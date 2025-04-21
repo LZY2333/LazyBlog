@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: 介绍
-      link: /速通Windows生成SSH_Key至Git
+      link: /others/github-remote-setup
 features:
   - title: 'MDX: 使用灵活语法编写内容'
     details: MDX 是一种强大的内容编写方式，你可以在 Markdown 中使用 React 组件。

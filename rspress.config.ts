@@ -1,28 +1,52 @@
 import * as path from 'node:path';
 import { defineConfig } from 'rspress/config';
 
+const docsPath = path.join(__dirname, 'docs')
+
 export default defineConfig({
-    root: path.join(__dirname, 'docs'),
+    root: docsPath,
     title: 'My Site',
     icon: '/rspress-icon.png',
-
     route: {
         // ** 代表任意级别的子目录，* 代表任意文件。
         // 'drafts':   drafts 目录下的文件，不匹配子目录(如: drafts/1/1.md)。同 'component/*' 'component/'
         // '/drafts/': 匹配根目录下的 component 目录，通常用作绝对路径匹配。
         exclude: ['drafts/**/*']
-    }
+    },
+    search: {
+        codeBlocks: true,
+    },
+    themeConfig: {
+        outlineTitle: '目录',
+        prevPageText: '上一篇',
+        nextPageText: '下一篇',
+        lastUpdated: true,
+    },
+
+    builderConfig: {
+        tools: {
+            rspack: async (config) => {
+                const { FrontMatterCountPlugin } = await import('./src/plugins/FrontMatterCountPlugin');
+
+                const docsDir = path.resolve(__dirname, 'docs');
+                const outputDir = path.resolve(__dirname, 'public');
+
+                config.plugins?.push(
+                    new FrontMatterCountPlugin({
+                        docsPath,
+                        outputDir,
+                    })
+                );
+
+                return config;
+            },
+        },
+    },
     // logo: {
     //     light: '/rspress-light-logo.png',
     //     dark: '/rspress-dark-logo.png',
     // },
-    // themeConfig: {
-    //     socialLinks: [
-    //         {
-    //             icon: 'github',
-    //             mode: 'link',
-    //             content: 'https://github.com/web-infra-dev/rspress',
-    //         },
-    //     ],
-    // },
 });
+
+// 自动生成frontmatter，如文章字数统计
+// 自动生成_meta.json
