@@ -5,7 +5,7 @@ const docsPath = path.join(__dirname, 'docs')
 
 export default defineConfig({
     root: docsPath,
-    title: 'My Site',
+    title: '懒前端',
     icon: '/rspress-icon.png',
     route: {
         // ** 代表任意级别的子目录，* 代表任意文件。
@@ -21,23 +21,18 @@ export default defineConfig({
         prevPageText: '上一篇',
         nextPageText: '下一篇',
         lastUpdated: true,
+        nav: [
+            { text: '标签', link: '/tags' },
+            { text: '分类', link: '/categories' },
+            { text: '归档', link: '/archives' },
+        ],
     },
 
     builderConfig: {
         tools: {
             rspack: async (config) => {
                 const { FrontMatterCountPlugin } = await import('./src/plugins/FrontMatterCountPlugin');
-
-                const docsDir = path.resolve(__dirname, 'docs');
-                const outputDir = path.resolve(__dirname, 'public');
-
-                config.plugins?.push(
-                    new FrontMatterCountPlugin({
-                        docsPath,
-                        outputDir,
-                    })
-                );
-
+                config.plugins?.push(new FrontMatterCountPlugin({ docsPath }));
                 return config;
             },
         },

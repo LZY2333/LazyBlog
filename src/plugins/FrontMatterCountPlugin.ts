@@ -1,3 +1,4 @@
+// FrontMatterCountPlugin V2（输出路径统一为 Rspress 的 outputDir）
 // 用于统计 Rspress 项目中所有 Markdown 和 TSX 文件的 frontmatter
 // 输出 frontMatter.json、tags.json、categories.json
 
@@ -9,21 +10,20 @@ import type { Plugin } from '@rspack/core'; // 引入插件类型定义
 
 interface PluginOptions {
     docsPath: string; // 文档目录路径
-    outputDir: string; // 输出 JSON 文件的路径
 }
 
 export class FrontMatterCountPlugin {
     name = 'frontmatter-count-plugin'; // 插件名称
     docsPath: string; // 文档目录
-    outputDir: string; // 输出目录
 
     constructor(options: PluginOptions) {
         this.docsPath = options.docsPath; // 设置文档目录
-        this.outputDir = options.outputDir; // 设置输出目录
     }
 
     apply(compiler: any) {
-        compiler.hooks.thisCompilation.tapPromise(this.name, async () => {
+        compiler.hooks.thisCompilation.tap(this.name, async (compilation: any) => {
+            const outputPath = compiler.options.output.path; // 使用 Rspack 的 output 路径作为 JSON 输出目录
+
             const frontmatters: Record<string, any> = {}; // 存储所有 frontmatter 数据
             const tagsMap: Record<string, string[]> = {}; // 存储 tags 的文章索引
             const categoriesMap: Record<string, string[]> = {}; // 存储 categories 的文章索引
@@ -31,9 +31,9 @@ export class FrontMatterCountPlugin {
             await this.walkAndParse(this.docsPath, frontmatters, tagsMap, categoriesMap); // 遍历并处理所有文件
 
             await Promise.all([
-                this.writeJson('frontMatter.json', frontmatters), // 写入 frontmatter 数据
-                this.writeJson('tags.json', tagsMap), // 写入 tag 索引
-                this.writeJson('categories.json', categoriesMap), // 写入分类索引
+                this.writeJson(path.join(outputPath, 'frontMatter.json'), frontmatters), // 写入 frontmatter 数据
+                this.writeJson(path.join(outputPath, 'tags.json'), tagsMap), // 写入 tag 索引
+                this.writeJson(path.join(outputPath, 'categories.json'), categoriesMap), // 写入分类索引
             ]);
         });
     }
@@ -92,9 +92,8 @@ export class FrontMatterCountPlugin {
         return Array.isArray(input) ? input : [input]; // 非数组统一转为数组
     }
 
-    private async writeJson(filename: string, data: any) {
-        const targetPath = path.join(this.outputDir, filename); // 生成目标文件路径
-        await fs.mkdir(path.dirname(targetPath), { recursive: true }); // 确保目录存在
-        await fs.writeFile(targetPath, JSON.stringify(data, null, 2), 'utf-8'); // 写入 JSON 文件
+    private async writeJson(filePath: string, data: any) {
+        await fs.mkdir(path.dirname(filePath), { recursive: true }); // 确保目录存在
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8'); // 写入 JSON 文件
     }
 }
