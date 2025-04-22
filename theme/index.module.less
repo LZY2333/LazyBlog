@@ -1,0 +1,29 @@
+.banner {
+    position: relative; /* 使背景图和蒙版叠加 */
+    width: 100%;
+    height: calc(100vh - 72px); /* 确保容器高度是屏幕高度 */
+
+    /* 添加渐变蒙版层 */
+    &::before {
+        content: ''; /* 必须有内容才能显示 */
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.6),
+            rgba(255, 255, 255, 0.2)
+        ); /* 线性渐变从白色到透明 */
+        z-index: 1; /* 确保蒙版层在背景图上方 */
+    }
+
+    /* 使内容不被背景图遮挡 */
+    z-index: 0;
+    overflow: hidden; /* 确保超出的背景图部分被裁剪 */
+
+    @media (max-width: 768px) {
+        height: calc(100vh - 56px); /* 调整高度 */
+    }
+}
