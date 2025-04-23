@@ -3,5 +3,9 @@
     "type": "file",
     "name": "index",
     "label": "Overview"
+  },
+  {
+    "type": "file",
+    "name": "js-basic"
   }
 ]
