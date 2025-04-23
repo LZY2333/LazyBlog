@@ -1,7 +1,7 @@
 .banner {
     position: relative; /* 使背景图和蒙版叠加 */
     width: 100%;
-    height: calc(100vh - 72px); /* 确保容器高度是屏幕高度 */
+    height: calc(100vh - var(--rp-nav-height)); /* 确保容器高度是屏幕高度 */
 
     /* 添加渐变蒙版层 */
     &::before {
@@ -23,7 +23,4 @@
     z-index: 0;
     overflow: hidden; /* 确保超出的背景图部分被裁剪 */
 
-    @media (max-width: 768px) {
-        height: calc(100vh - 56px); /* 调整高度 */
-    }
 }

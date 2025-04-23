@@ -1,5 +1,6 @@
 import React from 'react'
 import Theme from 'rspress/theme'
+import CustomNav from './Nav'
 import style from './index.module.less'
 
 const HomeLayout = () => {
@@ -25,5 +26,7 @@ export default {
 }
 
 //  如何修改homelayout组件增加背景？如何引入图片?如何支持cssmodule，ts不报错？
+
+export { CustomNav as Nav }
 
 export * from 'rspress/theme'

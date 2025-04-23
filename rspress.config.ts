@@ -1,5 +1,7 @@
 import * as path from 'node:path';
 import { defineConfig } from 'rspress/config';
+import { FrontMatterCountPlugin } from './src/plugins/FrontMatterCountPlugin'
+import { OverviewGeneratorPlugin } from './src/plugins/OverviewGenerator'
 
 const docsPath = path.join(__dirname, 'docs')
 
@@ -31,8 +33,8 @@ export default defineConfig({
     builderConfig: {
         tools: {
             rspack: async (config) => {
-                const { FrontMatterCountPlugin } = await import('./src/plugins/FrontMatterCountPlugin');
                 config.plugins?.push(new FrontMatterCountPlugin({ docsPath }));
+                config.plugins?.push(new OverviewGeneratorPlugin({ docsPath }));
                 return config;
             },
         },

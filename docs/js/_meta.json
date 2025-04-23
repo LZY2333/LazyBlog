@@ -3,9 +3,5 @@
     "type": "file",
     "name": "index",
     "label": "Overview"
-  },
-  {
-    "type": "file",
-    "name": "github-remote-setup"
   }
 ]
