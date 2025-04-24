@@ -30,7 +30,7 @@ export class OverviewGeneratorPlugin {
         compiler.hooks.initialize.tap(this.name, () => {
             // 启动时触发生成逻辑
             generateOverview(this.docsPath)
-                .then(() => {})
+                .then(() => { })
                 .catch((err) => {
                     console.error('[overview-generator] 初始化失败', err); // 错误日志
                 });
@@ -66,8 +66,8 @@ async function ensureIndexMd(folderPath: string) {
             overview: true, // 添加 overview
             title: 'Overview', // 添加 title
         };
-        const newContent = matter.stringify(parsed.content, newData); // 重新拼接内容
-        await fs.writeFile(indexPath, newContent, 'utf-8'); // 写入 index.md
+        const newContent = matter.stringify(parsed.content.trimEnd(), newData); // 重新拼接内容
+        await fs.writeFile(indexPath, newContent.trimEnd(), 'utf-8'); // 写入 index.md
     } catch {
         const content = matter.stringify('', {
             overview: true, // 新建文件时添加 overview
