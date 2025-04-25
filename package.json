@@ -1,16 +1,16 @@
 {
-  "name": "lazy-blog",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "build": "rspress build",
-    "dev": "rspress dev",
-    "preview": "rspress preview"
-  },
-  "dependencies": {
-    "rspress": "^1.43.11"
-  },
-  "devDependencies": {
-    "@types/node": "^18.11.17"
-  }
+    "name": "LazyBlog",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "rspress dev",
+        "build": "rspress build",
+        "preview": "rspress preview"
+    },
+    "dependencies": {
+        "rspress": "^1.40.2"
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.17"
+    }
 }

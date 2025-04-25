@@ -1,0 +1,17 @@
+[
+    {
+        "type": "file",
+        "name": "index",
+        "label": "Overview"
+    },
+    {
+        "type": "dir",
+        "name": "js",
+        "label": "Javascript"
+    },
+    {
+        "type": "dir",
+        "name": "others",
+        "label": "Others"
+    }
+]

@@ -1,5 +1,6 @@
 ---
 pageType: home
+navbar: false
 
 hero:
     name: Rspress
@@ -9,7 +10,7 @@ hero:
     actions:
         - theme: brand
           text: 介绍
-          link: /overview
+          link: /posts
 ---
 
 1. 读取文件中的 tags categories 两个frontMatter生成统计
@@ -17,3 +18,5 @@ hero:
 2. 自动生成Overview
 
 3. 自动生成含当前所有文章的Overview页面
+
+4. 
