@@ -1,5 +1,5 @@
 ---
-title: 阅读杂记JS
+title: JS基础
 date: 2022-05-10 05:51:23
 categories: 技术栈
 tags:

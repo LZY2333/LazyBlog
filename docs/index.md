@@ -1,15 +1,14 @@
 ---
 pageType: home
-navbar: false
 
 hero:
-    name: Rspress
-    text: 文档工程解决方案
+    name: LazyBlog
+    text: 懒前端
 
-    tagline: 现代化文档开发技术栈
+    tagline: 明明只是想简单搭个博客，不小心开启了码字生活
     actions:
         - theme: brand
-          text: 介绍
+          text: 开始
           link: /posts
 ---
 

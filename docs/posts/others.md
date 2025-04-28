@@ -1,4 +1,3 @@
 ---
 overview: true
-navbar: true
 ---

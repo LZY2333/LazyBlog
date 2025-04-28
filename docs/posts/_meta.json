@@ -6,12 +6,17 @@
     },
     {
         "type": "dir",
-        "name": "js",
-        "label": "Javascript"
+        "name": "others",
+        "label": "Others"
     },
     {
         "type": "dir",
-        "name": "others",
-        "label": "Others"
+        "name": "life",
+        "label": "Life"
+    },
+    {
+        "type": "dir",
+        "name": "javascript",
+        "label": "Javascript"
     }
 ]

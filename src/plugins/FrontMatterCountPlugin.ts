@@ -6,7 +6,6 @@ import fs from 'fs/promises'; // 引入文件系统模块，用于异步读写�
 import path from 'path'; // 引入路径模块，用于处理文件路径
 import matter from 'gray-matter'; // 引入 gray-matter 用于解析 Markdown frontmatter
 import { pathToFileURL } from 'url'; // 将文件路径转换为 file:// URL
-import type { Plugin } from '@rspack/core'; // 引入插件类型定义
 
 interface PluginOptions {
     docsPath: string; // 文档目录路径
@@ -21,23 +20,26 @@ export class FrontMatterCountPlugin {
     }
 
     apply(compiler: any) {
-        compiler.hooks.thisCompilation.tap(this.name, async (compilation: any) => {
-            const outputPath = compiler.options.output.path; // 使用 Rspack 的 output 路径作为 JSON 输出目录
-
-            const frontmatters: Record<string, any> = {}; // 存储所有 frontmatter 数据
-            const tagsMap: Record<string, string[]> = {}; // 存储 tags 的文章索引
-            const categoriesMap: Record<string, string[]> = {}; // 存储 categories 的文章索引
-
-            await this.walkAndParse(this.docsPath, frontmatters, tagsMap, categoriesMap); // 遍历并处理所有文件
-
-            await Promise.all([
-                this.writeJson(path.join(outputPath, 'frontMatter.json'), frontmatters), // 写入 frontmatter 数据
-                this.writeJson(path.join(outputPath, 'tags.json'), tagsMap), // 写入 tag 索引
-                this.writeJson(path.join(outputPath, 'categories.json'), categoriesMap), // 写入分类索引
-            ]);
+        // 在构建开始前运行
+        compiler.hooks.environment.tap(this.name, async () => {
+            await this.generate(compiler.options.output.path);
         });
     }
 
+    private async generate(outputPath: string) {
+        console.log('正在生成 tags categories...');
+        const frontmatters: Record<string, any> = {}; // 存储所有 frontmatter 数据
+        const tagsMap: Record<string, string[]> = {}; // 存储 tags 的文章索引
+        const categoriesMap: Record<string, string[]> = {}; // 存储 categories 的文章索引
+
+        await this.walkAndParse(this.docsPath, frontmatters, tagsMap, categoriesMap); // 遍历并处理所有文件
+
+        return Promise.all([
+            this.writeJson(path.join(outputPath, 'frontMatter.json'), frontmatters), // 写入 frontmatter 数据
+            this.writeJson(path.join(outputPath, 'tags.json'), tagsMap), // 写入 tag 索引
+            this.writeJson(path.join(outputPath, 'categories.json'), categoriesMap), // 写入分类索引
+        ]);
+    }
     private async walkAndParse(
         dir: string,
         frontmatters: Record<string, any>,

@@ -1,5 +1,7 @@
 import * as path from 'node:path';
 import { defineConfig } from 'rspress/config';
+import { FrontMatterCountPlugin } from './src/plugins/FrontMatterCountPlugin'
+import { OverviewGeneratePlugin } from './src/plugins/OverviewGeneratePlugin'
 
 const docsPath = path.join(__dirname, 'docs')
 
@@ -22,15 +24,15 @@ export default defineConfig({
         lastUpdated: true,
     },
 
-    // builderConfig: {
-    //     tools: {
-    //         rspack: async (config) => {
-    //             config.plugins?.push(new FrontMatterCountPlugin({ docsPath }));
-    //             config.plugins?.push(new OverviewGeneratorPlugin({ docsPath }));
-    //             return config;
-    //         },
-    //     },
-    // },
+    builderConfig: {
+        tools: {
+            rspack: async (config) => {
+                config.plugins?.unshift(new FrontMatterCountPlugin({ docsPath }));
+                config.plugins?.unshift(new OverviewGeneratePlugin({}));
+                return config;
+            },
+        },
+    },
     logo: {
         light: '/rspress-light-logo.png',
         dark: '/rspress-dark-logo.png',
