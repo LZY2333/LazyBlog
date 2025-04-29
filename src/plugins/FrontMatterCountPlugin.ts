@@ -7,32 +7,30 @@ import path from 'path'; // 引入路径模块，用于处理文件路径
 import matter from 'gray-matter'; // 引入 gray-matter 用于解析 Markdown frontmatter
 import { pathToFileURL } from 'url'; // 将文件路径转换为 file:// URL
 
-interface PluginOptions {
-    docsPath: string; // 文档目录路径
-}
-
 export class FrontMatterCountPlugin {
     name = 'frontmatter-count-plugin'; // 插件名称
-    docsPath: string; // 文档目录
-
-    constructor(options: PluginOptions) {
-        this.docsPath = options.docsPath; // 设置文档目录
-    }
 
     apply(compiler: any) {
         // 在构建开始前运行
-        compiler.hooks.environment.tap(this.name, async () => {
-            await this.generate(compiler.options.output.path);
+        compiler.hooks.environment.tap(this.name, () => {
+            this.generate(compiler.options.output.path);
         });
     }
 
     private async generate(outputPath: string) {
         console.log('正在生成 tags categories...');
+        // 获取 rspress 文章文件路径（默认在项目根目录/docs）
+        const configPath = path.resolve(process.cwd(), 'rspress.config.ts');
+        // 处理 .tsx 或 .js 等模块文件，并尝试使用 import() 动态加载时需要使用 pathToFileURL
+        const configModule = await import(pathToFileURL(configPath).href);
+        const siteConfig = configModule.default || {};
+        const rootDir = siteConfig.root || path.resolve(process.cwd(), 'docs');
+
         const frontmatters: Record<string, any> = {}; // 存储所有 frontmatter 数据
         const tagsMap: Record<string, string[]> = {}; // 存储 tags 的文章索引
         const categoriesMap: Record<string, string[]> = {}; // 存储 categories 的文章索引
 
-        await this.walkAndParse(this.docsPath, frontmatters, tagsMap, categoriesMap); // 遍历并处理所有文件
+        await this.walkAndParse(rootDir, frontmatters, tagsMap, categoriesMap); // 遍历并处理所有文件
 
         return Promise.all([
             this.writeJson(path.join(outputPath, 'frontMatter.json'), frontmatters), // 写入 frontmatter 数据
@@ -52,7 +50,7 @@ export class FrontMatterCountPlugin {
             if (entry.isDirectory()) {
                 await this.walkAndParse(fullPath, frontmatters, tagsMap, categoriesMap); // 递归处理子目录
             } else if (entry.name.endsWith('.md') || entry.name.endsWith('.tsx')) {
-                const relativePath = path.relative(this.docsPath, fullPath); // 获取相对路径
+                const relativePath = path.relative(dir, fullPath); // 获取相对路径
                 const key = relativePath.replace(/\\/g, '/'); // 标准化为 POSIX 路径
                 const data = await this.extractFrontmatterFromFile(fullPath); // 提取 frontmatter
                 if (!data) continue; // 无效 frontmatter 则跳过

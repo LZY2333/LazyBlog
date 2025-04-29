@@ -27,8 +27,8 @@ export default defineConfig({
     builderConfig: {
         tools: {
             rspack: async (config) => {
-                config.plugins?.unshift(new FrontMatterCountPlugin({ docsPath }));
-                config.plugins?.unshift(new OverviewGeneratePlugin({}));
+                config.plugins?.unshift(new FrontMatterCountPlugin());
+                config.plugins?.unshift(new OverviewGeneratePlugin());
                 return config;
             },
         },
