@@ -32,6 +32,15 @@ export default defineConfig({
                 return config;
             },
         },
+        html: {
+            tags: [
+                {
+                    tag: 'script',
+                    // 通过 window.RSPRESS_THEME 变量来指定默认的主题模式，可选值为 'dark' 和 'light'
+                    children: "window.RSPRESS_THEME = 'dark';",
+                },
+            ],
+        },
     },
     logo: {
         light: '/rspress-light-logo.png',
