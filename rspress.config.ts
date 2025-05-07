@@ -9,6 +9,7 @@ export default defineConfig({
     root: docsPath,
     title: '懒前端',
     icon: '/rspress-icon.png',
+    outDir: 'LazyBlog',
     route: {
         // ** 代表任意级别的子目录，* 代表任意文件。
         // 'drafts':   drafts 目录下的文件，不匹配子目录(如: drafts/1/1.md)。同 'component/*' 'component/'
@@ -22,6 +23,9 @@ export default defineConfig({
         prevPageText: '上一篇',
         nextPageText: '下一篇',
         lastUpdated: true,
+        footer: {
+            message: '<a href="https://beian.miit.gov.cn/">粤ICP备2021167772号</a>',
+        },
     },
 
     builderConfig: {

@@ -6,8 +6,8 @@
     },
     {
         "type": "dir",
-        "name": "others",
-        "label": "Others"
+        "name": "javascript",
+        "label": "Javascript"
     },
     {
         "type": "dir",
@@ -16,7 +16,12 @@
     },
     {
         "type": "dir",
-        "name": "javascript",
-        "label": "Javascript"
+        "name": "practices",
+        "label": "Practices"
+    },
+    {
+        "type": "dir",
+        "name": "others",
+        "label": "Others"
     }
 ]
