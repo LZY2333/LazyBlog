@@ -1,6 +1,7 @@
 ---
 title: 婚礼演讲稿
 categories: life
+hide: true
 ---
 
 大家好，额外增加一个我比较擅长的环节，讲ppt
