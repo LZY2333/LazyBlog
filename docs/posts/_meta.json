@@ -21,7 +21,7 @@
     },
     {
         "type": "dir",
-        "name": "others",
-        "label": "Others"
+        "name": "workflow",
+        "label": "Workflow"
     }
 ]
