@@ -23,5 +23,10 @@
         "type": "dir",
         "name": "workflow",
         "label": "Workflow"
+    },
+    {
+        "type": "dir",
+        "name": "typescript",
+        "label": "Typescript"
     }
 ]

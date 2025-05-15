@@ -1,5 +1,5 @@
 ---
-title: pnpm与yarn与npm
+title: pnpm、yarn、npm
 date: 2025-04-27 10:48:13
 ---
 
