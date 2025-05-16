@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "outDir": "../../dist/scripts",
+        "allowJs": true
+    },
+    "include": [
+        "./**/*.ts",
+        "../../rspress.config.ts"
+    ],
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS"
+        },
+        "require": [
+            "tsconfig-paths/register"
+        ]
+    }
+}
