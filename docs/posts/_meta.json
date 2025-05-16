@@ -11,8 +11,8 @@
     },
     {
         "type": "dir",
-        "name": "life",
-        "label": "Life"
+        "name": "typescript",
+        "label": "Typescript"
     },
     {
         "type": "dir",
@@ -26,7 +26,7 @@
     },
     {
         "type": "dir",
-        "name": "typescript",
-        "label": "Typescript"
+        "name": "life",
+        "label": "Life"
     }
 ]
