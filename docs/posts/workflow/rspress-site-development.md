@@ -66,40 +66,41 @@ __跟着文档来几行命令就行，Rspress官方文档写的很详细__
 name: Build and Deploy to ECS
 
 on:
-  push:
-    branches:
-      - main  # 或你要触发部署的分支
+    push:
+        branches:
+            - main # 或你要触发部署的分支
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+    build-and-deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '20'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+            - name: Install pnpm
+              run: npm install -g pnpm
 
-      - name: Install dependencies
-        run: pnpm install
+            - name: Install dependencies
+              run: pnpm install
 
-      - name: Build Rspress project
-        run: pnpm build
+            - name: Build Rspress project
+              run: pnpm build
 
-      - name: Deploy to ECS via SCP
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "dist/*" # 打包output目录
-          target: "/var/www" # 服务器存放目录，和nginx配置有关
+            - name: Deploy to ECS via SCP
+              uses: appleboy/scp-action@v0.1.3
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SERVER_SSH_KEY }}
+                  source: 'dist/*' # output目录,这里是dist文件夹内所有内容，不含dist本身
+                  target: '/var/www/【xxx】' # 一般放在var/www/【xxx】内，和nginx配置要一致
+
 ```
 
 
