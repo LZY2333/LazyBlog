@@ -224,14 +224,13 @@ console.log((name as any as boolean).length); // 双重断言,OK
 ```
 
 
-## 8. TS函数
+## 8. 函数类型
 
 函数的类型约束主要是 入参 和 返回值
 
 函数的声明方式有两种，function关键字来声明 表达式声明
 
 表达式声明时，如果把类型约束写在函数里，则变量类型是根据函数推导出来的类型。
-
 
 ```ts
 // function关键字声明 定义类型
@@ -310,11 +309,11 @@ function attr3(a: any,b: any): void {
 
 TS中:
 
-typeof 取变量的类型
+`typeof 变量`取变量的类型
 
-keyof 取的是类型的key的集合
+`keyof 类型`取类型的key的集合
 
-this 可在函数的第一个参数处做类型约束
+函数的第一个参数处可写为this，并对其做TS约束，调用时会忽略这一参数
 
 > 注意: 如果 type 关键字后面的 typeof 会被视为 TS语法，具有获取 实例类型的功能，
 > 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof，也能被识别为TS
