@@ -1,5 +1,5 @@
 ---
-title: Extends + Infer
+title: Extends + Infer 提取类型
 date: 2025-05-15 21:58:58
 categories: 技术栈
 tags: 
@@ -7,7 +7,7 @@ tags:
 ---
 
 
-## 模式匹配
+## 模式匹配 + 提取类型
 
 比如这样一个 Promise<value> 类型：
 
