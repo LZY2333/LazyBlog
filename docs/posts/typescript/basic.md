@@ -101,10 +101,10 @@ null 和 undefined 可以相互赋值
 TS配置文件设置了strictNullChecks:true时,任意类型被赋值为这两个类型会报错
 
 __unknown__
-表示未知，可以被赋值任意类型，但是不可以赋值给别的类型
+表示未知，可以被赋值任意类型，但是不可以赋值给其他类型
 
 __any__
-表示任意类型,可以被赋值任意类型
+表示任意类型,可以被赋值任意类型，也可以给任意类型赋值
 
 __void__
 表示没有任何类型,当函数没有返回值时,被认为是void类型
@@ -332,6 +332,10 @@ getName.call(person, "name");
 let a = typeof person
 // let a: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
 ```
+
+this 约束几乎只出现在该函数可能被BindCallApply调用的情况下
+
+如果没有报错，说明没开启 strictBindCallApply 的编译选项，这个是控制是否按照原函数的类型来检查 bind、call、apply
 
 ## 10. 其它笔记
 `?.` 是js语法，链运算判断符，这个值没有值就不继续取值了
