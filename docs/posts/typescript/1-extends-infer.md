@@ -1,5 +1,5 @@
 ---
-title: Extends + Infer 提取类型
+title: Extends + Infer 提取类型技巧
 date: 2025-05-15 21:58:58
 categories: 技术栈
 tags: 
@@ -77,6 +77,16 @@ type ReplaceStrAll<
 > = Str extends `${infer Prefix}${From}${infer Suffix}` ? `${Prefix}${To}${ReplaceStrAll<Suffix, From, To>}` : Str;
 
 type f = ReplaceStrAll<'hello world world', 'world', 'typescript'> // 'hello typescript typescript'
+```
+
+__SubString__
+
+```ts
+type SubString<Str extends string, SubStr extends string> = 
+    Str extends `${infer Prefix}${SubStr}${infer Suffix}` 
+        ? SubString<`${Prefix}${Suffix}`, SubStr> : Str;
+
+type subString = SubString<'hello_world_t_t_t', '_t'>; // "hello_world"
 ```
 
 __Trim__
