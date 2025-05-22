@@ -1,13 +1,14 @@
 ---
-title: Extends + Infer 提取类型技巧
+title: TS类型技巧(一):提取
 date: 2025-05-15 21:58:58
 categories: 技术栈
 tags: 
     - TypeScript
 ---
 
+Extends + Infer
 
-## 模式匹配 + 提取类型
+## 模式匹配 + 提取类型 的技巧
 
 比如这样一个 Promise<value> 类型：
 
