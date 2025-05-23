@@ -8,66 +8,83 @@ tags:
 
 应对数量不确定的情况时，需要使用 __递归__
 
-## 提取不确定层数的 Promise 中的 value 类型
+## 提取Promise value类型
 ```ts
-type ttt = Promise<Promise<Promise<number>>>;
-type DeepPromiseValueType<T> =
-    T extends Promise<infer U> ? DeepPromiseValueType<U> : T;
-type ttt2 = DeepPromiseValueType<ttt>; // number
+type ttt = Promise<Promise<Promise<number>>>
+type DeepPromiseValueType<T> = T extends Promise<infer U>
+    ? DeepPromiseValueType<U>
+    : T
+type ttt2 = DeepPromiseValueType<ttt> // number
 ```
 
-## 反转不确定数量的 数组
+## 反转数组
 ```ts
-type arr = [1, 2, 3, 4, 5];
-type ReverseArr<Arr extends unknown[]> =
-    Arr extends [infer First, ...infer Rest]
+type ReverseArr<Arr extends unknown[]> = Arr extends [
+    infer First,
+    ...infer Rest
+]
     ? [...ReverseArr<Rest>, First]
-    : Arr;
-type arr2 = ReverseArr<arr>; // [5,4,3,2,1]
+    : Arr
+type arr2 = ReverseArr<arr> // [5,4,3,2,1]
 ```
 注意泛型不能写成 `type ReverseArray<T: any[]>`, `:`是函数的语法
 
-## 查找不确定数量数组 的指定元素
+## 查找数组元素
 
 ```ts
-type Includes<Arr extends unknown[], FindItem> = 
-    Arr extends [infer First, ...infer Rest]
-        ? IsEqual<First, FindItem> extends true
-            ? true
-            : Includes<Rest, FindItem>
-        : false;
+type Includes<Arr extends unknown[], FindItem> = Arr extends [
+    infer First,
+    ...infer Rest
+]
+    ? IsEqual<First, FindItem> extends true
+        ? true
+        : Includes<Rest, FindItem>
+    : false
 
-type IsEqual<A, B> = (A extends B ? true : false) & (B extends A ? true : false);
+type IsEqual<A, B> = (A extends B ? true : false) & (B extends A ? true : false)
 
-type arr3 = [1, 2, 3, 4, 5];
-type res = Includes<arr3, 3>; // true
-type res2 = Includes<arr3, 6>; // false
+type arr3 = [1, 2, 3, 4, 5]
+type res = Includes<arr3, 3> // true
+type res2 = Includes<arr3, 6> // false
 ```
 
-## 删除数组的 不确定数量指定元素
-
-
-```ts
-
-type Delete<Arr extends unknown[], DeleteItem> =
-    Arr extends [infer First, ...infer Rest] ? IsEqual<First, DeleteItem> extends false ? Delete<Rest, DeleteItem> : [...Rest] : false;
-
-type arr4 = [1, 2, 3, 4, 5];
-type res3 = Delete<arr4, 3>; // [1,2,4,5]
-```
+## 删除数组元素
 
 ```ts
-type RemoveItem<
-    Arr extends unknown[], 
-    Item, 
-    Result extends unknown[] = []
-> = Arr extends [infer First, ...infer Rest]
-        ? IsEqual<First, Item> extends true
-            ? RemoveItem<Rest, Item, Result>
-            : RemoveItem<Rest, Item, [...Result, First]>
-        : Result;
+type RemoveItem<T extends unknown[], DeleteItem, Result extends unknown[] = []> =
+    // 不管相不相等都继续递归 RemoveItem, 直到数组为空返回Result, 做到全部删除
+    T extends [infer First, ...infer Rest]
+        ? IsEqual<First, DeleteItem> extends true
+            ? // 如果相等就不放进Result,
+              RemoveItem<Rest, DeleteItem, Result>
+            : // 如果不相等,就放进Result, 注意...Result在前面，因为Result是前面传下来的结果
+              RemoveItem<Rest, DeleteItem, [...Result, First]>
+        : Result
         
 type IsEqual<A, B> = (A extends B ? true : false) & (B extends A ? true : false);
+
+type arr5 = [1, 2, 3, 3, 4, 5, 3]
+type res4 = RemoveItem<arr5, 3> // [1,2,4,5]
+```
+
+## 扁平化数组
+
+```ts
+// 两层
+type Flatten< Arr extends unknown[], Result extends unknown[] = [] > =
+    Arr extends [infer First, ...infer Rest]
+        ? First extends unknown[]
+            ? Flatten<Rest, [...Result, ...First]>
+            : Flatten<Rest, [...Result, First]>
+        : Result
+
+// 多层
+type DeepFlatten< Arr extends unknown[], Result extends unknown[] = [] > =
+    Arr extends [infer First, ...infer Rest]
+        ? First extends unknown[]
+            ? Flatten<[...First, ...Rest], Result>
+            : Flatten<Rest, [...Result, First]>
+        : Result
 
 ```
 
