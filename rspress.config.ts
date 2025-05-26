@@ -39,8 +39,8 @@ export default defineConfig({
         },
     },
     logo: {
-        light: '/rspress-light-logo.png',
-        dark: '/rspress-dark-logo.png',
+        light: '/rspress-icon.png',
+        dark: '/rspress-icon.png',
     },
 });
 

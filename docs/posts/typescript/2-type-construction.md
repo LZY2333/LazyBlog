@@ -154,7 +154,7 @@ type ToRequired<T> = {
 __联合类型 归一化技巧__
 ```ts
 // 删除指定属性的readonly修饰符
-type RemoveReadonly<T extends Record<string, any>, K extends keyof T> =
+type RemoveReadonly<T extends Record<string, any>, 123 keyof T> =
     // 1. 将 K 中的属性设为可变（移除 readonly）
     { -readonly [P in K]: T[P] } &
     // 2. 保留非 K 的其它属性（原样）
