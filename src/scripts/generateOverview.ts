@@ -132,8 +132,8 @@ async function updateSubDirMetaJson(postsPath: string, dirName: string) {
             // 如果文件被标记为隐藏，从 metaItems 中移除
             metaItems = metaItems.filter(item => item !== fileName);
         } else if (!metaItems.includes(fileName)) {
-            // 如果文件不在 metaItems 中，添加到开头
-            metaItems.unshift(fileName);
+            // 如果文件不在 metaItems 中，添加到末尾
+            metaItems.push(fileName);
         }
     }
 

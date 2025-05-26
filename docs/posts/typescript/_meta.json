@@ -2,5 +2,7 @@
     "0-basic",
     "1-extends-infer",
     "2-type-construction",
-    "3-recursion"
+    "3-recursion",
+    "4-count",
+    "5-union"
 ]
