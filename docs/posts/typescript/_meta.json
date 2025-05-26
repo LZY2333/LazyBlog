@@ -1,5 +1,6 @@
 [
     "0-basic",
     "1-extends-infer",
-    "2-type-construction"
+    "2-type-construction",
+    "3-recursion"
 ]

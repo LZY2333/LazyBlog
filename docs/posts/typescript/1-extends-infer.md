@@ -62,9 +62,11 @@ type ReplaceStr<
     From extends string,
     To extends string
 > = Str extends `${infer Prefix}${From}${infer Suffix}`
-    ? `${Prefix}${To}${Suffix}` : Str;
+    ? `${Prefix}${To}${Suffix}`
+    : Str
 
-type e = ReplaceStr<'hello world', 'world', 'typescript'> // 'hello typescript'
+// 'hello typescript'
+type e = ReplaceStr<'hello world', 'world', 'typescript'> 
 ```
 
 __ReplaceAll__
@@ -75,19 +77,26 @@ type ReplaceStrAll<
     Str extends string,
     From extends string,
     To extends string
-> = Str extends `${infer Prefix}${From}${infer Suffix}` ? `${Prefix}${To}${ReplaceStrAll<Suffix, From, To>}` : Str;
+> = Str extends `${infer Prefix}${From}${infer Suffix}`
+    ? `${Prefix}${To}${ReplaceStrAll<Suffix, From, To>}`
+    : Str
 
-type f = ReplaceStrAll<'hello world world', 'world', 'typescript'> // 'hello typescript typescript'
+// 'hello typescript typescript'
+type f = ReplaceStrAll<'hello world world', 'world', 'typescript'> 
 ```
 
 __SubString__
 
 ```ts
-type SubString<Str extends string, SubStr extends string> = 
-    Str extends `${infer Prefix}${SubStr}${infer Suffix}` 
-        ? SubString<`${Prefix}${Suffix}`, SubStr> : Str;
-
-type subString = SubString<'hello_world_t_t_t', '_t'>; // "hello_world"
+type SubString<
+    Str extends string,
+    SubStr extends string
+> = Str extends `${infer Prefix}${SubStr}${infer Suffix}`
+    ? SubString<`${Prefix}${Suffix}`, SubStr>
+    : Str
+    
+// "hello_world"
+type subString = SubString<'hello_world_t_t_t', '_t'>
 ```
 
 __Trim__
@@ -98,7 +107,8 @@ type Trim<str extends string> =
     str extends `${infer Prefix}${' ' | '\n' | '\t'}${infer Suffix}`
         ? Trim<`${Prefix}${Suffix}`> : str;
 
-type g = Trim<' hello world '> // 'helloworld'
+// 'helloworld'
+type g = Trim<' hello world '>
 ```
 
 ## 函数 提取类型
@@ -139,7 +149,9 @@ dong.hello.call({something: 'lazy'});
 ```ts
 // 提取约束过的this的类型
 type GetThisParameter<Func extends (this: any, ...args: any[]) => any> =
-    Func extends (this: infer ThisType, ...args: any[]) => any ? ThisType : never;
+    Func extends (this: infer ThisType, ...args: any[]) => any
+        ? ThisType
+        : never
 
 type i = GetThisParameter<typeof dong.hello> // unknown
 type j = GetThisParameter<typeof dong.hello2> // Dong
@@ -155,18 +167,17 @@ __提取构造器类型__
 
 ```ts
 // 首先约束GetInstanceType<T>接收的T为构造器类型
-type GetInstanceType<
-    ConstructorType extends new (...args: any) => any
-> = ConstructorType extends new (...args: any) => infer InstanceType 
-        ? InstanceType 
-        : any;
+type GetInstanceType<ConstructorType extends new (...args: any) => any> =
+    ConstructorType extends new (...args: any) => infer InstanceType
+        ? InstanceType
+        : any
 
 interface Person {
-    name: string;
+    name: string
 }
 
 interface PersonConstructor {
-    new(name: string): Person;
+    new (name: string): Person
 }
 
 type k = GetInstanceType<PersonConstructor> // Person
