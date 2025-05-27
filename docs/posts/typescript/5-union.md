@@ -14,19 +14,10 @@ TypeScript 对联合类型做了专门的处理，得到了写法上的简化。
 
 缺点: 带来了理解上的门槛
 
-| 类型系统结构                     | 是否对联合类型逐个处理（"分发"）              | 说明                                    |
-| -------------------------------- | --------------------------------------------- | --------------------------------------- |
-| 条件类型                         | ✅ 会分布式地应用每个成员                      | 最经典的分发机制，`T extends U ? A : B` |
-| 模板字符串类型                   | ✅ 会交叉组合成员生成新联合                    | 隐式地展开每个组合                      |
-| 映射类型（Mapped Types）         | ❌ 不分发联合类型本身，但会映射联合 key        | 不对整个联合类型本身做拆分              |
-| 索引访问类型 `T[K]`              | ✅ `T extends { [K]: ... }` 会对联合做交叉分布 | 有时候会触发分布行为                    |
-| 函数参数推导（infer）            | ✅ 有时能触发 union 分布式推导                 | 特别是在 `infer T` 中嵌套 union         |
-| infer 条件中交叉分布（函数变种） | ✅ `T extends (...args: infer A) => any ? ...` | 会对每种函数变体分发                    |
-| 对象赋值/类型兼容判断            | ❌ 不会显式分发                                | 静态兼容，不涉及类型操作                |
-
 
 ## 1. 条件类型
 
+这种效果叫 __分布式条件类型__
 ```ts
 type UppercaseA<Item extends string> = 
     Item extends 'a' ?  Uppercase<Item> : Item;
@@ -114,21 +105,7 @@ type ConcatStr<T extends string, U extends string> = `${T}-${U}`;
 type A = ConcatStr<'A' | 'B', 'a' | 'b'>;
 ```
 
-## 4. 映射类型
-
-Key值分发, Value值不分发
-
-```ts
-// { a: true, b: true }
-type DistributeKey = {
-    [K in 'a' | 'b']: true
-}
-type DistributeValue = {
-    k: 'a' | 'b'
-}
-```
-
-
+## 4. 索引类型
 
 __数组转联合类型, 使用number下标访问__
 
@@ -140,4 +117,45 @@ type test2 = ['aaa', 'bbb'][number]
 type test3 = test[number]
 ```
 
+```ts
+type T = { a: number } | { b: string };
 
+// number | string 
+type Keys = T['a' | 'b']; 
+```
+
+## 5. 利用分发机制
+
+对数组进行全组合(4 和 3 中的内容), 下面只需要传入数组
+```ts
+type test4<T extends string[]> = `__${T[number]}`
+
+// "__aaa" | "__bbb"
+type test5 = test4<['aaa', 'bbb']>
+```
+`T extends string[]` 和 `T[number]` 这两点是实现能传入数组变成联合类型的关键
+
+联合类型的分发 代替 循环， 达到遍历子类型的效果
+```ts
+// 任意两个类型的全组合
+type Combination<A extends string, B extends string> =
+    | A
+    | B
+    | `${A}${B}`
+    | `${B}${A}`
+
+// 任意个数类型的全组合, 利用联合类型做到循环，同时加入递归
+type AllCombinations<
+    A extends string,
+    B extends string = A
+> = A extends A
+    ? Combination<A, AllCombinations<Exclude<B, A>>>
+    : never
+
+// "A" | "B" | "C" | "BC" | "CB" | "AB" | "AC" | "ABC" | "ACB" | "BA" | "CA" | "BCA" | "CBA" | "BAC" | "CAB"
+type test6 = AllCombinations<'A' | 'B' | 'C'>
+```
+
+`A extends A` 将A分发, 相当于循环遍历了A的每个子类型
+
+接下来对每个 单A 都调用一次 Combination，循环+递归 完成全组合
