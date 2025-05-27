@@ -14,7 +14,8 @@ type ttt = Promise<Promise<Promise<number>>>
 type DeepPromiseValueType<T> = T extends Promise<infer U>
     ? DeepPromiseValueType<U>
     : T
-type ttt2 = DeepPromiseValueType<ttt> // number
+// number
+type ttt2 = DeepPromiseValueType<ttt>
 ```
 
 ## 2. 反转数组
@@ -25,23 +26,25 @@ type ReverseArr<Arr extends unknown[]> = Arr extends [
 ]
     ? [...ReverseArr<Rest>, First]
     : Arr
-type arr2 = ReverseArr<arr> // [5,4,3,2,1]
+// [5,4,3,2,1]
+type arr2 = ReverseArr<arr>
 ```
 注意泛型不能写成 `type ReverseArray<T: any[]>`, `:`是函数的语法
 
 ## 3. 查找数组元素
 
 ```ts
-type Includes<Arr extends unknown[], FindItem> = Arr extends [
-    infer First,
-    ...infer Rest
-]
+type Includes<
+    Arr extends unknown[],
+    FindItem
+> = Arr extends [infer First, ...infer Rest]
     ? IsEqual<First, FindItem> extends true
         ? true
         : Includes<Rest, FindItem>
     : false
 
-type IsEqual<A, B> = (A extends B ? true : false) & (B extends A ? true : false)
+type IsEqual<A, B> = (A extends B ? true : false) &
+    (B extends A ? true : false)
 
 type arr3 = [1, 2, 3, 4, 5]
 type res = Includes<arr3, 3> // true
@@ -51,17 +54,22 @@ type res2 = Includes<arr3, 6> // false
 ## 4. 删除数组元素
 
 ```ts
-type RemoveItem<T extends unknown[], DeleteItem, Result extends unknown[] = []> =
+type RemoveItem<
+    T extends unknown[],
+    DeleteItem,
+    Result extends unknown[] = []
+> =
     // 不管相不相等都继续递归 RemoveItem, 直到数组为空返回Result, 做到全部删除
     T extends [infer First, ...infer Rest]
         ? IsEqual<First, DeleteItem> extends true
             ? // 如果相等就不放进Result,
               RemoveItem<Rest, DeleteItem, Result>
             : // 如果不相等,就放进Result, 注意...Result在前面，因为Result是前面传下来的结果
-              RemoveItem<Rest, DeleteItem, [...Result, First]>
+              RemoveItem< Rest, DeleteItem, [...Result, First] >
         : Result
-        
-type IsEqual<A, B> = (A extends B ? true : false) & (B extends A ? true : false);
+
+type IsEqual<A, B> = (A extends B ? true : false) &
+    (B extends A ? true : false)
 
 type arr5 = [1, 2, 3, 3, 4, 5, 3]
 type res4 = RemoveItem<arr5, 3> // [1,2,4,5]
@@ -71,20 +79,24 @@ type res4 = RemoveItem<arr5, 3> // [1,2,4,5]
 
 ```ts
 // 两层
-type Flatten< Arr extends unknown[], Result extends unknown[] = [] > =
-    Arr extends [infer First, ...infer Rest]
-        ? First extends unknown[]
-            ? Flatten<Rest, [...Result, ...First]>
-            : Flatten<Rest, [...Result, First]>
-        : Result
+type Flatten<
+    Arr extends unknown[],
+    Result extends unknown[] = []
+> = Arr extends [infer First, ...infer Rest]
+    ? First extends unknown[]
+        ? Flatten<Rest, [...Result, ...First]>
+        : Flatten<Rest, [...Result, First]>
+    : Result
 
 // 多层
-type DeepFlatten< Arr extends unknown[], Result extends unknown[] = [] > =
-    Arr extends [infer First, ...infer Rest]
-        ? First extends unknown[]
-            ? Flatten<[...First, ...Rest], Result>
-            : Flatten<Rest, [...Result, First]>
-        : Result
+type DeepFlatten<
+    Arr extends unknown[],
+    Result extends unknown[] = []
+> = Arr extends [infer First, ...infer Rest]
+    ? First extends unknown[]
+        ? Flatten<[...First, ...Rest], Result>
+        : Flatten<Rest, [...Result, First]>
+    : Result
 
 ```
 
@@ -95,8 +107,10 @@ type DeepFlatten< Arr extends unknown[], Result extends unknown[] = [] > =
 type BuildArray<
     Length extends number,
     Ele = unknown,
-    Arr extends unknown[] = []
-> = Arr['length'] extends Length ? Arr : BuildArray<Length, Ele, [...Arr, Ele]>
+    R extends unknown[] = []
+> = R['length'] extends Length
+    ? R
+    : BuildArray<Length, Ele, [...R, Ele]>
 
 // [string, string, string, string, string]
 type a = BuildArray<5, string>
@@ -114,10 +128,10 @@ type a = BuildArray<5, string>
 
 ```ts
 // 非累加器写法
-type RemoveItem<T extends unknown[], DeleteItem> = T extends [
-    infer First,
-    ...infer Rest
-]
+type RemoveItem<
+    T extends unknown[],
+    DeleteItem
+> = T extends [infer First, ...infer Rest]
     ? IsEqual<First, DeleteItem> extends true
         ? RemoveItem<Rest, DeleteItem>
         : [First, ...RemoveItem<Rest, DeleteItem>]
@@ -154,7 +168,9 @@ type f = ReplaceStrAll<'hello world world', 'world', 'typescript'>
 __StringToUnion__
 ```ts
 type StringToUnion<T extends string> =
-    T extends `${infer C}${infer Rest}` ? C | StringToUnion<Rest> : never;
+    T extends `${infer C}${infer Rest}`
+        ? C | StringToUnion<Rest>
+        : never
 
 // 'h' | 'e' | 'l' | 'o'
 type a = StringToUnion<'hello'>
@@ -176,18 +192,64 @@ type c = ReverseStr<'tenet'> // 'tenet'
 
 __DeepReadonly__
 ```ts
-type DeepReadonly<Obj extends Record<string, any>> = Obj extends any
-    ? {
-          readonly [Key in keyof Obj]: Obj[Key] extends object
-              ? Obj[Key] extends Function
-                  ? Obj[Key]
-                  : DeepReadonly<Obj[Key]>
-              : Obj[Key]
-      }
-    : never
+type DeepReadonly<Obj extends Record<string, any>> = {
+    readonly [Key in keyof Obj]: Obj[Key] extends object
+        ? Obj[Key] extends Function
+            ? Obj[Key]
+            : DeepReadonly<Obj[Key]>
+        : Obj[Key]
+}
 
+type DeepReadonly2<Obj extends Record<string, any>> =
+    Obj extends any
+        ? {
+              readonly [Key in keyof Obj]: Obj[Key] extends object
+                  ? Obj[Key] extends Function
+                      ? Obj[Key]
+                      : DeepReadonly2<Obj[Key]>
+                  : Obj[Key]
+          }
+        : never
 type obj = { a: { b: { c: string } } }
 
+// { readonly a: DeepReadonly<{ b: { c: string; }; }>; }
+type obj1 = DeepReadonly<obj>
 // { readonly a: { readonly b: { readonly c: string } } }
-type obj2 = DeepReadonly<obj>
+type obj2 = DeepReadonly2<obj>
 ```
+
+`Obj extends any ? { ... } : never` 触发计算,ts的类型只有被用到的时候才会做计算
+
+这是 TS 一个非常经典的技巧，通常被称为
+
+__通过条件类型，触发联合类型的分发策略，导致重新计算__
+
+## 技巧！联合类型分发触发重新计算
+
+__通过条件类型，触发联合类型的分发策略，导致重新计算__
+
+首先, __联合类型的分发策略__:
+
+条件类型会分别作用于 联合类型的每一个元素做类型计算，最后合并。
+
+```ts
+type IsA<T> = T extends 'A' ? true : T;
+
+// true | "B" | "C"
+type test = IsA<'A' | 'B' | 'C'>
+// 其计算过程等同于:
+// ('A' extends 'A' ? true : 'A')
+// | ('B' extends 'A' ? true : 'B')
+// | ('C' extends 'A' ? true : 'C')
+
+```
+
+其次, 这个机制也可以用 __打破引用__ 和触发 __类型重新计算__
+
+正常情况, __ts 的类型只有被用到的时候才会做计算__
+
+`type obj1 = { readonly a: DeepReadonly<{ b: { c: string; }; }>; }`
+
+`Obj extends any ? { ... } : never`
+
+会迫使 TypeScript 把整个 Obj 视作一个“可以分发”的类型，从而彻底展开再计算

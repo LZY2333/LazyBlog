@@ -6,13 +6,11 @@ tags:
     - TypeScript
 ---
 
-## 构造新类型 的技巧
-
 TS类型系统不能对原类型进行修改，而是每次都构造新类型
 
 extends + infer 提取类型，下一步便是 __构造新类型__
 
-## 数组:解构
+## 1. 数组:解构
 
 __解构__,只需要掌握解构语法
 
@@ -21,12 +19,16 @@ type Push<Arr extends  unknown[], Ele> = [...Arr, Ele];
 ```
 
 ```ts
-type Zip<T extends [unknown, unknown], U extends [unknown, unknown]> =
-    T extends [infer A, infer B] ?
-    U extends [infer C, infer D] ?
-    [[A, C], [B, D]] : never : never;
-
-type tuple1 = Zip<[1, 2], ['a', 'b']>; // [[1, 'a'], [2, 'b']];
+type Zip<
+    T extends [unknown, unknown],
+    U extends [unknown, unknown]
+> = T extends [infer A, infer B]
+    ? U extends [infer C, infer D]
+        ? [[A, C], [B, D]]
+        : never
+    : never
+// [[1, 'a'], [2, 'b']];
+type tuple1 = Zip<[1, 2], ['a', 'b']> 
 ```
 
 ```ts
@@ -52,8 +54,8 @@ type CamelCase<Str extends string> =
     Str extends `${infer Left}_${infer Right}${infer Rest}`
         ? `${Left}${Uppercase<Right>}${CamelCase<Rest>}`
         : Str;
-
-type camelCase = CamelCase<'hello_world_test'>; // "helloWorldTest"
+// "helloWorldTest"
+type camelCase = CamelCase<'hello_world_test'>;
 ```
 
 ## 函数:解构
@@ -89,7 +91,8 @@ type obj = {
 type Mapping<Obj extends object> = { 
     [Key in keyof Obj]: Obj[Key]
 }
-type mapping = Mapping<obj>; // { name: string; age: number; gender: boolean }
+// { name: string; age: number; gender: boolean }
+type mapping = Mapping<obj>;
 ```
 
 ### 修改key, as 重命名
@@ -116,23 +119,36 @@ type UppercaseKey2<Obj extends Record<string, any>> = {
 }
 ```
 `& string` Key 可能为string、number、symbol, 这里代表只取string
-`<K extends keyof any>`  约束 K 是可以作为对象键的类型（string、number 或 symbol）
+
+`<K extends keyof any>`  约束 K 是可以作为对象键的类型
+
 `K extends string | number | symbol` 与这条完全相等
-`Record` 专门用来创建索引类型, 以后都可以用`Record<string, any>`代替`object`,class、对象 等都是 索引类型
+
+`Record` 专门用来创建索引类型,class、对象 等都是 索引类型
+
+以后都可以用`Record<string, any>`代替`object`
 
 ### 删除key, as 条件类型
 
-过滤只保留指定value类型的key
 ```ts
-type FilterByValueType<Obj extends Record<string, any>, ValueType> = {
-    // `Key in keyof Obj` 遍历Obj的key,用 as 修改key
-    // 这些key 如果 `extends ValueType`，则保留该key,否则剔除
-    [Key in keyof Obj as Obj[Key] extends ValueType ? Key : never]
-    : Obj[Key]
+// 过滤只保留指定value类型的key
+type FilterByValueType<
+    Obj extends Record<string, any>,
+    ValueType
+> = {
+    [Key in keyof Obj as Obj[Key] extends ValueType
+        ? Key
+        : never]: Obj[Key]
 }
 // { a: string }
-type filterByValueType = FilterByValueType<{ a: string, b: number }, string>
+type filterByValueType = FilterByValueType<
+    { a: string; b: number },
+    string
+>
 ```
+`Key in keyof Obj` 遍历Obj的key,用 as 修改key
+
+这些key 如果 `extends ValueType`，则保留该key,否则剔除
 
 ### 修改修饰符
 
@@ -154,24 +170,37 @@ type ToRequired<T> = {
 __联合类型 归一化技巧__
 ```ts
 // 删除指定属性的readonly修饰符
-type RemoveReadonly<T extends Record<string, any>, 123 keyof T> =
+type RemoveReadonly<
+    T extends Record<string, any>,
+    K extends keyof T
+> =
     // 1. 将 K 中的属性设为可变（移除 readonly）
-    { -readonly [P in K]: T[P] } &
+    { -readonly [P in K]: T[P] }
     // 2. 保留非 K 的其它属性（原样）
-    { [P in Exclude<keyof T, K>]: T[P] }
+    & { [P in Exclude<keyof T, K>]: T[P] }
 
 // 对联合类型归一化
-type RemoveReadonly2<T extends Record<string, any>, K extends keyof T> =
-    { -readonly [P in K]: T[P] } &
-    { [P in Exclude<keyof T, K>]: T[P] } extends infer O
+type RemoveReadonly2<
+    T extends Record<string, any>,
+    K extends keyof T
+> =
+    { -readonly [P in K]: T[P] }
+    & { [P in Exclude<keyof T, K>]: T[P] } extends infer O
     // 3. 重新整理属性顺序（避免交叉类型不易使用）
     ? { [P in keyof O]: O[P] }
-    : never;
+    : never
 
 // { name: string; } & { age: number; }
-type test1 = RemoveReadonly<{ readonly name: string, age: number }, 'name'>
+type test1 = RemoveReadonly<
+    { readonly name: string; age: number },
+    'name'
+>
 // { name: string; age: number; }
-type test2 = RemoveReadonly2<{ readonly name: string, age: number }, 'name'>
+type test2 = RemoveReadonly2<
+    { readonly name: string; age: number },
+    'name'
+>
+
 ```
 
 `extends infer O` 这里是小type推导出大type，而之前常见的是大type中infer提取小type

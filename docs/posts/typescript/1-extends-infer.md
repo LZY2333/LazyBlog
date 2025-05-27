@@ -8,13 +8,13 @@ tags:
 
 Extends + Infer
 
-## 模式匹配 + 提取类型 的技巧
-
-比如这样一个 Promise<value> 类型：
-
 ```ts
-type GetValueType<P> = P extends Promise<infer Value> ? Value : never;
-type a = GetValueType<Promise<'123'>>; // '123'
+type GetValueType<P> = P extends Promise<infer Value>
+    ? Value
+    : never
+
+// '123'
+type a = GetValueType<Promise<'123'>>
 ```
 
 extends 对 P 做类型匹配
@@ -23,28 +23,34 @@ extends 对 P 做类型匹配
 
 如果extends匹配成立，就返回infer 储存的变量，否则就返回 never。
 
-## 数组 提取类型
+## 1. 数组 提取类型
 
 ```ts
 type arr = [1, 2, 3]
 // 其中的<Arr extends unknown[]>约束了GetFirst接收的必须是一个数组
-type GetFirst<Arr extends unknown[]> =
-    Arr extends [infer First, ...unknown[]] ? First : never;
+type GetFirst<Arr extends unknown[]> = Arr extends [
+    infer First,
+    ...unknown[]
+]
+    ? First
+    : never
 
 type a = GetFirst<arr> // 1
 ```
 
-## 字符串 提取类型
+## 2. 字符串 提取类型
 
 ```ts
 type GetStartWord<Str extends string> =
-    Str extends `${infer Prefix} ${string}` ? Prefix : never;
+    Str extends `${infer Prefix} ${string}` ? Prefix : never
 
 type GetStartChar<Str extends string> =
-    Str extends `${infer Prefix}${string}` ? Prefix : never;
+    Str extends `${infer Prefix}${string}` ? Prefix : never
 
-type StartsWith<Str extends string, Prefix extends string> =
-    Str extends `${Prefix}${string}` ? true : false;
+type StartsWith<
+    Str extends string,
+    Prefix extends string
+> = Str extends `${Prefix}${string}` ? true : false
 
 type a = GetStartWord<'hello world'> // 'hello'
 type b = GetStartChar<'hello world'> // 'h'
@@ -104,20 +110,28 @@ __Trim__
 ```ts
 // 去除所有空格
 type Trim<str extends string> =
-    str extends `${infer Prefix}${' ' | '\n' | '\t'}${infer Suffix}`
-        ? Trim<`${Prefix}${Suffix}`> : str;
+    str extends `${infer Prefix}${
+        | ' '
+        | '\n'
+        | '\t'}${infer Suffix}`
+        ? Trim<`${Prefix}${Suffix}`>
+        : str
 
 // 'helloworld'
 type g = Trim<' hello world '>
 ```
 
-## 函数 提取类型
+## 3. 函数 提取类型
 
 ```ts
-type GetParameters<Func extends Function> = 
-    Func extends (...args: infer Args) => unknown ? Args : never;
+type GetParameters<Func extends Function> = Func extends (
+    ...args: infer Args
+) => unknown
+    ? Args
+    : never
 
-type h = GetParameters<(a: string, b: number) => void> // [a: string, b: number]
+// [a: string, b: number]
+type h = GetParameters<(a: string, b: number) => void>
 ```
 
 __提取this类型__
@@ -148,10 +162,11 @@ dong.hello.call({something: 'lazy'});
 函数中提取 约束过的this类型
 ```ts
 // 提取约束过的this的类型
-type GetThisParameter<Func extends (this: any, ...args: any[]) => any> =
-    Func extends (this: infer ThisType, ...args: any[]) => any
-        ? ThisType
-        : never
+type GetThisParameter<
+    Func extends (this: any, ...args: any[]) => any
+> = Func extends ( this: infer ThisType, ...args: any[] ) => any
+    ? ThisType
+    : never
 
 type i = GetThisParameter<typeof dong.hello> // unknown
 type j = GetThisParameter<typeof dong.hello2> // Dong
@@ -167,23 +182,22 @@ __提取构造器类型__
 
 ```ts
 // 首先约束GetInstanceType<T>接收的T为构造器类型
-type GetInstanceType<ConstructorType extends new (...args: any) => any> =
-    ConstructorType extends new (...args: any) => infer InstanceType
-        ? InstanceType
-        : any
+type GetInstanceType<
+    ConstructorType extends new (...args: any) => any
+> = ConstructorType extends new (
+    ...args: any
+) => infer InstanceType
+    ? InstanceType
+    : any
 
-interface Person {
-    name: string
-}
+interface Person { name: string }
 
-interface PersonConstructor {
-    new (name: string): Person
-}
-
-type k = GetInstanceType<PersonConstructor> // Person
+interface PersonConstructor { new (name: string): Person }
+// Person
+type k = GetInstanceType<PersonConstructor>
 ```
 
-## 索引类型 提取类型
+## 4. 索引类型 提取类型
 
 索引类型就是 键值对的对象类型(可通过T[K]访问)
 
@@ -210,12 +224,10 @@ type GetRefProps<Props> =
 所以第一句本质上只是一句兼容处理！！！ 没有它也一样！！！
 
 
-## 一句话用法总结
+## 5. 一句话用法总结
 
 使用 类型 extends 另一个类型 的模式判断是否匹配，
 
 在匹配的同时 从另一个类型中把需要提取的部分 infer 提取变量，  
 
 后续可对此变量进行进一步处理
-
-[神光大佬的TypeScript 类型体操通关秘籍](https://juejin.cn/book/7047524421182947366/section/7048281581428932619)
