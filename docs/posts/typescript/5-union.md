@@ -6,7 +6,7 @@ tags:
     - TypeScript
 ---
 
-TypeScript 对联合类型做了专门的处理，得到了写法上的简化。
+TypeScript 对联合类型做了专门的处理，具有 Distributive 特性, 得到了写法上的简化。
 
 效果: 联合类型 的每一个元素会分别参与 类型计算,结果再次合并为 联合类型
 
@@ -159,3 +159,11 @@ type test6 = AllCombinations<'A' | 'B' | 'C'>
 `A extends A` 将A分发, 相当于循环遍历了A的每个子类型
 
 接下来对每个 单A 都调用一次 Combination，循环+递归 完成全组合
+
+## 7. any的条件类型分发机制
+
+```ts
+type TestAny<T> = T extends number ? 1 : 2;
+// 1 | 2
+type test8 = TestAny<any>
+```
