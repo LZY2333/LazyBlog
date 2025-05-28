@@ -1,5 +1,5 @@
 ---
-title: TS类型技巧(六):特殊类型判断
+title: TS类型技巧(六):特殊类型
 date: 2025-05-27 22:05:31
 categories: 技术栈
 tags: 
@@ -82,9 +82,15 @@ type IsUnion<A, B = A> = A extends A
 
 ## 5. IsNever
 
-如果条件类型左边是never, 那永远返回never, 所以判定never要写右边
 ```ts
 type IsNever<T> = [T] extends [never] ? true : false
+```
+
+如果条件类型左边是never, 那永远返回never
+```ts
+type BadIsNever<T> = T extends never ? true : false;
+// never
+type testBadIsNever = BadIsNever<never>
 ```
 
 ## 6. IsTuple
@@ -125,6 +131,110 @@ TS 中有函数参数是有逆变性，如果参数是多个类型，参数类�
 
 提取索引类型中的可选索引
 
-可选索引的特性：可选索引的值为 undefined 和值类型的联合类型
+可选属性其Key可能没有,即`{}`是其子类型
+```ts
+type GetOptional<Obj extends Record<string, any>> = {
+    [Key in keyof Obj as {} extends Pick<Obj, Key>
+        ? Key
+        : never]: Obj[Key]
+}
+// { b?: number | undefined; }
+type testGetOptional = GetOptional<{ a: 1; b?: number }>
+```
 
-https://juejin.cn/book/7047524421182947366/section/7048282437238915110?enter_from=course_center&utm_source=course_center#heading-7
+可选索引 表现为值是 `T | undefined`, 但 `T | undefined` 不代表是可选索引
+
+可选索引 必须有 `?`
+
+## 9. GetRequired
+
+与可选索引相反的就是required
+```ts
+type isRequired<
+    Key extends keyof Obj,
+    Obj
+> = {} extends Pick<Obj, Key> ? never : Key
+
+type GetRequired<Obj extends Record<string, any>> = {
+    [Key in keyof Obj as isRequired<Key, Obj>]: Obj[Key]
+}
+// { a: 1 }
+type testGetRequired = GetRequired<{ a: 1; b?: number }>
+```
+
+## 10. RemoveIndexSignature
+
+`{[key: string]: any}` 索引签名, 代表可添加任意 Key 为 string 索引
+
+```ts
+// 删除 索引签名
+type RemoveIndexSignature<Obj extends Record<string, any>> = {
+    [Key in keyof Obj as Key extends `${infer Str}`
+        ? Str
+        : never] : Obj[Key]
+}
+// { a: 1 }
+type testGetRemoveIndexSignature = RemoveIndexSignature<{
+    [key: string]: any
+    a: 1
+}>
+```
+
+索引签名不能构造成字符串字面量类型，因为它没有名字，而其他索引可以
+
+## 11. ClassPublicProps
+
+过滤出 class 的 public属性
+
+keyof 只能拿到 class 的 public 索引，不能拿到 private 和 protected
+```ts
+type ClassPublicProps<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Obj[Key]
+}
+class testClass {
+    public a: boolean
+    protected b: number
+    private c: string
+}
+// { a: boolean }
+type testGetClassPublicProps = ClassPublicProps<testClass>
+```
+
+## 12. as const
+
+TS 默认推导出来的类型不会是字面量类型,也就是某一固定值
+```ts
+const obj = { a:1,b:2 }
+// { a: number; b: number; }
+type TypeObj = typeof obj
+
+const obj2 = { a:1,b:2 } as const
+// { readonly a: 1; readonly b: 2; }
+type TypeObj = typeof obj2
+```
+
+`as const` 具有常量 和 readonly 双重含义
+
+所以通过`typeof (常量 as const)` 推导出 的字面量类型必含 readonly属性
+
+所以再通过 模式匹配提取类型 时也要加上 readonly 的修饰才行
+
+```ts
+const arrConst = [1, 2] as const
+type arrConstType = typeof arrConst
+
+type IsConstOnly<Arr> =
+    // 这里必须加 readonly
+    Arr extends readonly [infer A, infer B] ? true : false
+// true
+type testGetConstOnly = IsConstOnly<arrConstType>
+```
+
+`as const` 常见使用场景, 模拟枚举
+```ts
+const colors = ['red', 'green', 'blue'] as const;
+// "red" | "green" | "blue"
+type Color = typeof colors[number];
+```
+
+

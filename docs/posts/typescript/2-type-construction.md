@@ -124,9 +124,21 @@ type UppercaseKey2<Obj extends Record<string, any>> = {
 
 `K extends string | number | symbol` 与这条完全相等
 
+## `Record<string, any>` 
+
 `Record` 专门用来创建索引类型,class、对象 等都是 索引类型
 
-以后都可以用`Record<string, any>`代替`object`
+`Obj extends Record<string, any>` 对比 `Obj extends Object`
+
+后者 无法确保是“纯粹的对象字面量结构”,
+
+`string, number, boolean, array, function` 都属于 `Object`
+
+__以后都可以用`Record<string, any>`代替`Obj extends Object`__
+
+另外 `<T, Key extends keyof T>` 也是常见写法，
+
+此时 Key 为 `string | number | symbol`, 使用 Uppercase需要`Uppercase<Key & string>`
 
 ### 删除key, as 条件类型
 
