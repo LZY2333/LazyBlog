@@ -6,7 +6,7 @@ tags:
     - TypeScript
 ---
 
-应对数量不确定的情况时，需要使用 __递归__
+应对数量不确定的情况时, 需要使用 __递归__
 
 ## 1. 提取Promise value类型
 ```ts
@@ -64,7 +64,7 @@ type RemoveItem<
         ? IsEqual<First, DeleteItem> extends true
             ? // 如果相等就不放进Result,
               RemoveItem<Rest, DeleteItem, Result>
-            : // 如果不相等,就放进Result, 注意...Result在前面，因为Result是前面传下来的结果
+            : // 如果不相等,就放进Result, 注意...Result在前面, 因为Result是前面传下来的结果
               RemoveItem< Rest, DeleteItem, [...Result, First] >
         : Result
 
@@ -102,7 +102,7 @@ type DeepFlatten<
 
 ## 6. 构造数组
 
-每次判断下 Arr 的长度是否到了 Length，是的话就返回 Arr，否则在 Arr 上加一个元素，然后递归构造
+每次判断下 Arr 的长度是否到了 Length, 是的话就返回 Arr, 否则在 Arr 上加一个元素, 然后递归构造
 ```ts
 type BuildArray<
     Length extends number,
@@ -124,7 +124,7 @@ type a = BuildArray<5, string>
 
 具有更好的编译性能
 
-不使用累加器，递归发生在最后一步，堆栈的“回溯阶段”更重，而且生成的类型树更大
+不使用累加器, 递归发生在最后一步, 堆栈的“回溯阶段”更重, 而且生成的类型树更大
 
 ```ts
 // 非累加器写法
@@ -212,44 +212,66 @@ type DeepReadonly2<Obj extends Record<string, any>> =
         : never
 type obj = { a: { b: { c: string } } }
 
-// { readonly a: DeepReadonly<{ b: { c: string; }; }>; }
+// {readonly a: DeepReadonly<{b:{c: string}}>}
 type obj1 = DeepReadonly<obj>
-// { readonly a: { readonly b: { readonly c: string } } }
+// {readonly a: {readonly b: {readonly c: string}}}
 type obj2 = DeepReadonly2<obj>
 ```
 
-`Obj extends any ? { ... } : never` 触发计算,ts的类型只有被用到的时候才会做计算
+`Obj extends any ? { ... } : never` 是 __强制计算,触发归一化的技巧__
 
-这是 TS 一个非常经典的技巧，通常被称为
+## 技巧！强制计算, 类型归一化
 
-__通过联合类型，触发条件类型的分发，导致重新计算__
+`type obj1 = {readonly a: DeepReadonly<{b: { c: string}}>}`
 
-## 技巧！分布式条件类型触发重新计算
+非归一化的类型, TS 默认类型推导是惰性的 
 
-__通过联合类型，触发条件类型的分发，导致重新计算__
+`type obj2 = {readonly a: {readonly b: {readonly c: string}}}`
 
-首先, __分布式条件类型__:
+__归一化__ 也即 __强制计算__
 
-条件类型会分别作用于 联合类型的每一个元素做类型计算，最后合并。
+表示展开所有引用、求值所有条件表达式、生成最终结构(后简称为 展开)
 
+### 条件类型触发强制计算
+
+`Obj extends any` 本身并无意义, 本身必然返回true, 纯粹为了条件类型
+
+一个类型别名或泛型引用，在没有访问其属性或结构的上下文中时，不会被立即展开。
+
+只有当上下文 需要 知道类型的具体结构时才会展开, 也就是条件类型
+
+### 举例
+
+obj1 在 a层级就停止了(默认惰性), 除非 __a.b.c被访问__ 或 __内部有计算属性__
 ```ts
-type IsA<T> = T extends 'A' ? true : T;
+// 这里直接简化一下上面的例子, 标出其计算过程
+type DeepReadonly<T> = {
+    // 执行到【DeepReadonly<T[K]>】时,会检查其内部是否有强制计算的内容,此处没有,即默认惰性
+    readonly [K in keyof T]: DeepReadonly<T[K]>
+}
 
-// true | "B" | "C"
-type test = IsA<'A' | 'B' | 'C'>
-// 其计算过程等同于:
-// ('A' extends 'A' ? true : 'A')
-// | ('B' extends 'A' ? true : 'B')
-// | ('C' extends 'A' ? true : 'C')
-
+type DeepReadonly2<T> =
+    // 执行到【DeepReadonly2<T[K]>】内部有Obj extends any,即继续计算
+    Obj extends any ? {
+        readonly [K in keyof T]: DeepReadonly2<T[K]>
+    } : never
 ```
 
-其次, 这个机制也可以用 __打破引用__ 和触发 __类型重新计算__
+再改一改上面的例子, 举个反面效果, 证明是
+```ts
+// DeepReadonly3 内部调用了 extends结构的 DeepReadonly
+type DeepReadonly3<Obj extends Record<string, any>> =
+    Obj extends any
+        ? {
+              readonly [Key in keyof Obj]: Obj[Key] extends object
+                  ? Obj[Key] extends Function
+                      ? Obj[Key]
+                      : DeepReadonly<Obj[Key]>
+                  : Obj[Key]
+          }
+        : never
+// DeepReadonly 内部无 extends结构, 所以obj3没有展开b
+// {readonly a: DeepReadonly<{b:{c: string}}>}
+type obj3 = DeepReadonly3<obj> // === obj1
+```
 
-正常情况, __ts 的类型只有被用到的时候才会做计算__
-
-`type obj1 = { readonly a: DeepReadonly<{ b: { c: string; }; }>; }`
-
-`Obj extends any ? { ... } : never`
-
-会迫使 TypeScript 把整个 Obj 视作一个“可以分发”的类型，从而彻底展开再计算

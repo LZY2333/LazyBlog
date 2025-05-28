@@ -112,6 +112,8 @@ type test9 = IsTuple<[1, 2, 3]>
 
 ## 7. UnionToIntersection
 
+函数参数处会发生逆变，可以用来实现联合类型转交叉类型。
+
 联合类型转交叉类型
 ```ts
 type UnionToIntersection<U> =
@@ -123,7 +125,7 @@ type UnionToIntersection<U> =
 
 `U extends U` 是为了触发联合类型的分发，每个类型单独计算,最后合并
 
-利用 U 做为参数构造个函数，通过模式匹配取参数的类型
+`(U extends U ? (x: U) => unknown : never)` 获得交叉类型
 
 TS 中有函数参数是有逆变性，如果参数是多个类型，参数类型会变成它们的交叉类型
 
