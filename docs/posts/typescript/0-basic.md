@@ -6,6 +6,8 @@ tags:
     - TypeScript
 ---
 
+__针对入参 动态生成 更精准的类型提示和检查__
+
 ## 1. 环境准备
 `npm i typescript -g` 全局安装TS编译器
 `npm i ts-node -g` 安装好后可在vscode右键run直接运行ts
