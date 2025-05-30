@@ -35,7 +35,7 @@ tags:
 
 ### 字符串大小写
 大写，小写，首字母大写，字母小写
-`Uppercase、Lowercase、Capitalize、Uncapitalize`
+`Uppercase`、`Lowercase`、`Capitalize`、`Uncapitalize`
 
 ### Awaited
 ```ts
@@ -167,3 +167,78 @@ type ParseQueryString<Str extends string> =
 // { a: ["1", "2"]; b: "2"; c: "3"; }
 type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
 ```
+
+## 驼峰转中分线
+
+要求
+```ts
+// "aaaBbbCcc"
+type testKebaCaseToCamelCase = KebaCaseToCamelCase<'aaa-bbb-ccc'>
+
+// "aaa-bbb-ccc"
+type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
+```
+
+```ts
+type KebaCaseToCamelCase<T extends string> =
+    T extends `${infer First}-${infer Rest}`
+        ? `${First}${KebaCaseToCamelCase<Capitalize<Rest>>}`
+        : T
+// "aaaBbbCcc"
+type testKebaCaseToCamelCase = KebaCaseToCamelCase<'aaa-bbb-ccc'>
+
+type CamelCaseToKebaCase<T extends string> =
+    T extends `${infer First}${infer Rest}`
+        ? First extends Lowercase<First>
+            ? `${First}${CamelCaseToKebaCase<Rest>}`
+            : `-${Lowercase<First>}${CamelCaseToKebaCase<Rest>}`
+        : T
+// "aaa-bbb-ccc"
+type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
+```
+
+## 数组分组
+
+要求
+```ts
+//  [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
+```
+
+
+```ts
+type Chunk<
+    T extends unknown[],
+    ItemLen extends number,
+    CurItem extends unknown[] = [],
+    R extends unknown[] = []
+> = T extends [infer First, ...infer Rest]
+    ? CurItem['length'] extends ItemLen
+        ? Chunk<Rest, ItemLen, [First], [...R, CurItem]>
+        : Chunk<Rest, ItemLen, [...CurItem, First], R>
+    : [...R, CurItem]
+
+//  [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
+```
+
+## 路径变对象
+
+```ts
+// { a: { b: { c: 'xxx' } } }
+type testTupleToNestedObject =
+    TupleToNestedObject<['a', 'b', 'c'], 'xxx'>
+```
+
+```ts
+type TupleToNestedObject<
+    Tuple extends unknown[],
+    Value
+> = Tuple extends [infer First, ...infer Rest]
+    ? { [Key in First as Key extends keyof any ? Key : never]
+            : Rest extends unknown[]
+                ? TupleToNestedObject<Rest, Value>
+                : Value }
+    : Value
+```
+过滤key,再给value 递归调用Rest进行赋值
