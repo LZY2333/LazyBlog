@@ -217,6 +217,7 @@ let isOK: boolean = new Boolean(1); // 编译失败 期望的 isOK 是一个原�
 ```
 
 ## 7. 类型断言
+
 将联合类型的变量 指定为 更加具体的类型
 ```ts
 let name: string | number;
@@ -307,6 +308,27 @@ function attr3(a: any,b: any): void {
 }
 ```
 
+## 8. 函数重载
+
+```ts
+// 1. 交叉类型实现重载效果
+type Overloaded = ((x: number) => string) &
+    ((x: string) => number)
+
+// 2. interface 中定义多个函数签名
+interface OverloadedFn {
+    (x: number): string
+    (x: string): number
+}
+
+// 3. 函数实现时重载语法（签名 + 实现）
+function fn(x: number): string
+function fn(x: string): number
+function fn(x: any): any {
+    return typeof x === 'number' ? x.toString() : x.length
+}
+```
+
 ## 9. typeof keyof 函数this类型约束
 
 TS中:
@@ -340,6 +362,7 @@ this 约束几乎只出现在该函数可能被BindCallApply调用的情况下
 如果没有报错，说明没开启 strictBindCallApply 的编译选项，这个是控制是否按照原函数的类型来检查 bind、call、apply
 
 ## 10. 其它笔记
+
 `?.` 是js语法，链运算判断符，这个值没有值就不继续取值了
 
 `!` 是TS语法，非空断言，断言该值必不为空，无需进行null检测。

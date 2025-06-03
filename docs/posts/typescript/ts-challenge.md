@@ -7,7 +7,7 @@ tags:
 ---
 
 
-## 内置工具类速查
+## 0. 内置工具类速查
 
 ### Extract 联合类型保留指定部分
 `type Extract<T, U> = T extends U ? T : never;`
@@ -108,7 +108,7 @@ type NthParameter<T, N extends number> =
 ```
 
 
-## a=1&a=2&b=2&c=3
+## 1. a=1&a=2&b=2&c=3
 
 要求
 ```ts
@@ -120,6 +120,7 @@ type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
 // 工具，解析形如 key=value 的字符串为对象类型
 type ParseParam<Param extends string> =
     Param extends `${infer Key}=${infer Value}`
+        // 直接写 {[Key]: Value} Key会被识别为字面量而非变量
         ? {[K in Key]: Value}
         : {}
 
@@ -168,7 +169,7 @@ type ParseQueryString<Str extends string> =
 type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
 ```
 
-## 驼峰转中分线
+## 2. 中分线转驼峰
 
 要求
 ```ts
@@ -197,14 +198,15 @@ type CamelCaseToKebaCase<T extends string> =
 type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
 ```
 
-## 数组分组
+字符串不需要 增加结果储存变量
+
+## 3. 数组分组
 
 要求
 ```ts
 //  [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
 type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
 ```
-
 
 ```ts
 type Chunk<
@@ -222,7 +224,7 @@ type Chunk<
 type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
 ```
 
-## 路径变对象
+## 4. 路径变对象
 
 ```ts
 // { a: { b: { c: 'xxx' } } }
@@ -242,3 +244,40 @@ type TupleToNestedObject<
     : Value
 ```
 过滤key,再给value 递归调用Rest进行赋值
+
+`[Key in First as Key extends keyof any ? Key : never]`
+
+过滤Key,应该是常用写法了,可以记
+
+## 5. 指定Key变可选
+
+```ts
+// { name?: string | undefined; age: number; address: string; }
+type testPartialObjectPropByKeys = PartialObjectPropByKeys<
+    Dong,
+    'name'
+>
+```
+
+```ts
+interface Dong {
+    name: string
+    age: number
+    address: string
+}
+
+type Copy<Obj extends Record<string, any>> =
+    { [Key in keyof Obj]: Obj[Key] }
+
+type PartialObjectPropByKeys<
+    T extends Record<string, any>,
+    Key extends keyof any
+> = Copy< Partial<Pick<T, Extract<keyof T, Key>>> & Omit<T, Key> >
+
+// { name?: string | undefined; age: number; address: string; }
+type testPartialObjectPropByKeys =
+    PartialObjectPropByKeys< Dong, 'name' >
+
+```
+
+## 6. 

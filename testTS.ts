@@ -1,102 +1,10 @@
-type Includes<
-    Arr extends unknown[],
-    FindItem
-> = Arr extends [infer First, ...infer Rest]
-    ? IsEqual<First, FindItem> extends true
-        ? true
-        : Includes<Rest, FindItem>
-    : false
-
-type IsEqual<A, B> = (A extends B ? true : false) &
-    (B extends A ? true : false)
-
-type arr3 = [1, 2, 3, 4, 5]
-type res = Includes<arr3, 3> // true
-type res2 = Includes<arr3, 6> // false
-
-type Flatten<
-    Arr extends unknown[],
-    Result extends unknown[] = []
-> = Arr extends [infer First, ...infer Rest]
-    ? First extends unknown[]
-        ? Flatten<Rest, [...Result, ...First]>
-        : Flatten<Rest, [...Result, First]>
-    : Result
-
-type DeepFlatten<
-    Arr extends unknown[],
-    Result extends unknown[] = []
-> = Arr extends [infer First, ...infer Rest]
-    ? First extends unknown[]
-        ? Flatten<[...First, ...Rest], Result>
-        : Flatten<Rest, [...Result, First]>
-    : Result
-
-type BuildArray<
-    Length extends number,
-    Ele = unknown,
-    Arr extends unknown[] = []
-> = Arr['length'] extends Length
-    ? Arr
-    : BuildArray<Length, Ele, [...Arr, Ele]>
-
-type Add<Num1 extends number, Num2 extends number> = [
-    ...BuildArray<Num1>,
-    ...BuildArray<Num2>
-]['length']
-
-type Subtract<
-    Num1 extends number,
-    Num2 extends number
-> = BuildArray<Num1> extends [
-    ...arr1: BuildArray<Num2>,
-    ...arr2: infer Rest
-]
-    ? Rest['length']
-    : never
-
-type a = Subtract<54, 80>
-
-type Multiply<
-    N1 extends number,
-    N2 extends number,
-    R extends unknown[] = []
-> = N2 extends 0
-    ? R['length']
-    : Multiply<
-          N1,
-          Subtract<N2, 1>,
-          [...BuildArray<N1>, ...R]
-      >
-
-type Divide<
-    N1 extends number,
-    N2 extends number,
-    R extends unknown[] = []
-> = N1 extends 0
-    ? R['length']
-    : Divide<Subtract<N1, N2>, N2, [unknown, ...R]>
-
-type StrLen<
-    Str extends string,
-    R extends unknown[] = []
-> = Str extends `${string}${infer Rest}`
-    ? StrLen<Rest, [...R, unknown]>
-    : R['length']
-
-type UppercaseA<Item extends string> = Item extends 'a'
-    ? Uppercase<Item>
-    : Item
-
-type Result = UppercaseA<'a' | 'b' | 'c'>
-
 // 下划线转驼峰
 type CamelCase<Str extends string> =
     Str extends `${infer Left}_${infer Right}${infer Rest}`
         ? `${Left}${Uppercase<Right>}${CamelCase<Rest>}`
         : Str
 
-// 数组转驼峰
+// 如果想对整个数组调用CamelCase，需要递归
 type CamelCaseArr<Arr extends unknown[]> = Arr extends [
     infer Item,
     ...infer RestArr
@@ -104,74 +12,342 @@ type CamelCaseArr<Arr extends unknown[]> = Arr extends [
     ? [CamelCase<Item & string>, ...CamelCaseArr<RestArr>]
     : []
 
-// 联合类型转驼峰
-type CamelCaseUnion<Item extends string> =
-    Item extends `${infer Left}_${infer Right}${infer Rest}`
-        ? `${Left}${Uppercase<Right>}${CamelCaseUnion<Rest>}`
-        : Item
+// 如果想对联合类型调用CamelCase，不需要递归
+type CamelCaseUnion<Item extends string> = CamelCase<Item>
 
-type test4<T extends string[]> = `__${T[number]}`
+// "aAA" | "bBB"
+type test = CamelCaseUnion<'a_a_a' | 'b_b_b'>
 
-// "__aaa" | "__bbb"
-type test5 = test4<['aaa', 'bbb']>
+type ConcatStr<
+    T extends string,
+    U extends string
+> = `${T}-${U}`
 
-type Combination<A extends string, B extends string> =
-    | A
-    | B
-    | `${A}${B}`
-    | `${B}${A}`
+// "A-a" | "A-b" | "B-a" | "B-b"
+type A = ConcatStr<'A' | 'B', 'a' | 'b'>
 
-type AllCombinations<
-    A extends string,
-    B extends string = A
-> = A extends A
-    ? Combination<A, AllCombinations<Exclude<B, A>>>
-    : never
+// { a: true, b: true }
+type DistributeKey = {
+    [K in 'a' | 'b']: true
+}
+type DistributeValue = {
+    k: 'a' | 'b'
+}
 
-// "A" | "B" | "C" | "BC" | "CB" | "AB" | "AC" | "ABC" | "ACB" | "BA" | "CA" | "BCA" | "CBA" | "BAC" | "CAB"
-type test6 = AllCombinations<'A' | 'B' | 'C'>
+type GetOptional<Obj extends Record<string, any>> = {
+    [Key in keyof Obj as {} extends Pick<Obj, Key>
+        ? Key
+        : never]: Obj[Key]
+}
+// { b?: number | undefined; }
+type testGetOptional = GetOptional<{ a: 1; b?: number }>
 
-// 之前的简易实现
-type IsEqual0<A, B> = (A extends B ? true : false) &
-    (B extends A ? true : false)
-// true, 无法判别any
-type isEqualRes0 = IsEqual0<'a', any>
+type isRequired<
+    Key extends keyof Obj,
+    Obj
+> = {} extends Pick<Obj, Key> ? never : Key
 
-// 最终实现
-type IsEqual1<A, B> = (<T>() => T extends A
-    ? 1
-    : 2) extends <T>() => T extends B ? 1 : 2
-    ? true
-    : false
-// false
-type isEqualRes = IsEqual1<'a', any>
+type GetRequired<Obj extends Record<string, any>> = {
+    [Key in keyof Obj as isRequired<Key, Obj>]: Obj[Key]
+}
+// { a: 1 }
+type testGetRequired = GetRequired<{ a: 1; b?: number }>
 
-type IsUnion<A, B = A> = A extends A
-    ? [B] extends [A]
-        ? false
-        : true
-    : never
+type RemoveIndexSignature<Obj extends Record<string, any>> =
+    {
+        [Key in keyof Obj as Key extends `${infer Str}`
+            ? Str
+            : never]: Obj[Key]
+    }
+// { a: 1 }
+type testGetRemoveIndexSignature = RemoveIndexSignature<{
+    [key: string]: any
+    a: 1
+}>
 
-type test7 = IsUnion<1>
+type ClassPublicProps<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Obj[Key]
+}
 
-type TestAny<T> = T extends number ? 1 : 2
-// 1 | 2
-type test8 = TestAny<any>
+// 这里!只为了过TS检查
+class testClass {
+    public a!: boolean
+    protected b!: number
+    private c!: string
+}
+// { a: boolean }
+type testGetClassPublicProps = ClassPublicProps<testClass>
 
-type IsTuple<T> = T extends [...params: infer args]
-    ? NotEqual<args['length'], number>
-    : false
+const obj = { a: 1, b: 2 }
 
-type NotEqual<A, B> = (<T>() => T extends A
-    ? 1
-    : 2) extends <T>() => T extends B ? 1 : 2
-    ? false
-    : true
+// { a: number; b: number; }
+type TypeObj = typeof obj
+
+const arrConst = [1, 2] as const
+type arrConstType = typeof arrConst
+
+type IsConstOnly<Arr> =
+    // 这里必须加only
+    Arr extends readonly [infer A, infer B] ? true : false
 // true
-type test9 = IsTuple<[1, 2, 3]>
+type testGetConstOnly = IsConstOnly<arrConstType>
+
+type BadIsNever<T> = T extends never ? true : false
+// never
+type testBadIsNever = BadIsNever<never>
+
+// 写一个TS,展开元组类型的所有属性,
+
+type DeepReadonly<Obj extends Record<string, any>> = {
+    readonly [Key in keyof Obj]: Obj[Key] extends object
+        ? Obj[Key] extends Function
+            ? Obj[Key]
+            : DeepReadonly<Obj[Key]>
+        : Obj[Key]
+}
+
+type DeepReadonly2<Obj extends Record<string, any>> =
+    Obj extends any
+        ? {
+              readonly [Key in keyof Obj]: Obj[Key] extends object
+                  ? Obj[Key] extends Function
+                      ? Obj[Key]
+                      : DeepReadonly2<Obj[Key]>
+                  : Obj[Key]
+          }
+        : never
+type obj = { a: { b: { c: string } } }
+
+// {readonly a: DeepReadonly<{b:{c: string}}>}
+type obj1 = DeepReadonly<obj>
+// {readonly a: {readonly b: {readonly c: string}}}
+type obj2 = DeepReadonly2<obj>
+
+// DeepReadonly3 内部调用了 extends结构的 DeepReadonly
+type DeepReadonly3<Obj extends Record<string, any>> =
+    Obj extends any
+        ? {
+              readonly [Key in keyof Obj]: Obj[Key] extends object
+                  ? Obj[Key] extends Function
+                      ? Obj[Key]
+                      : DeepReadonly<Obj[Key]>
+                  : Obj[Key]
+          }
+        : never
+// DeepReadonly 内部无 extends结构, 所以obj3没有展开b
+// {readonly a: DeepReadonly<{b:{c: string}}>}
+type obj3 = DeepReadonly3<obj>
+
+// ------------------------------------------------------------------------
+// 工具，解析形如 key=value 的字符串为对象类型
+type ParseParam<Param extends string> =
+    Param extends `${infer Key}=${infer Value}`
+        ? { [K in Key]: Value }
+        : {}
+
+// 工具: Key相同的两个value合并为数组
+// 注意: value本身可能已经是数组，由于是从后往前，所以只有Other可能是数组
+type MergeValues<One, Other> = One extends Other
+    ? // 俩value相等, 随便返回谁
+      One
+    : // 俩value不相等, 开始合并
+    Other extends unknown[]
+    ? // Other是数组, 解构other合并
+      [One, ...Other]
+    : // Other不是数组, 直接合并
+      [One, Other]
+
+// 第二层，这里都是ParseParam过的数据，从<{b:3}, {c:4}>开始
+type MergeParams<
+    OneParam extends Record<string, any>,
+    OtherParam extends Record<string, any>
+> = {
+    // 遍历两个对象的key
+    [Key in
+        | keyof OneParam
+        | keyof OtherParam]: Key extends keyof OneParam
+        ? Key extends keyof OtherParam
+            ? // Key在1中,又在2中,value就要合并为数组
+              MergeValues<OneParam[Key], OtherParam[Key]>
+            : // Key在1中,不在2中,返回1的value
+              OneParam[Key]
+        : Key extends keyof OtherParam
+        ? // Key不在1中,在2中,返回2的value
+          OtherParam[Key]
+        : // Key不在1中,不在2中,返回never
+          never
+}
+
+// 第一层
+type ParseQueryString<Str extends string> =
+    Str extends `${infer Param}&${infer Rest}`
+        ? // MergeParams 会在回溯阶段从后往前执行,也就是说最后两个参数会先合并,然后往前推
+          MergeParams<
+              ParseParam<Param>,
+              ParseQueryString<Rest>
+          >
+        : // 到这里其实是，最后一个参数，直接parse并返回上一层,然后开始 MergeParams
+          ParseParam<Str>
+
+// { a: ["1", "2"]; b: "2"; c: "3"; }
+type ParseQueryStringResult =
+    ParseQueryString<'a=1&a=2&b=2&c=3'>
+// ------------------------------------------------------------------------
+
+type x = { a: 1 } | { a: 2 } | { b: 3 } | { c: 4 }
+
+type k = keyof x
+
+type xx = { a: [1, 2]; b: 3; c: 4 }
+
+// 提取函数 参数类型
+type Parameters0<T extends (...args: any) => any> =
+    T extends (...args: infer P) => any ? P : never
+
+// 提取函数 返回类型
+type ReturnType0<T extends (...args: any) => any> =
+    T extends (...args: any) => infer R ? R : never
+
+// 提取函数this类型
+type ThisParameterType0<T> = T extends (
+    this: infer U,
+    ...args: any[]
+) => any
+    ? U
+    : unknown
+
+// 移除函数this类型
+type OmitThisParameter0<T> =
+    unknown extends ThisParameterType<T>
+        ? T
+        : T extends (...args: infer A) => infer R
+        ? (...args: A) => R
+        : T
+
+// 提取构造器 参数类型
+type ConstructorParameters0<
+    T extends abstract new (...args: any) => any
+> = T extends abstract new (...args: infer P) => any
+    ? P
+    : never
+
+// 提取构造器 返回类型(实例)
+type InstanceType0<
+    T extends abstract new (...args: any) => any
+> = T extends abstract new (...args: any) => infer R
+    ? R
+    : never
+
+type KebaCaseToCamelCase<T extends string> =
+    T extends `${infer First}-${infer Rest}`
+        ? `${First}${KebaCaseToCamelCase<Capitalize<Rest>>}`
+        : T
+// "aaaBbbCcc"
+type testKebaCaseToCamelCase =
+    KebaCaseToCamelCase<'aaa-bbb-ccc'>
+
+type CamelCaseToKebaCase<T extends string> =
+    T extends `${infer First}${infer Rest}`
+        ? First extends Lowercase<First>
+            ? `${First}${CamelCaseToKebaCase<Rest>}`
+            : Debug<`-${Lowercase<First>}${CamelCaseToKebaCase<Rest>}`>
+        : T
+// "aaa-bbb-ccc"
+type testCamelCaseToKebaCase =
+    CamelCaseToKebaCase<'aaaBbbCcc'>
+console.log('开始')
+const a: testCamelCaseToKebaCase = 'aaa-bbb-ccc'
+type Debug<T> = T
+
+type Chunk<
+    T extends unknown[],
+    ItemLen extends number,
+    CurItem extends unknown[] = [],
+    R extends unknown[] = []
+> = T extends [infer First, ...infer Rest]
+    ? CurItem['length'] extends ItemLen
+        ? Chunk<Rest, ItemLen, [First], [...R, CurItem]>
+        : Chunk<Rest, ItemLen, [...CurItem, First], R>
+    : [...R, CurItem]
+
+//  [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
+
+// { a: { b: { c: 'xxx' } } }
+type testTupleToNestedObject = TupleToNestedObject<
+    ['a', 'b', 'c'],
+    'xxx'
+>
+
+type TupleToNestedObject<
+    Tuple extends unknown[],
+    Value
+> = Tuple extends [infer First, ...infer Rest]
+    ? {
+          [Key in First as Key extends keyof any
+              ? Key
+              : never]: Rest extends unknown[]
+              ? TupleToNestedObject<Rest, Value>
+              : Value
+      }
+    : Value
+
+interface Dong {
+    name: string
+    age: number
+    address: string
+}
+
+type Copy<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Obj[Key]
+}
+
+type PartialObjectPropByKeys<
+    T extends Record<string, any>,
+    Key extends keyof any
+> = Copy<
+    Partial<Pick<T, Extract<keyof T, Key>>> & Omit<T, Key>
+>
+
+// { name?: string | undefined; age: number; address: string; }
+type testPartialObjectPropByKeys = PartialObjectPropByKeys<
+    Dong,
+    'name'
+>
+
+// 1. 交叉类型实现重载效果
+type Overloaded = ((x: number) => string) &
+    ((x: string) => number)
+
+// 2. interface 中定义多个函数签名
+interface OverloadedFn {
+    (x: number): string
+    (x: string): number
+}
+
+// 3. 函数实现时重载语法（签名 + 实现）
+function fn(x: number): string
+function fn(x: string): number
+function fn(x: any): any {
+    return typeof x === 'number' ? x.toString() : x.length
+}
 
 type UnionToIntersection<U> =
     (U extends U ? (x: U) => unknown : never) extends
     (x: infer R) => unknown
     ? R
     : never
+
+// { a: string; } & { b: number; }
+type testUnionToIntersection = UnionToIntersection<{ a: string } | { b: number }>
+
+// 联合类型转元组类型
+type UnionToTuple<T> = 
+    UnionToIntersection<
+        T extends any ? () => T : never
+    > extends () => infer ReturnType
+        ? [...UnionToTuple<Exclude<T, ReturnType>>, ReturnType]
+        : []
+
+// [1, 2, 3]
+type testUnionToTuple = UnionToTuple<1 | 2 | 3>

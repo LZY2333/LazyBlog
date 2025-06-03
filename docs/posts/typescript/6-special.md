@@ -119,8 +119,12 @@ type test9 = IsTuple<[1, 2, 3]>
 type UnionToIntersection<U> =
     (U extends U ? (x: U) => unknown : never) extends
     (x: infer R) => unknown
-    ? R
+    ? R // { [K in keyof R]: R[K] }
     : never
+
+// { a: string; } & { b: number; }
+type testUnionToIntersection =
+    UnionToIntersection<{ a: string } | { b: number }>
 ```
 
 `U extends U` 是为了触发联合类型的分发，每个类型单独计算,最后合并
@@ -128,6 +132,10 @@ type UnionToIntersection<U> =
 `(U extends U ? (x: U) => unknown : never)` 获得交叉类型
 
 TS 中有函数参数是有逆变性，如果参数是多个类型，参数类型会变成它们的交叉类型
+
+`? R` 可以改为 `? { [K in keyof R]: R[K] }` 这样可以归一化平铺ab属性
+
+以后要使用归一化要记住，是对谁进行归一化，就对谁直接这样替换
 
 ## 8. GetOptional
 
@@ -239,4 +247,4 @@ const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
 ```
 
-
+## 13. 

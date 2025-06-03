@@ -167,3 +167,45 @@ type TestAny<T> = T extends number ? 1 : 2;
 // 1 | 2
 type test8 = TestAny<any>
 ```
+
+## 8. 联合类型的最后一个类型
+
+联合类型不能直接 infer 来取其中的某个类型, 必须通过特殊技巧
+
+联合类型转元组
+```ts
+// [1, 2, 3]
+type testUnionToTuple = UnionToTuple<1 | 2 | 3>
+```
+
+```ts
+// 联合类型转交叉类型
+type UnionToIntersection<U> =
+    (U extends U ? (x: U) => unknown : never) extends
+    (x: infer R) => unknown
+    ? R // { [K in keyof R]: R[K] }
+    : never
+
+// 联合类型转元组类型
+type UnionToTuple<T> = 
+    UnionToIntersection<
+        T extends any ? () => T : never
+    > extends () => infer ReturnType
+        ? [...UnionToTuple<Exclude<T, ReturnType>>, ReturnType]
+        : [];
+
+// [1, 2, 3]
+type testUnionToTuple = UnionToTuple<1 | 2 | 3>
+```
+
+`T extends any ? () => T : never` 联合类型转 函数联合类型
+
+`UnionToIntersection<>`函数联合类型 转 函数交叉类型
+
+函数交叉类型 即 函数重载(见TS基础8函数重载)
+
+`函数重载 extends () => infer ReturnType` 获取函数重载的 ReturnType
+
+__函数重载的ReturnType 特性是: 其值为最后一个重载的ReturnType__
+
+至此我们拿到了联合类型的最后一个类型！！
