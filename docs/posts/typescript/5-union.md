@@ -209,3 +209,9 @@ type testUnionToTuple = UnionToTuple<1 | 2 | 3>
 __函数重载的ReturnType 特性是: 其值为最后一个重载的ReturnType__
 
 至此我们拿到了联合类型的最后一个类型！！
+
+## 9. 其他
+
+`keyof T | keyof U`不能写成 `keyof (T | U)`，这样是拿交集的Key
+
+__keyof 是一种内置操作符, 联合类型不对 keyof 分发__

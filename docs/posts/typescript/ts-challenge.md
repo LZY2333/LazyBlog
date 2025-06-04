@@ -139,20 +139,20 @@ type MergeValues<One, Other> =
 
 // 第二层，这里都是ParseParam过的数据，从<{b:3}, {c:4}>开始
 type MergeParams<
-    OneParam extends Record<string, any>,
-    OtherParam extends Record<string, any>
+    T extends Record<string, any>,
+    U extends Record<string, any>
 > = {
     // 遍历两个对象的key
-    [Key in | keyof OneParam | keyof OtherParam]:
-        Key extends keyof OneParam
-            ? Key extends keyof OtherParam
+    [Key in keyof T | keyof U]:
+        Key extends keyof T
+            ? Key extends keyof U
                 // Key在1中,又在2中,value就要合并为数组
-                ? MergeValues<OneParam[Key], OtherParam[Key]>
+                ? MergeValues<T[Key], U[Key]>
                 // Key在1中,不在2中,返回1的value
-                : OneParam[Key]
-            : Key extends keyof OtherParam
+                : T[Key]
+            : Key extends keyof U
                 // Key不在1中,在2中,返回2的value
-                ? OtherParam[Key]
+                ? U[Key]
                 // Key不在1中,不在2中,返回never
                 : never
 }
@@ -168,6 +168,10 @@ type ParseQueryString<Str extends string> =
 // { a: ["1", "2"]; b: "2"; c: "3"; }
 type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
 ```
+
+`keyof T | keyof U`不能写成 `keyof (T | U)`，这样是拿交集的Key
+
+__keyof 是一种内置操作符, 联合类型不对 keyof 分发__
 
 ## 2. 中分线转驼峰
 
