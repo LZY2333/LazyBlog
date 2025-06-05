@@ -23,7 +23,15 @@ export default defineConfig({
                 '<a href="https://beian.miit.gov.cn/">粤ICP备2021167772号</a>',
         },
     },
-
+    builderPlugins: [
+        pluginOpenGraph({
+            title: '紫宇的博客',
+            type: 'website',
+            url: 'https://www.luoziyu.com/',
+            image: 'https://www.luoziyu.com/rspress-icon.png',
+            description: '转生成为.tsx文件创建工程师，结果身处AI横行的末前端时代？！',
+        }),
+    ],
     builderConfig: {
         tools: {
             rspack: async (config) => {
@@ -47,13 +55,5 @@ export default defineConfig({
         light: '/rspress-icon.png',
         dark: '/rspress-icon.png',
     },
-    plugins: [
-        pluginOpenGraph({
-            title: '紫宇的博客',
-            type: 'website',
-            url: 'https://www.luoziyu.com/',
-            image: 'https://www.luoziyu.com/rspress-icon.png',
-            description: '转生成为.tsx文件创建工程师，结果身处AI横行的末前端时代？！',
-        }),
-    ],
+    
 })
