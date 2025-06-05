@@ -322,5 +322,49 @@ const curriedFunc2 = currying2(func)
 
 `declare function` 是直接声明一个 实际存在的函数（通常由 JS 提供或实现）
 
+## 7. 索引类型所有Key的路径
 
+```ts
+type Obj = {
+    a: {
+        b: {
+            b1: string
+            b2: string
+        }
+        c: {
+            c1: string
+            c2: string
+        }
+    }
+}
 
+// "a" | "a.b" | "a.c" | "a.b.b1" | "a.b.b2" | "a.c.c1" | "a.c.c2"
+type AllKeyPathRes = AllKeyPath<Obj>
+
+type AllKeyPath<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Key extends string
+        ? Obj[Key] extends Record<string, any>
+            ? Key | `${Key}.${AllKeyPath<Obj[Key]>}`
+            : Key
+        : never
+}[keyof Obj]
+```
+
+## 8. 合并两个索引类型
+要求 a有b没有 或 a没有b有 的属性变为 可选属性
+
+```ts
+type AA = { aaa: 111; bbb: 222 }
+type BB = { bbb: 222; ccc: 333 }
+
+// { aaa: 111; bbb?: 222 | undefined; ccc?: 333 | undefined; }
+type DefaultizeRes = Copy<Defaultize<AA, BB>>
+
+type Defaultize<A, B> = Pick<A, Exclude<keyof A, keyof B>> &
+    Partial<Pick<A, Extract<keyof A, keyof B>>> &
+    Partial<Pick<B, Exclude<keyof B, keyof A>>>
+
+type Copy<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Obj[Key]
+}
+```

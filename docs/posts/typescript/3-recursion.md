@@ -275,3 +275,49 @@ type DeepReadonly3<Obj extends Record<string, any>> =
 type obj3 = DeepReadonly3<obj> // === obj1
 ```
 
+## 技巧！对最终结果进行最后处理
+
+__当需要对最终结果进行一次处理时，请使用积累参数Result__
+
+JoinType 就用到了这个技巧，JoinType本可以不使用积累参数
+```ts
+interface Join{
+    <Delimiter extends string>(delimiter: Delimiter):
+        <Items extends string[]>(...items: Items) =>
+            JoinType<Items, Delimiter>
+}
+
+type RemoveFirstDelimiter<Str extends string> =
+    Str extends `${infer _}${infer Rest}` ? Rest : Str
+
+type JoinType<
+    Items extends any[],
+    Delimiter extends string,
+    Result extends string = ''
+> = Items extends [infer Cur, ...infer Rest]
+    ? JoinType<Rest, Delimiter, `${Result}${Delimiter}${Cur & string}`>
+    : RemoveFirstDelimiter<Result>
+
+// "l-z-y"
+declare const join:Join;
+let res = join('-')('l', 'z', 'y')
+```
+
+另外注意到:
+
+__Join 中第一个函数返回值使用了`:`,第二个函数返回值使用了`=>`__
+
+`:` 是 `interface` 中定义函数的要求
+
+`=>` 是 `type` 中定义函数的要求
+```ts
+// 这里与 join 的语法一致
+interface Add1 {
+  (a: number): (b: number) => number;
+}
+// 使用type就可以改写成都为 => 的写法
+type Add2 = (a: number) => (b: number) => number;
+// 二者用法一致
+declare const add1:Add1
+declare const add2:Add2
+```

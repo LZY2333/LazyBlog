@@ -118,7 +118,7 @@ type UppercaseKey2<Obj extends Record<string, any>> = {
     [Key in keyof Obj as Uppercase<Key & string>]: Obj[Key]
 }
 ```
-`& string` Key 可能为string、number、symbol, 这里代表只取string
+`& string` 是 __通用写法__, Key 可能为string、number、symbol, 代表只取string
 
 `<K extends keyof any>`  约束 K 是可以作为对象键的类型
 

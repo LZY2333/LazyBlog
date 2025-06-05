@@ -29,7 +29,7 @@ export default defineConfig({
             type: 'website',
             url: 'https://www.luoziyu.com/',
             image: 'https://www.luoziyu.com/rspress-icon.png',
-            description: '转生成为.tsx文件创建工程师，结果身处AI横行的末前端时代？！',
+            description: '转生成为.tsx文件创建工程师',
         }),
     ],
     builderConfig: {

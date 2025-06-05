@@ -353,20 +353,24 @@ type UnionToTuple<T> = UnionToIntersection<
 // [1, 2, 3]
 type testUnionToTuple = UnionToTuple<1 | 2 | 3>
 
-type CurriedFunc<Params, Return> =
-    Params extends [ infer Arg, ...infer Rest ]
-        ? (arg: Arg) => CurriedFunc<Rest, Return>
-        : never
+type CurriedFunc<Params, Return> = Params extends [
+    infer Arg,
+    ...infer Rest
+]
+    ? (arg: Arg) => CurriedFunc<Rest, Return>
+    : never
 
-declare function currying<Func>(fn: Func):
-    Func extends (...args: infer Params) => infer Result
-        ? CurriedFunc<Params, Result>
-        : never
+declare function currying<Func>(
+    fn: Func
+): Func extends (...args: infer Params) => infer Result
+    ? CurriedFunc<Params, Result>
+    : never
 
 // 使用 interface 表达 currying 函数的类型签名
 interface Currying {
-    <Func>(fn: Func):
-    Func extends (...args: infer Params) => infer Result
+    <Func>(fn: Func): Func extends (
+        ...args: infer Params
+    ) => infer Result
         ? CurriedFunc<Params, Result>
         : never
 }
@@ -375,21 +379,81 @@ const func = (a: boolean, b: number, c: string) => {}
 // (arg: boolean) => (arg: number) => (arg: string) => never
 const curriedFunc = currying(func)
 // (arg: boolean) => (arg: number) => (arg: string) => never
-declare const currying2: Currying;
+declare const currying2: Currying
 const curriedFunc2 = currying2(func)
 
-// 'guang-and-dong'
-// const res = join('-')('guang', 'and', 'dong');
+interface Join {
+    <Delimiter extends string>(delimiter: Delimiter): <
+        Items extends string[]
+    >(
+        ...items: Items
+    ) => JoinType<Items, Delimiter>
+}
 
-// interface Join {
-//     <Delimiter extends string>(delimiter: Delimiter):
-//         <Items extends string[]>(...parts: Items):
-//             JoinType<Items, Delimiter>
+type RemoveFirstDelimiter<Str extends string> =
+    Str extends `${infer _}${infer Rest}` ? Rest : Str
+
+type JoinType<
+    Items extends any[],
+    Delimiter extends string,
+    Result extends string = ''
+> = Items extends [infer Cur, ...infer Rest]
+    ? JoinType<
+          Rest,
+          Delimiter,
+          `${Result}${Delimiter}${Cur & string}`
+      >
+    : RemoveFirstDelimiter<Result>
+
+// "l-z-y"
+declare const join: Join
+let res = join('-')('l', 'z', 'y')
+
+interface Add1 {
+    (a: number): (b: number) => number
+}
+// 使用type就可以改写成都为 => 的写法
+type Add2 = (a: number) => (b: number) => number
+
+declare const add1: Add1
+declare const add2: Add2
+add1(1)(2)
+add1(1)(2)
+
+type Obj = {
+    a: {
+        b: {
+            b1: string
+            b2: string
+        }
+        c: {
+            c1: string
+            c2: string
+        }
+    }
+}
+
+type AllKeyPath<Obj extends Record<string, any>> = {
+    [Key in keyof Obj]: Key extends string
+        ? Obj[Key] extends Record<string, any>
+            ? Key | `${Key}.${AllKeyPath<Obj[Key]>}`
+            : Key
+        : never
+}[keyof Obj]
+
+// "a" | "a.b" | "a.c" | "a.b.b1" | "a.b.b2" | "a.c.c1" | "a.c.c2"
+type AllKeyPathRes = AllKeyPath<Obj>
+
+type Defaultize<A, B> = Pick<A, Exclude<keyof A, keyof B>> &
+    Partial<Pick<A, Extract<keyof A, keyof B>>> &
+    Partial<Pick<B, Exclude<keyof B, keyof A>>>
+
+// type Copy<Obj extends Record<string, any>> = {
+//     [Key in keyof Obj]: Obj[Key]
 // }
 
-// type JoinType<Items extends string[],Delimiter extends string> =
-//     Items extends [infer First, ...infer Rest]
-//         ? `${First}${Delimiter}${JoinType<Rest, Delimiter>}`
-//         : ''
+type AA = { aaa: 111; bbb: 222 }
+type BB = { bbb: 222; ccc: 333 }
 
-// infer First 推断的类型默认是 unknown，它不能直接用于模板字符串中。
+// { aaa: 111; bbb?: 222 | undefined; ccc?: 333 | undefined; }
+type DefaultizeRes = Copy<Defaultize<AA, BB>>
