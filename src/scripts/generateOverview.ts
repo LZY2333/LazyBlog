@@ -98,7 +98,7 @@ async function updateMetaJson(postsPath: string, subDirs: string[]) {
     metaItems = metaItems.filter(item =>
         item.label === 'Overview' || subDirs.includes(item.name)
     );
-
+    console.log();
     // 确保目录存在并写入文件
     await fs.mkdir(path.dirname(metaJsonPath), { recursive: true });
     await fs.writeFile(metaJsonPath, JSON.stringify(metaItems, null, 4), 'utf-8');

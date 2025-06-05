@@ -332,22 +332,64 @@ function fn(x: any): any {
     return typeof x === 'number' ? x.toString() : x.length
 }
 
-type UnionToIntersection<U> =
-    (U extends U ? (x: U) => unknown : never) extends
-    (x: infer R) => unknown
+type UnionToIntersection<U> = (
+    U extends U ? (x: U) => unknown : never
+) extends (x: infer R) => unknown
     ? R
     : never
 
 // { a: string; } & { b: number; }
-type testUnionToIntersection = UnionToIntersection<{ a: string } | { b: number }>
+type testUnionToIntersection = UnionToIntersection<
+    { a: string } | { b: number }
+>
 
 // 联合类型转元组类型
-type UnionToTuple<T> = 
-    UnionToIntersection<
-        T extends any ? () => T : never
-    > extends () => infer ReturnType
-        ? [...UnionToTuple<Exclude<T, ReturnType>>, ReturnType]
-        : []
+type UnionToTuple<T> = UnionToIntersection<
+    T extends any ? () => T : never
+> extends () => infer ReturnType
+    ? [...UnionToTuple<Exclude<T, ReturnType>>, ReturnType]
+    : []
 
 // [1, 2, 3]
 type testUnionToTuple = UnionToTuple<1 | 2 | 3>
+
+type CurriedFunc<Params, Return> =
+    Params extends [ infer Arg, ...infer Rest ]
+        ? (arg: Arg) => CurriedFunc<Rest, Return>
+        : never
+
+declare function currying<Func>(fn: Func):
+    Func extends (...args: infer Params) => infer Result
+        ? CurriedFunc<Params, Result>
+        : never
+
+// 使用 interface 表达 currying 函数的类型签名
+interface Currying {
+    <Func>(fn: Func):
+    Func extends (...args: infer Params) => infer Result
+        ? CurriedFunc<Params, Result>
+        : never
+}
+
+const func = (a: boolean, b: number, c: string) => {}
+// (arg: boolean) => (arg: number) => (arg: string) => never
+const curriedFunc = currying(func)
+// (arg: boolean) => (arg: number) => (arg: string) => never
+declare const currying2: Currying;
+const curriedFunc2 = currying2(func)
+
+// 'guang-and-dong'
+// const res = join('-')('guang', 'and', 'dong');
+
+// interface Join {
+//     <Delimiter extends string>(delimiter: Delimiter):
+//         <Items extends string[]>(...parts: Items):
+//             JoinType<Items, Delimiter>
+// }
+
+// type JoinType<Items extends string[],Delimiter extends string> =
+//     Items extends [infer First, ...infer Rest]
+//         ? `${First}${Delimiter}${JoinType<Rest, Delimiter>}`
+//         : ''
+
+// infer First 推断的类型默认是 unknown，它不能直接用于模板字符串中。

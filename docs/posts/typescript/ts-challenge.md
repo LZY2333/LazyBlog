@@ -107,7 +107,6 @@ type NthParameter<T, N extends number> =
     ? P[N] : never;
 ```
 
-
 ## 1. a=1&a=2&b=2&c=3
 
 要求
@@ -284,4 +283,44 @@ type testPartialObjectPropByKeys =
 
 ```
 
-## 6. 
+## 6. 柯里化
+
+返回值类型与当时传入参数有关，需要动态生成类型
+
+```ts
+const func = (a: boolean, b: number, c: string) => {}
+// (arg: boolean) => (arg: number) => (arg: string) => never
+const curriedFunc = currying(func)
+```
+
+```ts
+type CurriedFunc<Params, Return> =
+    Params extends [ infer Arg, ...infer Rest ]
+        ? (arg: Arg) => CurriedFunc<Rest, Return>
+        : never
+
+declare function currying<Func>(fn: Func):
+    Func extends (...args: infer Params) => infer Result
+        ? CurriedFunc<Params, Result>
+        : never
+
+// 使用 interface 表达 currying 函数的类型签名
+interface Currying {
+    <Func>(fn: Func):
+    Func extends (...args: infer Params) => infer Result
+        ? CurriedFunc<Params, Result>
+        : never
+}
+
+const func = (a: boolean, b: number, c: string) => {}
+// (arg: boolean) => (arg: number) => (arg: string) => never
+const curriedFunc = currying(func)
+// (arg: boolean) => (arg: number) => (arg: string) => never
+declare const currying2: Currying;
+const curriedFunc2 = currying2(func)
+```
+
+`declare function` 是直接声明一个 实际存在的函数（通常由 JS 提供或实现）
+
+
+

@@ -6,11 +6,6 @@
     },
     {
         "type": "dir",
-        "name": "javascript",
-        "label": "Javascript"
-    },
-    {
-        "type": "dir",
         "name": "typescript",
         "label": "Typescript"
     },
@@ -23,6 +18,11 @@
         "type": "dir",
         "name": "workflow",
         "label": "Workflow"
+    },
+    {
+        "type": "dir",
+        "name": "javascript",
+        "label": "Javascript"
     },
     {
         "type": "dir",

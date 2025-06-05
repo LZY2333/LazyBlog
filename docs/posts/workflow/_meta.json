@@ -1,6 +1,8 @@
 [
+    "site-1-rspress",
+    "site-2-cicd",
+    "site-3-https",
     "github-actions",
-    "rspress-site-development",
     "blog-posts-tech-stack",
     "github-remote-setup",
     "pnpm-yarn-npm"

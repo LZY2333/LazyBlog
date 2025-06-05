@@ -1,7 +1,6 @@
 ---
 title: 静态博客搭建(2)CI/CD
 date: 2025-06-04 11:51:05
-hide: true
 ---
 
 [如果使用GitHub Page，直接跟官方文档就，简单无需服务器，完美自动部署](https://rspress.dev/zh/guide/basic/deploy)
@@ -10,7 +9,7 @@ hide: true
 
 性子急，不废话直接上配置流程。一些解析话太多，放在后面(见五)，大手子们选择性阅读。
 
-## 一. 服务器 配置 公钥
+## 1. 服务器 配置 公钥
 
 1. 阿里云 ECS > 实例 > 绑定密钥对/创建密钥对 > 名称随意，如: aliyun_ssh
 
@@ -20,7 +19,7 @@ hide: true
 
 当实例绑定了密钥对之后密码访问的方式将失效，远程连接服务器请改用密钥方式(见四)
 
-## 二. 仓库 配置 Action Secret  
+## 2. 仓库 配置 Action Secret  
 
 进入你的 GitHub 仓库 → Settings → Secrets and variables → Actions → New repository secret
 
@@ -34,7 +33,7 @@ hide: true
 
 将私钥内容需全部复制，包括 `-----BEGIN RSA PRIVATE KEY-----` 到 `-----END RSA PRIVATE KEY-----`。
 
-## 三. 仓库 配置 GitHub Action
+## 3. 仓库 配置 GitHub Action
 
 在你的 Rspress 项目根目录中创建 `.github/workflows/deploy.yml`：
 
@@ -79,8 +78,7 @@ jobs:
 
 ```
 
-
-## 四. 其他推荐配置(不影响功能)
+## 4. 其他推荐配置(不影响功能)
 
 __XShell修改远程连接服务器方式__
 
@@ -94,9 +92,11 @@ __随时可以通过私钥文件生成公钥__
 
 `ssh-keygen -y -f【文件位置/aliyun_ssh.pem】 > aliyun_ssh.pub`
 
-## 五. 步骤解析
+## 5. 步骤解析
 
-__代码提交到某个地方，立即触发自动编译，并推送编译后的代码到服务器__(即自动部署)，涉及两个难点:
+代码提交到某个地方，立即触发自动编译，并推送编译后的代码到服务器
+
+即自动部署，涉及两个难点:
 
 1. 如何访问服务器 -- SSH Key + GitHub Action Secrets
 

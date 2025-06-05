@@ -30,6 +30,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      rsbuild-plugin-open-graph:
+        specifier: ^1.0.2
+        version: 1.0.2(@rsbuild/core@1.2.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@18.19.87)(typescript@5.8.3)
@@ -1399,6 +1402,14 @@ packages:
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
+
+  rsbuild-plugin-open-graph@1.0.2:
+    resolution: {integrity: sha512-JGBMM9T7GNX47Y3jiSJkhoK2rT1bb7+TOO6yYpMHW+/3PLD9i0vv2S4qfdskTnVo8kTNEAYzTZrd+k+XuWxcNA==}
+    peerDependencies:
+      '@rsbuild/core': 0.x || 1.x || ^1.0.1-beta.0
+    peerDependenciesMeta:
+      '@rsbuild/core':
+        optional: true
 
   rspack-plugin-virtual-module@0.1.13:
     resolution: {integrity: sha512-VC0HiVHH6dtGfTgfpbDgVTt6LlYv+uAg9CWGWAR5lBx9FbKPEZeGz7iRUUP8vMymx+PGI8ps0u4a25dne0rtuQ==}
@@ -3547,6 +3558,10 @@ snapshots:
       - supports-color
 
   require-from-string@2.0.2: {}
+
+  rsbuild-plugin-open-graph@1.0.2(@rsbuild/core@1.2.3):
+    optionalDependencies:
+      '@rsbuild/core': 1.2.3
 
   rspack-plugin-virtual-module@0.1.13:
     dependencies:
