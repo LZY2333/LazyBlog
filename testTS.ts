@@ -457,3 +457,41 @@ type BB = { bbb: 222; ccc: 333 }
 
 // { aaa: 111; bbb?: 222 | undefined; ccc?: 333 | undefined; }
 type DefaultizeRes = Copy<Defaultize<AA, BB>>
+
+type TestInferLast<T extends string[]> = T extends [
+    ...infer _Rest,
+    infer Last
+]
+    ? `last${Last & string}`
+    : never
+
+type TestInferLast1<T extends string[]> = T extends [
+    ...infer _Rest,
+    infer Last extends string
+]
+    ? // 报错，不能将类型“Last”分配给类型“string | xxx
+      // 因为，infer推导的元素默认为unknown类型
+      `last${Last}`
+    : never
+
+type StrToNum<Str> =
+    Str extends `${infer Num extends number}` ? Num : Str
+
+// 123
+type testSingleStrToNum = StrToNum<'123'>
+
+enum Code { a = 111, b = 222, c = 'abc' }
+
+// "111" | "222" | "abc"
+type testCode = `${Code}`
+// 获取enum 的value类型
+// 111 | 222 | "abc"
+type testStrToNum = StrToNum<`${Code}`>
+
+
+type Test1 = never extends string ? true : false   // true ✅
+type Test2 = undefined extends void ? true : false // true ✅
+type Test3 = any extends unknown ? true : false    // true ✅
+type Test4 = unknown extends any ? true : false    // true ✅（双向兼容）
+type Test5 = void extends undefined ? true : false // true ✅
+type Test6 = null extends void ? true : false      // true ✅（但依赖 tsconfig）

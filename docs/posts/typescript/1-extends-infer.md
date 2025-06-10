@@ -121,6 +121,61 @@ type Trim<str extends string> =
 type g = Trim<' hello world '>
 ```
 
+## infer extends 和 & string
+
+```ts
+type TestInferLast<T extends string[]> =
+    T extends [ ...infer _Rest, infer Last ]
+      // 报错，不能将类型“Last”分配给类型“string | xxx
+      // 因为，infer推导的元素默认为unknown类型
+      ? `last${Last}`
+      : never
+```
+
+通用解决方案
+```ts
+// 改 Last 调用处
+`last${Last & string}`
+// 或
+Last extends string ? `last${Last}` : never
+```
+
+ts 4.7 开始进行了优化, 可以这样写 `infer xxx extends string`
+```ts
+// 改 Last 生成处
+T extends [ ...infer _Rest, infer Last extends string ]
+```
+
+__infer extends__ 对infer变量进行了类型转换
+```ts
+type StrToBoolean<Str> =
+    Str extends `${infer Bool extends boolean}` ? Bool : Str
+// true
+type res2 = StrToBoolean<'true'>
+
+type StrToNull<Str> =
+    Str extends `${infer Null extends null}` ? Null : Str
+// null
+type res3 = StrToNull<'null'>
+```
+
+另外，如果`extends 基础类型`，传入字面量会返回 字面量，而不是 基础类型
+```ts
+type StrToNum<Str> =
+    Str extends `${infer Num extends number}` ? Num : Str;
+
+// 123, 而不是number
+type testSingleStrToNum = StrToNum<'123'>
+```
+```ts
+// 获取enum 的value类型
+enum Code { a = 111, b = 222, c = 'abc' }
+// "111" | "222" | "abc"
+type testCode = `${Code}`
+// 111 | 222 | "abc"
+type testStrToNum = StrToNum<`${Code}`>
+```
+
 ## 3. 函数 提取类型
 
 ```ts

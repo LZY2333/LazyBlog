@@ -32,7 +32,7 @@ vscode -> 终端 -> 运行生成任务 -> tsc:监视
 
 ## 2. 基本数据类型
 
-__布尔__ __数字__ __字符串__ 
+### __布尔__ __数字__ __字符串__ 
 ```ts
 let married: boolean = false;   // boolean
 let age: number = 25;           // number
@@ -42,6 +42,8 @@ let arr2: number[]=[4,5,6];     // array
 let arr3: Array<number>=[7,8,9];// array
 let arr4: (string | number)[]=[7,8,9,'a'];// array
 ```
+
+### __数组__ __元组__
 
 __数组__ 等内置类型
 
@@ -54,6 +56,8 @@ let lzy:[string,number] = ['lzy',5]; // tuple
 lzy[0].length; // OK
 lzy[1].toFixed(2); // OK
 ```
+
+### __枚举__
 
 __枚举__: 该数据类型的变量 只能为事先写好的几个类型
 ```ts
@@ -69,13 +73,15 @@ const enum Color2 {
     Yellow,// 默认值为1
     Blue// 默认值为2
 }
-// 常量枚举的变量名(如Red)会在编译时被完全删除,节省变量名开销,因为是常量,必然是固定值,调用这个固定值的地方会直接被替换为值
+// 常量枚举的变量名(如Red)会在编译时被完全删除,节省变量名开销
+// 因为是常量,必然是固定值,调用这个固定值的地方会直接被替换为值
 
 let myColors = [Colors.Red, Colors.Yellow, Colors.Blue];
 ```
 
-__symbol__
-表示唯一不变的类型
+### __symbol__
+
+__symbol__: 表示唯一不变的类型
 ```ts
 const sym1 = Symbol('key');
 const sym2 = Symbol('key');
@@ -84,8 +90,9 @@ console.log(sym1 === sym2)
 ```
 使用Symbol 需要 ES6 编译辅助库
 
-__bigint__
-可以安全的 储存 和 操作 大整数
+### __bigint__
+
+__bigint__: 可以安全的 储存 和 操作 大整数
 ```ts
 const max = Number.MAX_SAFE_INTEGER;// 2**53-1
 console.log(max + 1 === max + 2); // true,因为溢出了
@@ -95,24 +102,34 @@ console.log(max + 1 === max + 2); // 报错,BigInt 不能直接 + number类型
 console.log(max + 1n === max + 2n); // 代表BigInt(1)
 ```
 使用 BigInt 需要 ESNext 的编译辅助库
+
 JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 
+### any unknown undefined null void never
+
+范围大小如下，父子关系相反
+
+__any__ > __unknown__ > object | number | string | boolean >
+
+> __void__ > __undefined__ = __null__ > __never__
+
+__any__: 表示任意类型,可以被赋值任意类型，也可以给任意类型赋值
+
+__unknown__: 表示未知，可以被赋值任意类型，但是不可以赋值给其他类型
+
+__void__: 表示没有任何类型,当函数没有返回值时,被认为是void类型
+
 __null__ __undefined__
+
 null 和 undefined 是其他任意类型的子类型,可以赋值给任意类型.
+
 null 和 undefined 可以相互赋值
+
 TS配置文件设置了strictNullChecks:true时,任意类型被赋值为这两个类型会报错
 
-__unknown__
-表示未知，可以被赋值任意类型，但是不可以赋值给其他类型
+__never__: 表示永远不会被执行到的类型，never 是其他任意类型的子类型
 
-__any__
-表示任意类型,可以被赋值任意类型，也可以给任意类型赋值
 
-__void__
-表示没有任何类型,当函数没有返回值时,被认为是void类型
-
-__never__
-表示永远不会被执行到的类型，never 是其他任意类型的子类型
 ```ts
 function error(message: string): never {
     throw new Error(message);
@@ -154,7 +171,9 @@ function test (stringOrNumber: string | number) {
 ```
 
 ## 3. 联合类型
+
 表示 取值可以时多种类型中的一种
+
 未赋值时 联合类型 上只能访问 两个类型共有的 属性或方法
 ```TS
 let name:string | number // 联合类型  
@@ -164,6 +183,8 @@ console.log(name!.toFixed(2)); // number方法
 name = 'zf';
 console.log(name!.toLowerCase()); // 字符串方法
 ```
+
+TS中，谁更具体谁是子类型，并不是属性多就是子类型，例如联合类型内的类型越少越具体
 
 ## 4. 字面量类型和类型字面量
 
@@ -194,6 +215,7 @@ enum Color {
 
 ## 5. 类型推导
 指 编程语言中 能自动推导出 值 的类型的能力,一般强类型语言才有
+
 定义未赋值时,会推论为any类型
 ```ts
 let username2;
@@ -202,12 +224,17 @@ username2 = 'lzy';// string类型
 ```
 
 ## 6. 包装对象
+
 JS有两类数据类型, 原始数据类型(null undefined boolean number string symbol bigint) 和 object
+
 所有原始数据类型都没有 属性 或 方法 可供使用,仅仅是储存一个数据.
 
 但字符串数据 却可以直接调用 splice等方法,
+
 这是因为 当 调用 基本数据类型 的方法时, JS 会把 原始数据类型 强制性切换为 对象类型,
+
 c# Java中都有这个概念,叫 __自动装箱__,
+
 TS承认这一概念，因此可以对 string 等原始类型调用方法
 
 ```ts

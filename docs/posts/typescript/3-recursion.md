@@ -251,7 +251,9 @@ type DeepReadonly<T> = {
 }
 
 type DeepReadonly2<T> =
-    // 执行到【DeepReadonly2<T[K]>】内部有Obj extends any,即继续计算
+    // 执行到【DeepReadonly2<T[K]>】时,
+    // 由于DeepReadonly2内部有Obj extends any,条件类型具有优先性,或称触发强制计算
+    // 会归一化展开
     Obj extends any ? {
         readonly [K in keyof T]: DeepReadonly2<T[K]>
     } : never
@@ -259,13 +261,14 @@ type DeepReadonly2<T> =
 
 再改一改上面的例子, 举个反面效果, 证明是
 ```ts
-// DeepReadonly3 内部调用了 extends结构的 DeepReadonly
+// DeepReadonly3 内部调用了 无extends结构的 DeepReadonly
 type DeepReadonly3<Obj extends Record<string, any>> =
     Obj extends any
         ? {
               readonly [Key in keyof Obj]: Obj[Key] extends object
                   ? Obj[Key] extends Function
                       ? Obj[Key]
+                      // 这里是 DeepReadonly
                       : DeepReadonly<Obj[Key]>
                   : Obj[Key]
           }
@@ -275,49 +278,3 @@ type DeepReadonly3<Obj extends Record<string, any>> =
 type obj3 = DeepReadonly3<obj> // === obj1
 ```
 
-## 技巧！对最终结果进行最后处理
-
-__当需要对最终结果进行一次处理时，请使用积累参数Result__
-
-JoinType 就用到了这个技巧，JoinType本可以不使用积累参数
-```ts
-interface Join{
-    <Delimiter extends string>(delimiter: Delimiter):
-        <Items extends string[]>(...items: Items) =>
-            JoinType<Items, Delimiter>
-}
-
-type RemoveFirstDelimiter<Str extends string> =
-    Str extends `${infer _}${infer Rest}` ? Rest : Str
-
-type JoinType<
-    Items extends any[],
-    Delimiter extends string,
-    Result extends string = ''
-> = Items extends [infer Cur, ...infer Rest]
-    ? JoinType<Rest, Delimiter, `${Result}${Delimiter}${Cur & string}`>
-    : RemoveFirstDelimiter<Result>
-
-// "l-z-y"
-declare const join:Join;
-let res = join('-')('l', 'z', 'y')
-```
-
-另外注意到:
-
-__Join 中第一个函数返回值使用了`:`,第二个函数返回值使用了`=>`__
-
-`:` 是 `interface` 中定义函数的要求
-
-`=>` 是 `type` 中定义函数的要求
-```ts
-// 这里与 join 的语法一致
-interface Add1 {
-  (a: number): (b: number) => number;
-}
-// 使用type就可以改写成都为 => 的写法
-type Add2 = (a: number) => (b: number) => number;
-// 二者用法一致
-declare const add1:Add1
-declare const add2:Add2
-```
