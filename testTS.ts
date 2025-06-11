@@ -256,7 +256,8 @@ type CamelCaseToKebaCase<T extends string> =
 type testCamelCaseToKebaCase =
     CamelCaseToKebaCase<'aaaBbbCcc'>
 console.log('开始')
-const a: testCamelCaseToKebaCase = 'aaa-bbb-ccc'
+const testCamelCaseToKebaCaseVariable: testCamelCaseToKebaCase =
+    'aaa-bbb-ccc'
 type Debug<T> = T
 
 type Chunk<
@@ -469,7 +470,7 @@ type TestInferLast1<T extends string[]> = T extends [
     ...infer _Rest,
     infer Last extends string
 ]
-    ? // 报错，不能将类型“Last”分配给类型“string | xxx
+    ? // 报错，不能将类型"Last"分配给类型"string | xxx"
       // 因为，infer推导的元素默认为unknown类型
       `last${Last}`
     : never
@@ -480,7 +481,11 @@ type StrToNum<Str> =
 // 123
 type testSingleStrToNum = StrToNum<'123'>
 
-enum Code { a = 111, b = 222, c = 'abc' }
+enum Code {
+    a = 111,
+    b = 222,
+    c = 'abc',
+}
 
 // "111" | "222" | "abc"
 type testCode = `${Code}`
@@ -488,10 +493,31 @@ type testCode = `${Code}`
 // 111 | 222 | "abc"
 type testStrToNum = StrToNum<`${Code}`>
 
-
-type Test1 = never extends string ? true : false   // true ✅
+type Test1 = never extends string ? true : false // true ✅
 type Test2 = undefined extends void ? true : false // true ✅
-type Test3 = any extends unknown ? true : false    // true ✅
-type Test4 = unknown extends any ? true : false    // true ✅（双向兼容）
+type Test3 = any extends unknown ? true : false // true ✅
+type Test4 = unknown extends any ? true : false // true ✅（双向兼容）
 type Test5 = void extends undefined ? true : false // true ✅
-type Test6 = null extends void ? true : false      // true ✅（但依赖 tsconfig）
+type Test6 = null extends void ? true : false // true ✅（但依赖 tsconfig）
+
+// 可赋值关系演示
+// let a: void
+// let b: undefined = undefined
+// let c: null = null
+// let d: never = undefined as never
+
+// a = c // ✅ void 可以接收 null（strictNullChecks: false）
+// a = b // ✅ void 可以接收 undefined(特殊)
+// a = c // ✅ void 可接收 null（strictNullChecks: false）
+
+// b = a // ❌ undefined 不能接收 void
+// b = c // ✅ undefined 可以接收 null（strictNullChecks: false）
+// b = d // ✅ undefined 可以接收 never
+
+// c = a // ❌ null 不能接收 void
+// c = b // ✅ null 可以接收 undefined（strictNullChecks: false）
+// c = d // ✅ null 可以接收 never
+
+// d = a // ❌ never 不能接收 void
+// d = b // ❌ never 不能接收 undefined
+// d = c // ❌ never 不能接收 null

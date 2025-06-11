@@ -14,7 +14,13 @@
         "allowImportingTsExtensions": true,
         "sourceMap": true
     },
-    "include": ["docs", "theme", "rspress.config.ts"],
+    "include": [
+        "docs",
+        "theme",
+        "src",
+        "rspress.config.ts",
+        "testTS.ts"
+    ],
     "mdx": {
         "checkMdx": true
     }

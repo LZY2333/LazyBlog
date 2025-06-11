@@ -105,71 +105,68 @@ console.log(max + 1n === max + 2n); // 代表BigInt(1)
 
 JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 
-### any unknown undefined null void never
+### any unknown 最大的类型
 
-范围大小如下，父子关系相反
+`any`: 表示任意类型，是所有类型的父类型，是所有类型的子类型
 
-__any__ > __unknown__ > object | number | string | boolean >
+`unknown`: 表示未知，是所有类型的父类型
 
-> __void__ > __undefined__ = __null__ > __never__
+`any` > `unknown` > object | number | string | boolean >
 
-__any__: 表示任意类型,可以被赋值任意类型，也可以给任意类型赋值
+`void` > `undefined` > `null` > `never`
 
-__unknown__: 表示未知，可以被赋值任意类型，但是不可以赋值给其他类型
+> 是所有类型父类型意味着,不可赋值给任何类型(协变)
+> 是所有类型子类型意味着,可赋值给任何类型(协变)
 
-__void__: 表示没有任何类型,当函数没有返回值时,被认为是void类型
+### undefined null void never 最小的类型
 
-__null__ __undefined__
+`void`: 表示没有返回值，是所有类型子类型
 
-null 和 undefined 是其他任意类型的子类型,可以赋值给任意类型.
+`null`: 表示不该有值，是所有类型子类型
 
-null 和 undefined 可以相互赋值
+`undefined`: 表示未赋值，是所有类型子类型
 
-TS配置文件设置了strictNullChecks:true时,任意类型被赋值为这两个类型会报错
+`never`: 表示永远不会被执行到的类型，是所有类型子类型
 
-__never__: 表示永远不会被执行到的类型，never 是其他任意类型的子类型
+__可赋值关系表__
+| From \ To   | `void` | `undefined` | `null` | `never` |
+| ----------- | ------ | ----------- | ------ | ------- |
+| `void`      | ✅      | ❌           | ❌      | ❌       |
+| `undefined` | ✅      | ✅           | ✅\*    | ❌       |
+| `null`      | ✅\*    | ✅\*         | ✅      | ❌       |
+| `never`     | ✅      | ✅           | ✅      | ✅       |
 
+> * 表示在 strictNullChecks: false 或 strict: false 下成立,
+> strictNullChecks:true时, 任意类型被赋值为null undefined会报错
+> 除了，void 可以被赋值 undefined
 
-```ts
-function error(message: string): never {
-    throw new Error(message);
-}
-function fn(x: number | string) {
-  if (typeof x === 'number') {
-    // x: number 类型
-  } else if (typeof x === 'string') {
-    // x: string 类型
-  } else {
-    // x: never 类型
-    // --strictNullChecks 模式下，这里的代码将不会被执行，x 无法被观察
-  }
-}
-```
-never 和 void 的区别: void 可以是 null 或 undefined
-拥有 never 返回值类型的函数无法正常返回，无法终止，或会抛出异常。
+> 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件
+> VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration
+> → 检查是否跳转到预期 tsconfig.json
 
 ```ts
-function validateCheck (v:never) {}
-function test (stringOrNumber: string | number) {
-    if(typeof stringOrNumber === 'string') {
-        return 
-    }
-    // 报错number类型不能赋值给never
-    validateCheck(stringOrNumber)
-}
+// 可赋值关系演示
+let a: void
+let b: undefined = undefined
+let c: null = null
+let d: never = undefined as never
 
-function validateCheck (v:never) {}
-function test (stringOrNumber: string | number) {
-    if(typeof stringOrNumber === 'string') {
-        return 
-    } if(typeof stringOrNumber === 'number') {
-        return
-    }
-    // OK!
-    validateCheck(stringOrNumber)
-}
+a = c // ✅ void 可以接收 null（strictNullChecks: false）
+a = b // ✅ void 可以接收 undefined(特殊)
+a = c // ✅ void 可接收 null（strictNullChecks: false）
+
+b = a // ❌ undefined 不能接收 void
+b = c // ✅ undefined 可以接收 null（strictNullChecks: false）
+b = d // ✅ undefined 可以接收 never
+
+c = a // ❌ null 不能接收 void
+c = b // ✅ null 可以接收 undefined（strictNullChecks: false）
+c = d // ✅ null 可以接收 never
+
+d = a // ❌ never 不能接收 void
+d = b // ❌ never 不能接收 undefined
+d = c // ❌ never 不能接收 null
 ```
-
 ## 3. 联合类型
 
 表示 取值可以时多种类型中的一种
