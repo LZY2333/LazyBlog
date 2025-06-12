@@ -521,3 +521,42 @@ type Test6 = null extends void ? true : false // true ✅（但依赖 tsconfig�
 // d = a // ❌ never 不能接收 void
 // d = b // ❌ never 不能接收 undefined
 // d = c // ❌ never 不能接收 null
+
+type F1 = <T>() => T extends any ? 1 : 2 // always 1
+type F2 = <T>() => T extends string ? 1 : 2
+
+type Test = F1 extends F2 ? true : false // false ✅
+
+// 之前写过Zip类型
+// [[1, 4], [2, 5], [3, 6]]
+type testZipType = Zip<[1, 2, 3], [4, 5, 6]>
+
+type Zip<
+    T extends unknown[],
+    U extends unknown[]
+> = T extends [infer FT, ...infer RT]
+    ? U extends [infer FU, ...infer RU]
+        ? [[FT, FU], ...Zip<RT, RU>]
+        : []
+    : []
+
+// 针对符合 Zip结构 的重载，返回类型为 Zip<T, U>
+function zipFunc<T extends unknown[], U extends unknown[]>(a1: T, a2: U): Zip<T, U>
+function zipFunc<T, U>(a1: T[], a2: U[]): [T, U][]
+function zipFunc(a1: any[], a2: any[]) {
+    return a1.map((item, index) => [item, a2[index]])
+}
+
+// [[1, 4], [2, 5], [3, 6]]
+const testZip = zipFunc([1, 2, 3] as const, [4, 5, 6] as const)
+// []
+const testZip2 = zipFunc([1, 2, 3], [4, 5, 6])
+
+
+
+// 通过函数重载，针对常量元组参数，TS 能推断出精确的 Zip<T, U> 类型，
+// 这样 testZip 的类型就能得到 [[1, 4], [2, 5], [3, 6]]。
+// 对于普通数组参数，返回类型为 [T, U][]，类型宽泛，避免类型不匹配报错。
+
+
+

@@ -33,14 +33,15 @@ type tuple1 = Zip<[1, 2], ['a', 'b']>
 
 ```ts
 // 任意个元组类型构造Zip2(递归)
-type Zip2<T extends unknown[], U extends unknown[]> =
-type Zip2<T extends unknown[], U extends unknown[]> =
-    T extends [infer A, ...infer rest] ?
-    U extends [infer B, ...infer rest2] ?
-    [[A, B], ...Zip2<rest, rest2>] : [] : []
+type Zip2< T extends unknown[], U extends unknown[] > =
+    T extends [infer FT, ...infer RT]
+        ? U extends [infer FU, ...infer RU]
+            ? [[FT, FU], ...Zip2<RT, RU>]
+            : []
+        : []
 
-// [[1, "a"], [2, "b"], [3, "c"]]
-type tuple6 = Zip2<[1, 2, 3], ['a', 'b', 'c']>;
+// [[1, 4], [2, 5], [3, 6]]
+type testZip2 = Zip2<[1, 2, 3], [4, 5, 6]>
 
 ```
 

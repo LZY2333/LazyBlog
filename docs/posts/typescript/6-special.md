@@ -15,7 +15,7 @@ type IsAny<T> = 0 extends (2 & T) ? true : false
 ```
 0 和 1 可以换成任意两个不同的类型
 
-## 2. IsEqual(待理解)
+## 2. IsEqual
 
 ```ts
 // 之前的简易实现

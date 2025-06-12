@@ -160,12 +160,16 @@ type test6 = AllCombinations<'A' | 'B' | 'C'>
 
 接下来对每个 单A 都调用一次 Combination，循环+递归 完成全组合
 
-## 7. any的条件类型分发机制
+## 7. boolean any never 的分发
 
 ```ts
-type TestAny<T> = T extends number ? 1 : 2;
+type ActiveDistribute<T> = T extends true ? 1 : 2
 // 1 | 2
-type test8 = TestAny<any>
+type testActiveDistribute = ActiveDistribute<any>
+// 1 | 2
+type testActiveDistribute1 = ActiveDistribute<boolean>
+// never，严格来说也是分布式条件类型，分别比较，分别返回never,结果还是never
+type testActiveDistribute2 = ActiveDistribute<never>
 ```
 
 ## 8. 联合类型的最后一个类型
