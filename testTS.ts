@@ -531,6 +531,9 @@ type Test = F1 extends F2 ? true : false // false ✅
 // [[1, 4], [2, 5], [3, 6]]
 type testZipType = Zip<[1, 2, 3], [4, 5, 6]>
 
+const sym1 = Symbol('key');
+const sym2 = Symbol('key');
+
 type Zip<
     T extends unknown[],
     U extends unknown[]

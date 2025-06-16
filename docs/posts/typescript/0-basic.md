@@ -26,6 +26,7 @@ __针对入参 动态生成 更精准的类型提示和检查__
 ```
 
 运行vscode检视任务
+
 vscode -> 终端 -> 运行生成任务 -> tsc:监视
 
 这样保存ts文件时 会自动编译出js文件,方便查看
@@ -45,14 +46,13 @@ let arr4: (string | number)[]=[7,8,9,'a'];// array
 
 ### __数组__ __元组__
 
-__数组__ 等内置类型
-
 __元组__: 表示 类型 和 数量 固定的 数组
-与数组的区别: 每一项可以是不同类型, 有预定义的长度, 
+
+与 __数组__ 的区别: 每一项可以是不同类型, 有预定义的长度, 
 ```ts
 const animal:[string,number,boolean] = ['lzy',25,true];  // tuple
+// 此处如果没定义元组类型，则后两行会报错
 let lzy:[string,number] = ['lzy',5]; // tuple
-// 此处如果没定义类型，则在TS中下面两行会报错。因为类型
 lzy[0].length; // OK
 lzy[1].toFixed(2); // OK
 ```
@@ -116,6 +116,7 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 `void` > `undefined` > `null` > `never`
 
 > 是所有类型父类型意味着,不可赋值给任何类型(协变)
+> 
 > 是所有类型子类型意味着,可赋值给任何类型(协变)
 
 ### undefined null void never 最小的类型
@@ -136,12 +137,16 @@ __可赋值关系表__
 | `null`      | ✅\*    | ✅\*         | ✅      | ❌       |
 | `never`     | ✅      | ✅           | ✅      | ✅       |
 
-> * 表示在 strictNullChecks: false 或 strict: false 下成立,
+> *表示在 strictNullChecks: false 或 strict: false 下成立,
+> 
 > strictNullChecks:true时, 任意类型被赋值为null undefined会报错
-> 除了，void 可以被赋值 undefined
+> 
+> 除了void 永远可以被赋值 undefined
 
 > 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件
+> 
 > VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration
+> 
 > → 检查是否跳转到预期 tsconfig.json
 
 ```ts
@@ -332,7 +337,7 @@ function attr3(a: any,b: any): void {
 }
 ```
 
-## 8. 函数重载
+## 8. 函数重载三种写法
 
 ```ts
 // 1. 交叉类型实现重载效果
@@ -364,8 +369,11 @@ TS中:
 函数的第一个参数处可写为this，并对其做TS约束，调用时会忽略这一参数
 
 > 注意: 如果 type 关键字后面的 typeof 会被视为 TS语法，具有获取 实例类型的功能，
+> 
 > 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof，也能被识别为TS
+> 
 > 返回的是 类型本身
+> 
 > 而语句中的 typeof 会被视为 js语法， 非获取类型的功能，而是返回类型字符串
 ```ts
 const person = { name: "lzy", age: 25 }
