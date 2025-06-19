@@ -28,5 +28,10 @@
         "type": "dir",
         "name": "life",
         "label": "Life"
+    },
+    {
+        "type": "dir",
+        "name": "algorithm",
+        "label": "Algorithm"
     }
 ]
