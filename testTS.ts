@@ -543,6 +543,8 @@ type Zip<
         : []
     : []
 
+
+    
 // 针对符合 Zip结构 的重载，返回类型为 Zip<T, U>
 function zipFunc<T extends unknown[], U extends unknown[]>(a1: T, a2: U): Zip<T, U>
 function zipFunc<T, U>(a1: T[], a2: U[]): [T, U][]
