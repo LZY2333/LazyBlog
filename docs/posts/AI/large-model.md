@@ -1,7 +1,7 @@
 ---
 title: 大模型到AI项目
 date: 2025-07-15 15:49:25
-tags: 
+tags:
     - AI
 ---
 
@@ -13,11 +13,11 @@ OpenAI 聊天补全 为例
 
 大模型 本质 就是: __条件概率分布建模器__
 
-> 它预测下一个Token的概览，依据就是上下文中已出现的Token
+> 它预测下一个 Token 的概览，依据就是上下文中已出现的 Token
 
 大模型 训练 就是: 通过大量文本学习到的语言中 token 之间出现的规律和概率关系
 
-> 大模型并不理解文本，而是基于训练得到的概率，生成最有可能的下一个Token
+> 大模型并不理解文本，而是基于训练得到的概率，生成最有可能的下一个 Token
 
 大模型一次问答的处理流程: 文本 分词(Tokenization) 为 Token, Token 补全(Completion)
 
@@ -25,13 +25,13 @@ OpenAI 聊天补全 为例
 
 ## 分词
 
-将文本转换为Token
+将文本转换为 Token
 
 [openAI tokenizer](https://platform.openai.com/tokenizer)
 
-单词与Token不一一对应，上下文 语种 也影响Token的产生
+单词与 Token 不一一对应，上下文 语种 也影响 Token 的产生
 
-高效 与大模型对话本质是 __减少Token__, 使用更少的Token表达清晰同样的意思
+高效 与大模型对话本质是 __减少 Token__, 使用更少的 Token 表达清晰同样的意思
 
 一个有效且通用的方法是 __格式化提示__, 例如代码就是高度格式化的
 
@@ -40,11 +40,11 @@ OpenAI 聊天补全 为例
 > 实现更精准的输出、更低的使用门槛与更强的领域适配性。
 > 如提示词工程、模板化输入、上下文补全、默认系统提示词等。
 
-## 常见AI项目
+## 常见 AI 项目
 
 输入处理
 
-- __Prompt 模板封装__：标准化提示词模板（如“你是…请帮我…”）  
+- __Prompt 模板封装__：标准化提示词模板（如“你是…请帮我…”）
 - __系统提示设定__：设定风格/身份（System Prompt）
 - __上下文增强__：包括 few-shot 示例、历史对话拼接、知识库插入（RAG）
 - __结构化输入解析__：将表单、结构化数据转为自然语言 prompt
@@ -70,25 +70,23 @@ OpenAI 聊天补全 为例
 - __Agent / 智能流程控制__：多步任务规划、工具调用、上下文记忆等智能体功能
 - __多模态集成__：融合文本、图像、语音、表格等模型进行联动（如文图问答、多模态代理）
 
-
-| 层级 | 中文名称      | 英文名称                    | 说明                     | 典型项目          |
-| -- | --------- | ---------------------------- | ---------------------- | ---------------------------- |
-| L1 | 提示词工程层    | Prompt Layer          | 基于 Prompt 模板引导模型输出，无训练 | Notion AI、Copy.ai、WriteSonic |
-| L2 | 上下文增强层    | Context-Aware Layer     | 引入知识库、文档、历史做上下文补全 | ChatPDF、Perplexity、ChatLaw   |
-| L3 | 工具增强        | Tool-Augmented         | 模型调用工具或规划多步骤任务 | AutoGPT、LangChain、OpenDevin  |
-| L4 | 模型微调        | Adaptation Layer        | 对模型进行 LoRA、Adapter 等微调 | Alpaca-LoRA、MiniGPT-4        |
-| L5 | 基座模型层     | Foundation Layer         | 完整训练大模型，构建核心生态   | GPT-4、Claude、通义千问、LLaMA、GLM  |
-
+| 层级 | 中文名称     | 英文名称            | 说明                                 | 典型项目                            |
+| ---- | ------------ | ------------------- | ------------------------------------ | ----------------------------------- |
+| L1   | 提示词工程层 | Prompt Layer        | 基于 Prompt 模板引导模型输出，无训练 | Notion AI、Copy.ai、WriteSonic      |
+| L2   | 上下文增强层 | Context-Aware Layer | 引入知识库、文档、历史做上下文补全   | ChatPDF、Perplexity、ChatLaw        |
+| L3   | 工具增强     | Tool-Augmented      | 模型调用工具或规划多步骤任务         | AutoGPT、LangChain、OpenDevin       |
+| L4   | 模型微调     | Adaptation Layer    | 对模型进行 LoRA、Adapter 等微调      | Alpaca-LoRA、MiniGPT-4              |
+| L5   | 基座模型层   | Foundation Layer    | 完整训练大模型，构建核心生态         | GPT-4、Claude、通义千问、LLaMA、GLM |
 
 ## 大模型常见参数
 
-以下参数可调整 大模型对Token补全的概率分布
+以下参数可调整 大模型对 Token 补全的概率分布
 
 role
 
 ### temperature 温度
 
-0～2，调整概率分布的差异，数值越大，概率分布越平缓，增加多样性
+0 ～ 2，调整概率分布的差异，数值越大，概率分布越平缓，增加多样性
 
 ```js
 Temperature = 0.2时：
@@ -105,7 +103,7 @@ Temperature = 1.5时：
 
 ### topP 核采样
 
-设定累积概率阈值，从高到低概率依次选择的token，直到总和达到设定值
+设定累积概率阈值，从高到低概率依次选择的 token，直到总和达到设定值
 
 ```js
 Top_p = 0.75时：
@@ -115,7 +113,7 @@ Top_p = 0.75时：
 
 ### frequencyPenalty 概率惩罚
 
--2 ～ 2，降低已出现token的再次出现概率，迫使模型选择新的 __表达方式__
+-2 ～ 2，降低已出现 token 的再次出现概率，迫使模型选择新的 __表达方式__
 
 ```js
 如果"喜欢"已经出现过：
@@ -125,7 +123,7 @@ Top_p = 0.75时：
 
 ### presencePenalty 存在惩罚
 
--2 ～ 2，降低已出现 __主题__ 的相关token概率
+-2 ～ 2，降低已出现 __主题__ 的相关 token 概率
 
 ```js
 我喜欢吃饭， -> 我也喜欢吃烧烤
@@ -144,22 +142,22 @@ Top_p = 0.75时：
 
 ```js
 // 参数配置
-Top_p = 0.3         // 只用最常见属性
-Temperature = 0.2   // 遵循最常见模式
-Frequency_penalty = 0.1  // 允许必要的重复
-Presence_penalty = 0     // 保持一致的编码风格
+Top_p = 0.3 // 只用最常见属性
+Temperature = 0.2 // 遵循最常见模式
+Frequency_penalty = 0.1 // 允许必要的重复
+Presence_penalty = 0 // 保持一致的编码风格
 ```
 
 输出：
 
 ```js
 const Button = ({ onClick, children, className }) => {
-  return (
-    <button className={className} onClick={onClick}>
-      {children}
-    </button>
-  );
-};
+    return (
+        <button className={className} onClick={onClick}>
+            {children}
+        </button>
+    )
+}
 ```
 
 ### Top_p = 0.3
@@ -192,20 +190,19 @@ return (
 ```js
 // 1. 属性的书写顺序
 const Button = {
-  onClick, // 遵循常见顺序：事件处理在前
-  children, // 内容次之
-  className, // 样式属性最后
-};
+    onClick, // 遵循常见顺序：事件处理在前
+    children, // 内容次之
+    className, // 样式属性最后
+}
 
 // 2. JSX结构的组织方式
 return (
-  <button // 标准的属性换行格式
-    className={className}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-);
+    <button // 标准的属性换行格式
+        className={className}
+        onClick={onClick}>
+        {children}
+    </button>
+)
 // 不会生成紧凑格式：<button className={className} onClick={onClick}>{children}</button>
 ```
 
@@ -215,8 +212,8 @@ return (
 
 ```js
 // 变量名重复
-onClick={onClick}
-className={className}   // ✓ 允许直接传递同名属性
+onClick = { onClick }
+className = { className } // ✓ 允许直接传递同名属性
 // className={`btn ${className}`} // 可能的替代写法
 ```
 
@@ -248,10 +245,10 @@ const Button = ({  // 保持基础的函数组件风格
 ### 如果调整参数
 
 ```js
-Top_p = 0.9         // 允许更多属性选择
-Temperature = 1.2   // 更创新的结构
-Frequency_penalty = 0.8  // 强制使用不同写法(表达方式)
-Presence_penalty = 0.5   // 允许混合风格(表达内容)
+Top_p = 0.9 // 允许更多属性选择
+Temperature = 1.2 // 更创新的结构
+Frequency_penalty = 0.8 // 强制使用不同写法(表达方式)
+Presence_penalty = 0.5 // 允许混合风格(表达内容)
 ```
 
 可能生成：
@@ -259,25 +256,24 @@ Presence_penalty = 0.5   // 允许混合风格(表达内容)
 ```js
 // 可能生成：
 const Button = ({
-  onClick,
-  style,
-  theme = "default", // 更多属性选项
-  ...props
+    onClick,
+    style,
+    theme = 'default', // 更多属性选项
+    ...props
 }) => {
-  const buttonStyles = useStyles(theme); // 更复杂的处理逻辑
+    const buttonStyles = useStyles(theme) // 更复杂的处理逻辑
 
-  return (
-    <motion.button // 使用不同的组件库
-      {...props}
-      style={{ ...buttonStyles, ...style }}
-      whileHover={{ scale: 1.05 }}
-      onClick={(e) => {
-        // 更复杂的事件处理
-        e.preventDefault();
-        onClick?.(e);
-      }}
-    />
-  );
-};
+    return (
+        <motion.button // 使用不同的组件库
+            {...props}
+            style={{ ...buttonStyles, ...style }}
+            whileHover={{ scale: 1.05 }}
+            onClick={(e) => {
+                // 更复杂的事件处理
+                e.preventDefault()
+                onClick?.(e)
+            }}
+        />
+    )
+}
 ```
-
