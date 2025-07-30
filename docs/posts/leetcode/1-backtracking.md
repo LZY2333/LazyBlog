@@ -1,0 +1,580 @@
+---
+title: 回溯算法
+date: 2025-07-30 09:05:01
+categories: 技术栈
+tags: 
+    - 算法题
+---
+
+## 回溯算法
+
+本质上就是遍历穷举和剪枝，
+但是它将求解分为多层多个阶段，发现路走不通时返回上一阶段，
+撤销当前循环的数据，继续向下遍历下一个解。
+
+所有回溯算法的问题都可以抽象为树，回溯算法的关键是终止条件
+
+本质是穷举，很多问题只能暴力搜索，甚至暴力搜索都写不出来，这时候要回溯算法来暴力搜索
+
+组合问题：N个数里面按一定规则找出k个数的集合
+切割问题：一个字符串按一定规则有几种切割方式
+子集问题：一个N个数的集合里有多少符合条件的子集
+排列问题：N个数按一定规则全排列，有几种排列方式
+棋盘问题：N皇后，解数独等等
+
+1. 思考暴力穷举是怎么解的
+2. 每一轮从哪开始(参数)，在哪结束(结束条件)
+3. 每一轮如何遍历(循环)
+4. 条件剪枝 重复项剪枝， 组合 切割 子集 排列 棋盘
+
+排列问题
+每层都是从0开始搜索而不是startIndex
+需要used数组记录path里都放了哪些元素，针对树枝去重发
+
+新增参数为一般为当前的进度
+剪枝可以放在循环内，也可以放在结束条件内
+在层中进行剪枝，效率高于在枝中剪枝
+
+```js
+void backTracking(参数) {
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+
+    for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) {
+        处理节点;
+        backTracking(路径，选择列表); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
+
+### 一些总结
+
+1. 终止条件取决于算法，是否存放结果取决于题目是否有额外要求
+
+### 八皇后问题
+
+92个解
+
+```js
+const result = new Array(8).fill(-1) // key表示行，value表示列
+
+const cal8queens = (row) => {
+    if (row === 8) {
+        printQueens(result)
+        return
+    }
+    for (let column = 0; column < 8; column++) {
+        if (isOK(row, column)) {
+            result[row] = column
+            cal8queens(row + 1)
+        }
+    }
+    
+}
+const isOK = (row, column) => {
+    let leftUp = rightUp = column
+    for (let i = row - 1; i >= 0; i--) { // 逐行往上考察每一行
+        leftUp--
+        rightUp++
+        if (result[i] === column) return false // 竖行有重合
+        if (leftUp >= 0 && result[i] === leftUp) return false // 左上有重合
+        if (rightUp < 8 && result[i] === rightUp) return false // 右上有重合
+    }
+    return true
+}
+const printQueens = (result) => {
+    const a = new Array(8).fill(0).map(() => new Array(8).fill(0))
+    result.forEach((column, row) => {
+        a[row][column] = 1
+    });
+    console.log(result)
+    // console.log(a)
+}
+
+cal8queens(0)
+```
+
+### 77. 组合
+
+https://leetcode.cn/problems/combinations/description/
+
+给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+
+```js
+// 1. 思考暴力穷举是怎么解的
+// 2. 每一轮从哪开始(参数)，新增参数为当前的进度，在哪结束(结束条件)
+// 3. 每一轮如何遍历
+var combine = function (n, k) {
+    const result = []
+    const cur = []
+    const backTracking = (start) => {
+        if (cur.length === k) {
+            result.push([...cur])
+            return
+        }
+        // 剪枝,后续数量不够K的没必要遍历
+        for (let i = start; i <= n - (k - cur.length) + 1; i++) {
+            cur.push(i)
+            backTracking(i + 1)
+            cur.pop()
+        }
+    }
+    backTracking(1)
+    return result
+};
+[[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+```
+
+剪枝优化
+
+```js
+// 遍历对象为 [1,2,3,4]， k 为 2
+// 1. "i <= n"    : 需要 =号, 因为是从1到4, n为4
+// 2. "(k - path.length - 1)" : 目的是填满k，末端的"枝" 和 "叶" 才解锁 k到n的项
+// 3. "k-1": 前端的"枝",比如path还为空时，需要遍历到3，想遍历到3 k就得-1
+// 3. 因为path想拿到k个数，起始的"枝"必须遍历到后k个数的第一个数，所以k得-1
+for (let i = startIndex; i <= n - (k - path.length - 1); ++i) {
+    ...
+}
+```
+
+暴力穷举是怎么解的
+
+```js
+// 假设 combine(4, 2),那result 就是 12 13 14 23 24 34
+// k就是k重循环，先放i，再放j
+let result = []
+let path = []
+for (let i = 1; i <= n; i++) {
+    path = [].push(i)
+    for (let j = i + 1; j <= n; j++) {
+        path.push(j)
+    }
+    result.push(path)
+}
+```
+
+### 216. 组合总和 III
+
+https://leetcode.cn/problems/combination-sum-iii/description/
+
+找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
+只使用数字1到9
+每个数字 最多使用一次
+
+```js
+var combinationSum3 = function (k, n) {
+    const result = []
+    const cur = []
+    let sum = 0
+    const sumHelper = (start) => {
+        if (cur.length === k) {
+            if (sum !== n) return
+            result.push([...cur])
+            return
+        }
+        // 剪枝：i开始的数要能凑够k，当前i的总和要小于n
+        for (let i = start; i <= 9 - (k - cur.length - 1) && i + sum < n; i++) {
+            cur.push(i)
+            sum += i
+            sumHelper(i + 1)
+            sum -= i
+            cur.pop()
+        }
+    }
+    sumHelper(1)
+    return result
+};
+console.log(combinationSum3(3, 7));
+[[1, 2, 4]]
+```
+
+### 17. 电话号码的字母组合
+
+https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/
+
+```js
+var letterCombinations = function (digits) {
+    if (!digits) return []
+    const map = ["", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"]
+    const result = [], path = []
+    backTracking(0)
+    function backTracking(index) {
+        if (index === digits.length) {
+            result.push(path.join(''))
+            return
+        }
+        for (const chart of map[digits[index]]) {
+            path.push(chart)
+            backTracking(index + 1)
+            path.pop()
+        }
+    }
+    return result
+};
+console.log(letterCombinations('23'));
+[ 'ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf' ]
+```
+
+### 39. 组合总和
+
+假设这里求的是数量而不是打印遍历，则同 518. 零钱兑换 II，使用动态规划
+
+```js
+// 前面的选择影响后面的选择，无限次选取，完全背包问题
+var combinationSum = function (candidates, target) {
+    // dp[i] 代表能组成 i 的组合candidates全部组合数
+    const dp = new Array(target + 1).fill(0)
+    // 要组成总和0, 有1种方式
+    dp[0] = 1
+    // 针对每一个item遍历容量j
+    for (let i = 0; i < candidates.length; i++) {
+        // 可无限次选取i，完全背包问题，顺序遍历
+        for (let j = candidates[i]; j <= target; j++) {
+            // 如果 candidates[j] 放入后，剩余空间有可填充的dp，那就放入
+            dp[j] = dp[j] + dp[j - candidates[i]]
+        }
+    }
+    return dp[target]
+};
+
+console.log(combinationSum([2,3,6,7], 7))
+// 输出2,两种:[[2,2,3],[7]]
+2 [ 1, 0, 1, 0, 1, 0, 1, 0 ]
+3 [ 1, 0, 1, 1, 1, 1, 2, 1 ]
+6 [ 1, 0, 1, 1, 1, 1, 3, 1 ]
+7 [ 1, 0, 1, 1, 1, 1, 3, 2 ]
+```
+
+### 40. 组合总和 II
+
+https://leetcode.cn/problems/combination-sum-ii/description/
+
+```js
+var combinationSum = function (candidates, target) {
+    let result = [], path = []
+    // 需要排序，因为较小的数多次递归使用可代替大数
+    candidates.sort((a, b) => a - b)
+    function backTracking(index, sum) {
+        if (sum === target) {
+            result.push([...path])
+            return
+        }
+        for (let i = index; i < candidates.length && sum + candidates[i] <= target; i++) {
+            path.push(candidates[i])
+            // 注意这里是i,不是i+1,因为i可以多次使用,和前面的题目不同
+            backTracking(i, sum + candidates[i])
+            path.pop()
+        }
+    }
+    backTracking(0, 0)
+    return result
+};
+console.log(combinationSum([3, 12, 9, 11, 6, 7, 8, 5, 4], 11))
+```
+
+### 131. 分割回文串
+
+https://leetcode.cn/problems/palindrome-partitioning/description/
+
+```js
+var partition = function (s) {
+    const result = [], path = []
+
+    function backTracking(index) {
+        if (index === s.length) {
+            result.push(Array.from(path))
+            return
+        }
+        for (let i = index + 1; i <= s.length; i++) {
+            const cur = s.slice(index, i)
+            if (!isOK(cur)) continue;
+            path.push(cur)
+            backTracking(i)
+            path.pop()
+        }
+    }
+    function isOK(str) {
+        for (let i = 0, j = str.length - 1; i <= j; i++, j--) {
+            if (str[i] !== str[j]) return false
+        }
+        return true
+    }
+    backTracking(0)
+    return result
+};
+```
+
+### 93. 复原 IP 地址
+
+https://leetcode.cn/problems/restore-ip-addresses/description/
+
+```js
+var restoreIpAddresses = function (s) {
+    const result = [], path = []
+
+    function backTracking(index) {
+        // 必须是四位
+        if(path.length > 4) return;
+        if(path.length === 4 && index === s.length) {
+            result.push(path.join("."));
+            return;
+        }
+        for (let i = index + 1; i <= s.length; i++) {
+            const str = s.slice(index, i)
+            // 当前数不满足，再补数也不会满足
+            if (!isOK(str)) break
+            path.push(str)
+            backTracking(i)
+            path.pop()
+        }
+    }
+    function isOK(str) {
+        return str[0] !== '0' && str <= 255 || str === '0'
+    }
+    backTracking(0)
+    return result
+};
+console.log(restoreIpAddresses("101023"))
+['1.0.10.23', '1.0.102.3', '10.1.0.23', '10.10.2.3', '101.0.2.3']
+```
+
+### 78. 子集
+
+https://leetcode.cn/problems/subsets/description/
+
+```js
+var subsets = function (nums) {
+    const result = [], path = []
+    function backTracking(index) {
+        // 不需要终止条件 收集子集，要放在终止添加的上面，否则会漏掉自己
+        result.push(Array.from(path))
+        for (let i = index; i < nums.length; i++) {
+            path.push(nums[i])
+            backTracking(i + 1)
+            path.pop()
+        }
+    }
+    backTracking(0)
+    return result
+};
+console.log(subsets([1, 2, 3]));
+[[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]
+```
+
+### 90. 子集 II
+
+https://leetcode.cn/problems/subsets-ii/description/
+
+同样是存在重复元素，与前面的字符串不同，字符串存在顺序，子集不存在顺序，是纯组合
+
+```js
+var subsetsWithDup = function (nums) {
+    const result = [], path = []
+    // 1.有重复元素，当前层不能使用重复元素，且不同顺序也算重复子集，所以需要排序+同层去重
+    nums.sort((a, b) => a - b)
+    function backTracking(index) {
+        result.push(Array.from(path))
+        for (let i = index; i < nums.length; i++) {
+            if (i > index && nums[i] === nums[i - 1]) continue
+            path.push(nums[i])
+            backTracking(i + 1)
+            path.pop()
+        }
+    }
+    backTracking(0)
+    return result
+};
+console.log(subsetsWithDup([2, 1, 2]));
+[[], [1], [1, 2], [1, 2, 2], [2], [2, 2]]
+```
+
+假设此题要的是排列
+
+```js
+var subsetsWithDup = function (nums) {
+    const result = [], path = []
+    function backTracking(index) {
+        const map = {}
+        result.push(Array.from(path))
+        // 2. 如果 是排列，不同顺序 不算重复子集，那就只需要记录 usedMap，同层去重，而不排序
+        for (let i = index; i < nums.length; i++) {
+            if (map[nums[i]]) continue
+            map[nums[i]] = true
+            path.push(nums[i])
+            backTracking(i + 1)
+            path.pop()
+        }
+    }
+    backTracking(0)
+    return result
+};
+console.log(subsetsWithDup([2, 1, 2]));
+[[], [2], [2, 1], [2, 1, 2], [2, 2], [1], [1, 2]]
+```
+
+### 491.递增子序列
+
+https://leetcode.cn/problems/non-decreasing-subsequences/
+
+```js
+var findSubsequences = function (nums) {
+    const result = [], path = []
+
+    function backTracking(index) {
+        // 只要出现了递增就记录
+        if (path.length > 1) result.push(Array.from(path))
+
+        const map = {}
+        for (let i = index; i < nums.length; i++) {
+            // 同层重复项 或 当前项非递增 ，进行剪枝
+            if (map[nums[i]] || path.length > 0 && nums[i] < path[path.length - 1]) continue
+            map[nums[i]] = true
+
+            path.push(nums[i])
+            backTracking(i + 1)
+            path.pop()
+        }
+    }
+    backTracking(0)
+    return result
+};
+console.log(findSubsequences([4, 6, 7, 7]));
+[[4, 6], [4, 6, 7], [4, 6, 7, 7], [4, 7], [4, 7, 7], [6, 7], [6, 7, 7], [7, 7]]
+```
+
+### 46. 全排列
+
+https://leetcode.cn/problems/permutations/description/
+
+全排列是不同轮之间的剪枝，重复项是当前轮之间的剪枝
+
+```js
+var permute = function (nums) {
+    const result = [], path = [], l = nums.length
+    const used = new Array(l).fill(false)
+    function backTracking() {
+        if (path.length === l) {
+            result.push(path.slice())
+            return
+        }
+        for (let i = 0; i < l; i++) {
+            if (used[i]) continue
+            used[i] = true
+            path.push(nums[i])
+            backTracking()
+            path.pop()
+            used[i] = false
+        }
+    }
+    backTracking()
+    return result
+};
+console.log(permute([1, 2, 3]));
+[[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+```
+
+### 47. 全排列 II
+
+https://leetcode.cn/problems/permutations-ii/description/
+
+只要存在重复项，就是当前层剪枝
+全排列和前面的不同，全排列每轮都从0开始遍历，也就是说重复的 i，每层遍历都会被判定到，
+即使其实是下一层的 i，而不是当前层，所以要多加个条件判断当前层
+换句话说，在非同层的重复项判断中，已入栈的元素是需要跳过的。
+
+used[i - 1] 为true 代表上一个元素用过 目前非处于同层
+used[i - 1] 为false 代表上一个元素没用过 也代表 代表目前处于同层
+
+```js
+var permuteUnique = function (nums) {
+    const result = [], path = [], l = nums.length
+    const used = []
+    nums.sort((a, b) => a - b)
+    function backTracking() {
+        if (path.length === l) {
+            result.push(path.slice())
+            return
+        }
+        for (let i = 0; i < l; i++) {
+            // 在其他题目中此处为 i > index，但全排列是从0开始，所以得先判定层
+            // 在同一层遍历中 并且此项等于前一项，则跳过
+            if (!used[i - 1] && i > 0 && nums[i] === nums[i - 1]) continue
+            if (used[i]) continue
+            used[i] = true
+            path.push(nums[i])
+            backTracking()
+            path.pop()
+            used[i] = false
+        }
+    }
+    backTracking()
+    return result
+};
+console.log(permuteUnique([1, 1, 2]));
+[[1, 1, 2], [1, 2, 1], [2, 1, 1]]
+```
+
+### 332. 重新安排行程
+
+https://leetcode.cn/problems/reconstruct-itinerary/description/
+
+```js
+
+```
+
+### 51. N 皇后
+
+https://leetcode.cn/problems/n-queens/description/
+
+```js
+var solveNQueens = function (n) {
+    const result = [], path = []
+    backTracking(0)
+    return result
+
+    function backTracking(row) {
+        if (path.length === n) {
+            result.push(draw(path, n))
+            return
+        }
+        for (let col = 0; col < n; col++) {
+            if (!isOK(col)) continue
+            path.push(col)
+            backTracking(row + 1)
+            path.pop()
+        }
+    }
+    function isOK(col) {
+        // row = path.length - 1 代表上一行
+        for (let row = path.length - 1, leftUp = col - 1, rightUp = col + 1; row >= 0; row--, leftUp--, rightUp++) {
+            // 检测左上:如果leftUp(上一行的col)没超出棋盘，且存在重合，则不符合规则
+            if (leftUp >= 0 && path[row] === leftUp) return false
+            if (rightUp < n && path[row] === rightUp) return false
+            if (path[row] === col) return false
+        }
+        return true
+    }
+    function draw(chessboard, n) {
+        const emptyStr = '.'.repeat(n)
+        // 匹配了两个组，item个. 和 1个. , 没有被使用到的组 $2所匹配到的内容会被删除
+        return chessboard.map(item => emptyStr.replace(new RegExp(`(.{${item}})(.)`), `$1Q`))
+    }
+};
+console.log(solveNQueens(4));
+[
+    ['.Q..', '...Q', 'Q...', '..Q.'],
+    ['..Q.', 'Q...', '...Q', '.Q..']
+]
+```
+
+### 37. 解数独
+
+https://leetcode.cn/problems/sudoku-solver/description/
+
+```js
+
+```

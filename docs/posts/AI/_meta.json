@@ -1,5 +1,7 @@
 [
-    "prompt",
     "large-model",
-    "my-gpt-promt"
+    "my-gpt-promt",
+    "1-prompt-ngineering",
+    "2-promt-generate",
+    "3-prompt-trick"
 ]

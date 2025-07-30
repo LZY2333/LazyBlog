@@ -38,5 +38,10 @@
         "type": "dir",
         "name": "AI",
         "label": "AI"
+    },
+    {
+        "type": "dir",
+        "name": "leetcode",
+        "label": "Leetcode"
     }
 ]
