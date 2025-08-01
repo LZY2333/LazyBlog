@@ -36,7 +36,7 @@ tags:
 在层中进行剪枝，效率高于在枝中剪枝
 
 ```js
-void backTracking(参数) {
+function backTracking(参数) {
     if (终止条件) {
         存放结果;
         return;
@@ -54,47 +54,58 @@ void backTracking(参数) {
 
 1. 终止条件取决于算法，是否存放结果取决于题目是否有额外要求
 
-### 八皇后问题
+### N皇后问题
 
-92个解
+[leetcode](https://leetcode.cn/problems/n-queens/)
+
+最经典的八皇后问题 有92个解
 
 ```js
-const result = new Array(8).fill(-1) // key表示行，value表示列
-
-const cal8queens = (row) => {
-    if (row === 8) {
-        printQueens(result)
-        return
-    }
-    for (let column = 0; column < 8; column++) {
-        if (isOK(row, column)) {
-            result[row] = column
-            cal8queens(row + 1)
+var solveNQueens = function (n) {
+    const result = new Array(n).fill(-1); // key表示行，value表示列
+    const store = [];
+    const solveRow = (row) => {
+        if (row === n) {
+            printMap();
+            return;
         }
-    }
-    
-}
-const isOK = (row, column) => {
-    let leftUp = rightUp = column
-    for (let i = row - 1; i >= 0; i--) { // 逐行往上考察每一行
-        leftUp--
-        rightUp++
-        if (result[i] === column) return false // 竖行有重合
-        if (leftUp >= 0 && result[i] === leftUp) return false // 左上有重合
-        if (rightUp < 8 && result[i] === rightUp) return false // 右上有重合
-    }
-    return true
-}
-const printQueens = (result) => {
-    const a = new Array(8).fill(0).map(() => new Array(8).fill(0))
-    result.forEach((column, row) => {
-        a[row][column] = 1
-    });
-    console.log(result)
-    // console.log(a)
-}
 
-cal8queens(0)
+        for (let column = 0; column < n; column++) {
+            if (!check(row, column)) continue;
+            result[row] = column;
+            // 这里不能写++row, ++row就是实参+1了，而row + 1传给下一层，是形参+1
+            solveRow(row + 1);
+        }
+    };
+
+    const check = (row, column) => {
+        let left = (right = column);
+        for (let i = row - 1; i >= 0; i--) {
+            if (
+                result[i] === --left ||
+                result[i] === ++right ||
+                result[i] === column
+            )
+                return false;
+        }
+        return true;
+    };
+    // 打印成棋盘的格式
+    const printMap = () => {
+        const board = [];
+        for (let i = 0; i < n; i++) {
+            let row = new Array(n).fill('.');
+            row[result[i]] = 'Q';
+            board.push(row.join(''));
+        }
+        store.push(board)
+    };
+
+    solveRow(0);
+    return store;
+};
+
+console.log(solveNQueens(4));
 ```
 
 ### 77. 组合
