@@ -54,6 +54,8 @@ function backTracking(参数) {
 
 1. 终止条件取决于算法，是否存放结果取决于题目是否有额外要求
 
+2. 递归过程是树的纵向遍历，内部的for循环是树的横向遍历
+
 ### N皇后问题
 
 [leetcode](https://leetcode.cn/problems/n-queens/)
@@ -61,9 +63,10 @@ function backTracking(参数) {
 最经典的八皇后问题 有92个解
 
 ```js
+
 var solveNQueens = function (n) {
-    const result = new Array(n).fill(-1); // key表示行，value表示列
-    const store = [];
+    const map = new Array(n).fill(-1); // key表示row，value表示column
+    const result = [];
     const solveRow = (row) => {
         if (row === n) {
             printMap();
@@ -72,9 +75,10 @@ var solveNQueens = function (n) {
 
         for (let column = 0; column < n; column++) {
             if (!check(row, column)) continue;
-            result[row] = column;
-            // 这里不能写++row, ++row就是实参+1了，而row + 1传给下一层，是形参+1
+            map[row] = column;
+            // 这里不能写++row, ++row就是实参+1了，应该写row + 1传给下一层，形参+1
             solveRow(row + 1);
+            // 形参+1，不需要 回溯撤销 的过程，因为这种一维数组的map模式会自动覆盖
         }
     };
 
@@ -82,9 +86,9 @@ var solveNQueens = function (n) {
         let left = (right = column);
         for (let i = row - 1; i >= 0; i--) {
             if (
-                result[i] === --left ||
-                result[i] === ++right ||
-                result[i] === column
+                map[i] === --left ||
+                map[i] === ++right ||
+                map[i] === column
             )
                 return false;
         }
@@ -93,16 +97,17 @@ var solveNQueens = function (n) {
     // 打印成棋盘的格式
     const printMap = () => {
         const board = [];
-        for (let i = 0; i < n; i++) {
+        map.forEach(item => {
             let row = new Array(n).fill('.');
-            row[result[i]] = 'Q';
+            row[item] = 'Q';
             board.push(row.join(''));
-        }
-        store.push(board)
+        })
+        result.push(board);
     };
 
+    // 别忘了调用，且要从0开始，不是n
     solveRow(0);
-    return store;
+    return result;
 };
 
 console.log(solveNQueens(4));
@@ -119,8 +124,8 @@ https://leetcode.cn/problems/combinations/description/
 // 2. 每一轮从哪开始(参数)，新增参数为当前的进度，在哪结束(结束条件)
 // 3. 每一轮如何遍历
 var combine = function (n, k) {
-    const result = []
     const cur = []
+    const result = []
     const backTracking = (start) => {
         if (cur.length === k) {
             result.push([...cur])
@@ -133,10 +138,13 @@ var combine = function (n, k) {
             cur.pop()
         }
     }
+
+    // 别忘了调用
     backTracking(1)
     return result
 };
-[[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+// [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+console.log(combine(4,2));
 ```
 
 剪枝优化
