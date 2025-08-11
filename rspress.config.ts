@@ -28,7 +28,7 @@ export default defineConfig({
             title: '紫宇的博客',
             type: 'website',
             url: 'https://www.luoziyu.com/',
-            image: 'https://www.luoziyu.com/rspress-icon.png',
+            image: 'https://www.luoziyu.com/rspress-icon.svg',
             description: '转生成为.tsx文件创建工程师',
         }),
     ],

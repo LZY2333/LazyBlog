@@ -56,6 +56,8 @@ function backTracking(参数) {
 
 2. 递归过程是树的纵向遍历，内部的for循环是树的横向遍历
 
+> sort((a, b) => a - b) 才是从小到大排序，不然超过一位的数会出错
+
 ### N皇后问题
 
 [leetcode](https://leetcode.cn/problems/n-queens/)
@@ -63,7 +65,6 @@ function backTracking(参数) {
 最经典的八皇后问题 有92个解
 
 ```js
-
 var solveNQueens = function (n) {
     const map = new Array(n).fill(-1); // key表示row，value表示column
     const result = [];
@@ -124,24 +125,28 @@ https://leetcode.cn/problems/combinations/description/
 // 2. 每一轮从哪开始(参数)，新增参数为当前的进度，在哪结束(结束条件)
 // 3. 每一轮如何遍历
 var combine = function (n, k) {
-    const cur = []
-    const result = []
+    const path = [];
+    const result = [];
     const backTracking = (start) => {
-        if (cur.length === k) {
-            result.push([...cur])
-            return
+        if (path.length === k) {
+            result.push([...path]);
+            return;
         }
         // 剪枝,后续数量不够K的没必要遍历
-        for (let i = start; i <= n - (k - cur.length) + 1; i++) {
-            cur.push(i)
-            backTracking(i + 1)
-            cur.pop()
+        for (
+            let i = start;
+            i <= n - (k - path.length) + 1;
+            i++
+        ) {
+            path.push(i);
+            backTracking(i + 1);
+            path.pop();
         }
-    }
+    };
 
     // 别忘了调用
-    backTracking(1)
-    return result
+    backTracking(1);
+    return result;
 };
 // [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
 console.log(combine(4,2));
@@ -152,10 +157,9 @@ console.log(combine(4,2));
 ```js
 // 遍历对象为 [1,2,3,4]， k 为 2
 // 1. "i <= n"    : 需要 =号, 因为是从1到4, n为4
-// 2. "(k - path.length - 1)" : 目的是填满k，末端的"枝" 和 "叶" 才解锁 k到n的项
-// 3. "k-1": 前端的"枝",比如path还为空时，需要遍历到3，想遍历到3 k就得-1
-// 3. 因为path想拿到k个数，起始的"枝"必须遍历到后k个数的第一个数，所以k得-1
-for (let i = startIndex; i <= n - (k - path.length - 1); ++i) {
+// 2. "(k - path.length)": 代表还需要这么多个元素
+// 3. "n - (k - path.length) + 1": 最多能从这个下标开始拿
+for (let i = startIndex; i <= n - (k - path.length) + 1; ++i) {
     ...
 }
 ```
@@ -171,8 +175,10 @@ for (let i = 1; i <= n; i++) {
     path = [].push(i)
     for (let j = i + 1; j <= n; j++) {
         path.push(j)
+        result.push(path)
+        path.pop()
     }
-    result.push(path)
+    path.pop()
 }
 ```
 
@@ -186,29 +192,34 @@ https://leetcode.cn/problems/combination-sum-iii/description/
 
 ```js
 var combinationSum3 = function (k, n) {
-    const result = []
-    const cur = []
-    let sum = 0
-    const sumHelper = (start) => {
-        if (cur.length === k) {
-            if (sum !== n) return
-            result.push([...cur])
-            return
+    const path = [];
+    let sum = 0;
+    const result = [];
+
+    const backtracking = (start) => {
+        if (path.length === k) {
+            if (sum === n) result.push(path.slice());
+            return;
         }
-        // 剪枝：i开始的数要能凑够k，当前i的总和要小于n
-        for (let i = start; i <= 9 - (k - cur.length - 1) && i + sum < n; i++) {
-            cur.push(i)
-            sum += i
-            sumHelper(i + 1)
-            sum -= i
-            cur.pop()
+
+        for (
+            let i = start;
+            i <= 9 - (k - path.length) + 1 && sum + i <= n;
+            i++
+        ) {
+            path.push(i);
+            sum += i;
+            backtracking(i + 1);
+            sum -= i;
+            path.pop();
         }
-    }
-    sumHelper(1)
-    return result
+    };
+
+    backtracking(1);
+    return result;
 };
-console.log(combinationSum3(3, 7));
-[[1, 2, 4]]
+
+console.log(combinationSum3(3, 9));
 ```
 
 ### 17. 电话号码的字母组合
@@ -239,6 +250,43 @@ console.log(letterCombinations('23'));
 ```
 
 ### 39. 组合总和
+
+https://leetcode.cn/problems/combination-sum/description/
+
+```js
+var combinationSum = function (candidates, target) {
+    const path = [];
+    let sum = 0;
+    const result = [];
+
+    const backtracking = (start) => {
+        if (sum === target) {
+            result.push(path.slice());
+            return;
+        }
+
+        for (
+            let i = start;
+            sum + candidates[i] <= target;
+            i++
+        ) {
+            path.push(candidates[i]);
+            sum += candidates[i];
+            backtracking(i);
+            sum -= candidates[i];
+            path.pop();
+        }
+    };
+
+    // sort((a, b) => a - b) 才是从小到大排序，不然超过一位的数会出错
+    // 这里排序进行剪枝
+    candidates.sort().sort((a, b) => a - b);
+    backtracking(0);
+    return result;
+};
+console.log(combinationSum([2, 3, 5], 8));
+// [ [ 2, 2, 2, 2 ], [ 2, 3, 3 ], [ 3, 5 ] ]
+```
 
 假设这里求的是数量而不是打印遍历，则同 518. 零钱兑换 II，使用动态规划
 

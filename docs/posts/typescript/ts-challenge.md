@@ -8,7 +8,6 @@ tags:
 
 
 ## 0. 内置工具类速查
-
 ### Extract 联合类型保留指定部分
 `type Extract<T, U> = T extends U ? T : never;`
 
