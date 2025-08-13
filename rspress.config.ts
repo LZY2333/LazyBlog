@@ -8,7 +8,7 @@ const docsPath = path.join(__dirname, 'docs')
 export default defineConfig({
     root: docsPath,
     title: '懒前端',
-    icon: '/rspress-icon.png',
+    icon: '/rspress-icon.svg',
     outDir: 'LazyBlog',
     search: {
         codeBlocks: true,
@@ -52,8 +52,8 @@ export default defineConfig({
         },
     },
     logo: {
-        light: '/rspress-icon.png',
-        dark: '/rspress-icon.png',
+        light: '/rspress-icon.svg',
+        dark: '/rspress-icon.svg',
     },
     
 })
