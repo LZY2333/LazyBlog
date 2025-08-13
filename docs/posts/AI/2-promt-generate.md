@@ -9,7 +9,7 @@ tags:
 
 ## 步骤---------------------
 
-1. 确定 特定场景下的 最佳实践
+1. 人工规划 该业务的 最佳实践(如:将需求分解，指定步骤，指定技术栈等)
 
 2. 使用提示词生成工具：
     - [月之暗面 Kimi × LangGPT 提示词专家](https://kimi.moonshot.cn/kimiplus/conpg00t7lagbbsfqkq0)

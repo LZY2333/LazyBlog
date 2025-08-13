@@ -82,7 +82,7 @@ OpenAI 聊天补全 为例
 
 以下参数可调整 大模型对 Token 补全的概率分布
 
-role
+### role 系统角色
 
 ### temperature 温度
 

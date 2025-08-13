@@ -31,7 +31,7 @@ Front Matter 是一种用于在 Markdown 文件开头添加**元数据（metadat
 title: 我的文章标题
 date: 2025-04-16
 tags: [前端, markdown, 笔记]
-draft: false
+hide: true
 ---
 
 ## h2标题测试
@@ -135,7 +135,7 @@ head:
 title: 我的文章标题
 date: 2025-04-16
 tags: [前端, markdown, 笔记]
-draft: false
+hide: true
 ---
 
 ## h2标题测试
