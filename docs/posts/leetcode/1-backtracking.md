@@ -231,7 +231,6 @@ var letterCombinations = function (digits) {
     if (!digits) return []
     const map = ["", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"]
     const result = [], path = []
-    backTracking(0)
     function backTracking(index) {
         if (index === digits.length) {
             result.push(path.join(''))
@@ -243,6 +242,7 @@ var letterCombinations = function (digits) {
             path.pop()
         }
     }
+    backTracking(0)
     return result
 };
 console.log(letterCombinations('23'));
@@ -255,11 +255,12 @@ https://leetcode.cn/problems/combination-sum/description/
 
 ```js
 var combinationSum = function (candidates, target) {
+    const result = [];
     const path = [];
     let sum = 0;
-    const result = [];
 
     const backtracking = (start) => {
+        // 不限制数量，到达目标结束，或者循环完了也会结束
         if (sum === target) {
             result.push(path.slice());
             return;
@@ -320,27 +321,44 @@ console.log(combinationSum([2,3,6,7], 7))
 
 https://leetcode.cn/problems/combination-sum-ii/description/
 
+每个只能使用一次 candidates会出现重复
 ```js
-var combinationSum = function (candidates, target) {
-    let result = [], path = []
-    // 需要排序，因为较小的数多次递归使用可代替大数
-    candidates.sort((a, b) => a - b)
-    function backTracking(index, sum) {
+var combinationSum2 = function (candidates, target) {
+    const result = [];
+    const path = [];
+    let sum = 0;
+    const backtracking = (start) => {
         if (sum === target) {
-            result.push([...path])
-            return
+            result.push([...path]);
+            return;
         }
-        for (let i = index; i < candidates.length && sum + candidates[i] <= target; i++) {
-            path.push(candidates[i])
-            // 注意这里是i,不是i+1,因为i可以多次使用,和前面的题目不同
-            backTracking(i, sum + candidates[i])
-            path.pop()
+
+        // 外面已经排过序了，所以 >target 可以直接去掉
+        for (
+            let i = start;
+            i < candidates.length &&
+            candidates[i] + sum <= target;
+            i++
+        ) {
+            // 同一层的数据要去重
+            if (
+                i > start &&
+                candidates[i] === candidates[i - 1]
+            )
+                continue;
+            path.push(candidates[i]);
+            sum += candidates[i];
+            backtracking(i + 1);
+            sum -= candidates[i];
+            path.pop();
         }
-    }
-    backTracking(0, 0)
-    return result
+    };
+
+    // 不能有重复的，但数字会重复，所以必须排序
+    candidates.sort((a, b) => a - b);
+    backtracking(0);
+    return result;
 };
-console.log(combinationSum([3, 12, 9, 11, 6, 7, 8, 5, 4], 11))
 ```
 
 ### 131. 分割回文串

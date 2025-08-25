@@ -6,6 +6,16 @@
     },
     {
         "type": "dir",
+        "name": "life",
+        "label": "Life"
+    },
+    {
+        "type": "dir",
+        "name": "chrome",
+        "label": "Chrome"
+    },
+    {
+        "type": "dir",
         "name": "typescript",
         "label": "Typescript"
     },
@@ -23,11 +33,6 @@
         "type": "dir",
         "name": "javascript",
         "label": "Javascript"
-    },
-    {
-        "type": "dir",
-        "name": "life",
-        "label": "Life"
     },
     {
         "type": "dir",
