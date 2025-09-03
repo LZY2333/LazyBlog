@@ -1,1 +1,7 @@
-[]
+[
+    "0-chrome",
+    "1-URL-to-render",
+    "2-render-process",
+    "3-cache-control",
+    "4-event-loop"
+]
