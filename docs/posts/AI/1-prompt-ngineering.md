@@ -5,6 +5,10 @@ tags:
     - AI
 ---
 
+https://doc.iamkasong.com
+https://kyscj.xetlk.com/s/3pm8Df
+https://kyscj.xetslk.com/s/OFLZ0
+
 ## 1.明确需求
 
 明确表达需求，给 AI 生成提示词，将提示词给大模型生成应用
@@ -23,7 +27,7 @@ tags:
 
 AI 生成提示词，将提示词给大模型，大模型生成应用
 
-## 2.选择合适的模型
+## 2.选择合适的模型  
 
 **合规隐私要求：筛选符合条件的模型**
 

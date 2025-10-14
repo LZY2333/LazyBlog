@@ -31,10 +31,6 @@ tags:
 每层都是从0开始搜索而不是startIndex
 需要used数组记录path里都放了哪些元素，针对树枝去重发
 
-新增参数为一般为当前的进度
-剪枝可以放在循环内，也可以放在结束条件内
-在层中进行剪枝，效率高于在枝中剪枝
-
 ```js
 function backTracking(参数) {
     if (终止条件) {
@@ -50,15 +46,21 @@ function backTracking(参数) {
 }
 ```
 
-### 一些总结
+## 一些总结
 
-1. 终止条件取决于算法，是否存放结果取决于题目是否有额外要求
+1. 终止条件取决于算法，是否存放结果取决于 题目要求
 
-2. 递归过程是树的纵向遍历，内部的for循环是树的横向遍历
+2. 打印遍历是回溯，只求总数是动态规划
+
+3. 可以抽象为树形结构理解，就可以用回溯
+
+4. 递归过程是树的纵向遍历，内部的for循环是树的横向遍历
+
+5. 时间复杂度: O(n * 2^n), 即每层进行一次 2^n级别的遍历
 
 > sort((a, b) => a - b) 才是从小到大排序，不然超过一位的数会出错
 
-### N皇后问题
+## N皇后问题
 
 [leetcode](https://leetcode.cn/problems/n-queens/)
 
@@ -114,9 +116,9 @@ var solveNQueens = function (n) {
 console.log(solveNQueens(4));
 ```
 
-### 77. 组合
+## 77. 组合
 
-https://leetcode.cn/problems/combinations/description/
+<https://leetcode.cn/problems/combinations/description/>
 
 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
 
@@ -182,9 +184,9 @@ for (let i = 1; i <= n; i++) {
 }
 ```
 
-### 216. 组合总和 III
+## 216. 组合总和 III
 
-https://leetcode.cn/problems/combination-sum-iii/description/
+<https://leetcode.cn/problems/combination-sum-iii/description/>
 
 找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
 只使用数字1到9
@@ -222,9 +224,9 @@ var combinationSum3 = function (k, n) {
 console.log(combinationSum3(3, 9));
 ```
 
-### 17. 电话号码的字母组合
+## 17. 电话号码的字母组合
 
-https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/
+<https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/>
 
 ```js
 var letterCombinations = function (digits) {
@@ -249,9 +251,9 @@ console.log(letterCombinations('23'));
 [ 'ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf' ]
 ```
 
-### 39. 组合总和
+## 39. 组合总和
 
-https://leetcode.cn/problems/combination-sum/description/
+<https://leetcode.cn/problems/combination-sum/description/>
 
 ```js
 var combinationSum = function (candidates, target) {
@@ -268,6 +270,7 @@ var combinationSum = function (candidates, target) {
 
         for (
             let i = start;
+            i < candidates.length &&
             sum + candidates[i] <= target;
             i++
         ) {
@@ -281,7 +284,7 @@ var combinationSum = function (candidates, target) {
 
     // sort((a, b) => a - b) 才是从小到大排序，不然超过一位的数会出错
     // 这里排序进行剪枝
-    candidates.sort().sort((a, b) => a - b);
+    candidates.sort((a, b) => a - b);
     backtracking(0);
     return result;
 };
@@ -289,7 +292,11 @@ console.log(combinationSum([2, 3, 5], 8));
 // [ [ 2, 2, 2, 2 ], [ 2, 3, 3 ], [ 3, 5 ] ]
 ```
 
-假设这里求的是数量而不是打印遍历，则同 518. 零钱兑换 II，使用动态规划
+`backtracking(i);` i不+1，代表当前值可重复使用，且不使用用过的值
+
+如果写成了每一层都从0开始遍历(可使用用过的值)，会导致重复(或者说解成了排列题)。
+
+另外，假设这里求的是数量而不是打印遍历，则同 518. 零钱兑换 II，使用动态规划
 
 ```js
 // 前面的选择影响后面的选择，无限次选取，完全背包问题
@@ -317,11 +324,12 @@ console.log(combinationSum([2,3,6,7], 7))
 7 [ 1, 0, 1, 1, 1, 1, 3, 2 ]
 ```
 
-### 40. 组合总和 II
+## 40. 组合总和 II
 
-https://leetcode.cn/problems/combination-sum-ii/description/
+<https://leetcode.cn/problems/combination-sum-ii/description/>
 
 每个只能使用一次 candidates会出现重复
+
 ```js
 var combinationSum2 = function (candidates, target) {
     const result = [];
@@ -361,123 +369,137 @@ var combinationSum2 = function (candidates, target) {
 };
 ```
 
-### 131. 分割回文串
+## 131. 分割回文串
 
-https://leetcode.cn/problems/palindrome-partitioning/description/
+<https://leetcode.cn/problems/palindrome-partitioning/description/>
 
 ```js
 var partition = function (s) {
-    const result = [], path = []
+    const path = [], result = [];
 
-    function backTracking(index) {
-        if (index === s.length) {
-            result.push(Array.from(path))
-            return
+    const backTracking = (start) => {
+        if (start === s.length) {
+            result.push([...path]);
+            return;
         }
-        for (let i = index + 1; i <= s.length; i++) {
-            const cur = s.slice(index, i)
-            if (!isOK(cur)) continue;
-            path.push(cur)
-            backTracking(i)
-            path.pop()
+        for (let i = start; i < s.length; i++) {
+            if (!isOK(start, i)) continue;
+            path.push(s.slice(start, i + 1));
+            backTracking(i + 1);
+            path.pop();
         }
-    }
-    function isOK(str) {
-        for (let i = 0, j = str.length - 1; i <= j; i++, j--) {
-            if (str[i] !== str[j]) return false
-        }
-        return true
-    }
-    backTracking(0)
-    return result
+    };
+
+    const isOK = (start, end) => {
+        for (let i = start, j = end; i < j; i++, j--)
+            if (s[i] !== s[j]) return false;
+        return true;
+    };
+
+    backTracking(0);
+    return result;
 };
+// [ [ 'a', 'a', 'b' ], [ 'aa', 'b' ] ]
+console.log(partition("aab"))
 ```
 
-### 93. 复原 IP 地址
+递归用来找下一个回文切割位，
 
-https://leetcode.cn/problems/restore-ip-addresses/description/
+模拟切割线，其实就是index是上一层已经确定了的分割线，i是这一层试图寻找的新分割线
+
+## 93. 复原 IP 地址
+
+<https://leetcode.cn/problems/restore-ip-addresses/description/>
 
 ```js
 var restoreIpAddresses = function (s) {
-    const result = [], path = []
-
-    function backTracking(index) {
-        // 必须是四位
-        if(path.length > 4) return;
-        if(path.length === 4 && index === s.length) {
-            result.push(path.join("."));
+    const result = [], path = [];
+    const backTracking = (start) => {
+        // 长度为4就结束
+        if (path.length === 4) {
+            // 长度为4且字符串全部切割完成，就记录答案
+            if (start === s.length)
+                result.push(path.join('.'));
             return;
         }
-        for (let i = index + 1; i <= s.length; i++) {
-            const str = s.slice(index, i)
-            // 当前数不满足，再补数也不会满足
-            if (!isOK(str)) break
-            path.push(str)
-            backTracking(i)
-            path.pop()
+
+        for (let i = start; i < s.length; i++) {
+            const str = s.slice(start, i + 1);
+            if (!isOK(str)) break;
+            path.push(str);
+            backTracking(i + 1);
+            path.pop();
         }
-    }
-    function isOK(str) {
-        return str[0] !== '0' && str <= 255 || str === '0'
-    }
-    backTracking(0)
-    return result
+    };
+    const isOK = (str) => (str[0] !== '0' && str <= 255) || str === '0';
+    backTracking(0);
+    return result;
 };
+// ['1.0.10.23', '1.0.102.3', '10.1.0.23', '10.10.2.3', '101.0.2.3']
 console.log(restoreIpAddresses("101023"))
-['1.0.10.23', '1.0.102.3', '10.1.0.23', '10.10.2.3', '101.0.2.3']
 ```
 
-### 78. 子集
+## 78. 子集
 
-https://leetcode.cn/problems/subsets/description/
+<https://leetcode.cn/problems/subsets/description/>
 
 ```js
-var subsets = function (nums) {
-    const result = [], path = []
-    function backTracking(index) {
-        // 不需要终止条件 收集子集，要放在终止添加的上面，否则会漏掉自己
-        result.push(Array.from(path))
-        for (let i = index; i < nums.length; i++) {
+var subsets = function(nums) {
+    const path = [], result = [];
+    const backTracking = (start) => {
+        result.push([...path])
+        for(let i = start; i < nums.length; i++ ) {
             path.push(nums[i])
-            backTracking(i + 1)
+            backTracking(i+1)
             path.pop()
         }
     }
     backTracking(0)
     return result
 };
-console.log(subsets([1, 2, 3]));
-[[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]
+// [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]
+console.log(subsets([1,2,3]));
 ```
 
-### 90. 子集 II
+组合问题、子集问题、分割问题都抽象为一棵树的话，
 
-https://leetcode.cn/problems/subsets-ii/description/
+那么组合问题和分割问题都是收集树的叶子节点，而子集问题是找树的所有节点！
+
+要求不重复，则每次要从 start 开始，不能从 0 开始
+
+## 90. 子集 II
+
+<https://leetcode.cn/problems/subsets-ii/description/>
 
 同样是存在重复元素，与前面的字符串不同，字符串存在顺序，子集不存在顺序，是纯组合
 
+__nums中含重复项__ 要做同层的剪枝
+
+__子集而非子序列__ 可以通过sort简化同层的剪枝
+
 ```js
 var subsetsWithDup = function (nums) {
-    const result = [], path = []
-    // 1.有重复元素，当前层不能使用重复元素，且不同顺序也算重复子集，所以需要排序+同层去重
-    nums.sort((a, b) => a - b)
-    function backTracking(index) {
-        result.push(Array.from(path))
-        for (let i = index; i < nums.length; i++) {
-            if (i > index && nums[i] === nums[i - 1]) continue
-            path.push(nums[i])
-            backTracking(i + 1)
-            path.pop()
+    const path = [], result = [];
+    nums.sort((a, b) => a - b);
+
+    const backTracking = (start) => {
+        result.push([...path]);
+        for (let i = start; i < nums.length; i++) {
+            if (i !== start && nums[i - 1] === nums[i]) continue;
+            path.push(nums[i]);
+            backTracking(i + 1);
+            path.pop();
         }
-    }
-    backTracking(0)
-    return result
+    };
+    
+    backTracking(0);
+    return result;
 };
-console.log(subsetsWithDup([2, 1, 2]));
-[[], [1], [1, 2], [1, 2, 2], [2], [2, 2]]
+// [ [], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 2 ], [ 2, 2 ] ]
+console.log(subsetsWithDup([1, 2, 2]));
 ```
 
-假设此题要的是排列
+这题关键是如何 同层去重，假设此题要的是序列，要保持原顺序，不能sort
 
 ```js
 var subsetsWithDup = function (nums) {
@@ -485,7 +507,7 @@ var subsetsWithDup = function (nums) {
     function backTracking(index) {
         const map = {}
         result.push(Array.from(path))
-        // 2. 如果 是排列，不同顺序 不算重复子集，那就只需要记录 usedMap，同层去重，而不排序
+        // 那就需要通过记录 usedMap，进行同层去重，而不sort，sort会导致乱序
         for (let i = index; i < nums.length; i++) {
             if (map[nums[i]]) continue
             map[nums[i]] = true
@@ -501,9 +523,13 @@ console.log(subsetsWithDup([2, 1, 2]));
 [[], [2], [2, 1], [2, 1, 2], [2, 2], [1], [1, 2]]
 ```
 
-### 491.递增子序列
+## 491.递增子序列
 
-https://leetcode.cn/problems/non-decreasing-subsequences/
+<https://leetcode.cn/problems/non-decreasing-subsequences/>
+
+__nums中含重复项__ 要做同层的剪枝
+
+__子序列__ 不可以通过sort简化同层的剪枝
 
 ```js
 var findSubsequences = function (nums) {
@@ -513,11 +539,11 @@ var findSubsequences = function (nums) {
         // 只要出现了递增就记录
         if (path.length > 1) result.push(Array.from(path))
 
-        const map = {}
+        const used = {}
         for (let i = index; i < nums.length; i++) {
             // 同层重复项 或 当前项非递增 ，进行剪枝
-            if (map[nums[i]] || path.length > 0 && nums[i] < path[path.length - 1]) continue
-            map[nums[i]] = true
+            if (used[nums[i]] || path.length > 0 && nums[i] < path[path.length - 1]) continue;
+            used[nums[i]] = true
 
             path.push(nums[i])
             backTracking(i + 1)
@@ -527,93 +553,94 @@ var findSubsequences = function (nums) {
     backTracking(0)
     return result
 };
+// [[4, 6], [4, 6, 7], [4, 6, 7, 7], [4, 7], [4, 7, 7], [6, 7], [6, 7, 7], [7, 7]]
 console.log(findSubsequences([4, 6, 7, 7]));
-[[4, 6], [4, 6, 7], [4, 6, 7, 7], [4, 7], [4, 7, 7], [6, 7], [6, 7, 7], [7, 7]]
 ```
 
-### 46. 全排列
+## 46. 全排列
 
-https://leetcode.cn/problems/permutations/description/
+<https://leetcode.cn/problems/permutations/description/>
 
-全排列是不同轮之间的剪枝，重复项是当前轮之间的剪枝
+__全排列__ 每层循环从0开始，也因此要做同枝的剪枝，同枝递归结束时要及时撤回状态
 
 ```js
-var permute = function (nums) {
-    const result = [], path = [], l = nums.length
-    const used = new Array(l).fill(false)
-    function backTracking() {
-        if (path.length === l) {
-            result.push(path.slice())
-            return
+var permute = function(nums) {
+    const path = [], result = [], used = {};
+    const backTracking = () => {
+        if(path.length === nums.length) {
+            result.push([...path])
         }
-        for (let i = 0; i < l; i++) {
-            if (used[i]) continue
-            used[i] = true
-            path.push(nums[i])
+        for (const cur of nums) {
+            if(used[cur]) continue;
+            path.push(cur)
+            used[cur] = true
             backTracking()
+            used[cur] = false
             path.pop()
-            used[i] = false
         }
     }
     backTracking()
     return result
 };
+// [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
 console.log(permute([1, 2, 3]));
-[[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
 ```
 
-### 47. 全排列 II
+## 47. 全排列 II
 
-https://leetcode.cn/problems/permutations-ii/description/
+<https://leetcode.cn/problems/permutations-ii/description/>
 
-只要存在重复项，就是当前层剪枝
-全排列和前面的不同，全排列每轮都从0开始遍历，也就是说重复的 i，每层遍历都会被判定到，
-即使其实是下一层的 i，而不是当前层，所以要多加个条件判断当前层
-换句话说，在非同层的重复项判断中，已入栈的元素是需要跳过的。
+__全排列__ 每层循环从0开始，也因此要做同枝的剪枝，同枝递归结束时要及时撤回状态
 
-used[i - 1] 为true 代表上一个元素用过 目前非处于同层
-used[i - 1] 为false 代表上一个元素没用过 也代表 代表目前处于同层
+__nums中含重复项__ 要做同层的剪枝
 
 ```js
-var permuteUnique = function (nums) {
-    const result = [], path = [], l = nums.length
-    const used = []
-    nums.sort((a, b) => a - b)
-    function backTracking() {
-        if (path.length === l) {
-            result.push(path.slice())
-            return
+var permuteUnique = function(nums) {
+    const path = [], result = [], used = {};
+    nums.sort((a, b) => a - b);
+
+    const backTracking = () => {
+        if(path.length === nums.length) {
+            result.push([...path])
         }
-        for (let i = 0; i < l; i++) {
-            // 在其他题目中此处为 i > index，但全排列是从0开始，所以得先判定层
-            // 在同一层遍历中 并且此项等于前一项，则跳过
-            if (!used[i - 1] && i > 0 && nums[i] === nums[i - 1]) continue
-            if (used[i]) continue
+        for (let i = 0;i < nums.length;i++) {
+            // 深度优先遍历，
+            // 遍历到 当前数 时，同层前一个数的递归一定是结束了，此时它的标记一定是false
+            // 所以借 used[i - 1] === false 判断 上一个数同层
+            // 同层 且 当前数 与 上一个数 相等(同层重复)，则跳过
+            if (i > 0 && nums[i] === nums[i - 1] && used[i - 1] === false) continue
+            // 如果当前数 用过(同枝重复)，或称 正在当前递归(path)中，跳过
+            if(used[i]) continue;
             used[i] = true
             path.push(nums[i])
             backTracking()
-            path.pop()
             used[i] = false
+            path.pop()
         }
     }
+    
     backTracking()
     return result
 };
-console.log(permuteUnique([1, 1, 2]));
-[[1, 1, 2], [1, 2, 1], [2, 1, 1]]
+// [ [ 1, 1, 3 ], [ 1, 3, 1 ], [ 3, 1, 1 ] ]
+console.log(permuteUnique([1,1,3]))
 ```
 
-### 332. 重新安排行程
+另外提一句，used[i - 1] === true 代表 上一个数同枝
 
-https://leetcode.cn/problems/reconstruct-itinerary/description/
+如果判断改为 `used[i - 1] === true`，则整个`if`代表，当前子枝与前一位
+
+## 332. 重新安排行程
+
+<https://leetcode.cn/problems/reconstruct-itinerary/description/>
 
 ```js
 
 ```
 
-### 51. N 皇后
+## 51. N 皇后
 
-https://leetcode.cn/problems/n-queens/description/
+<https://leetcode.cn/problems/n-queens/description/>
 
 ```js
 var solveNQueens = function (n) {
@@ -656,9 +683,9 @@ console.log(solveNQueens(4));
 ]
 ```
 
-### 37. 解数独
+## 37. 解数独
 
-https://leetcode.cn/problems/sudoku-solver/description/
+<https://leetcode.cn/problems/sudoku-solver/description/>
 
 ```js
 

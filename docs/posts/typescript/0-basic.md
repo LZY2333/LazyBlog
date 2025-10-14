@@ -9,12 +9,14 @@ tags:
 __针对入参 动态生成 更精准的类型提示和检查__
 
 ## 1. 环境准备
+
 `npm i typescript -g` 全局安装TS编译器
 `npm i ts-node -g` 安装好后可在vscode右键run直接运行ts
 `tsc hello.ts`可运行编译文件
 `tsc --init`生成TS配置文件
 
 配置tsconfig.json
+
 ```js
 {
   "compilerOptions": {
@@ -33,7 +35,8 @@ vscode -> 终端 -> 运行生成任务 -> tsc:监视
 
 ## 2. 基本数据类型
 
-### __布尔__ __数字__ __字符串__ 
+### __布尔__ __数字__ __字符串__
+
 ```ts
 let married: boolean = false;   // boolean
 let age: number = 25;           // number
@@ -48,7 +51,8 @@ let arr4: (string | number)[]=[7,8,9,'a'];// array
 
 __元组__: 表示 类型 和 数量 固定的 数组
 
-与 __数组__ 的区别: 每一项可以是不同类型, 有预定义的长度, 
+与 __数组__ 的区别: 每一项可以是不同类型, 有预定义的长度,
+
 ```ts
 const animal:[string,number,boolean] = ['lzy',25,true];  // tuple
 // 此处如果没定义元组类型，则后两行会报错
@@ -60,6 +64,7 @@ lzy[1].toFixed(2); // OK
 ### __枚举__
 
 __枚举__: 该数据类型的变量 只能为事先写好的几个类型
+
 ```ts
 // 普通枚举
 enum Color {
@@ -82,17 +87,20 @@ let myColors = [Colors.Red, Colors.Yellow, Colors.Blue];
 ### __symbol__
 
 __symbol__: 表示唯一不变的类型
+
 ```ts
 const sym1 = Symbol('key');
 const sym2 = Symbol('key');
 // 报错:此条件将始终返回false
 console.log(sym1 === sym2)
 ```
+
 使用Symbol 需要 ES6 编译辅助库
 
 ### __bigint__
 
 __bigint__: 可以安全的 储存 和 操作 大整数
+
 ```ts
 const max = Number.MAX_SAFE_INTEGER;// 2**53-1
 console.log(max + 1 === max + 2); // true,因为溢出了
@@ -101,6 +109,7 @@ const max:bigint = BigInt(Number.MAX_SAFE_INTEGER);
 console.log(max + 1 === max + 2); // 报错,BigInt 不能直接 + number类型
 console.log(max + 1n === max + 2n); // 代表BigInt(1)
 ```
+
 使用 BigInt 需要 ESNext 的编译辅助库
 
 JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
@@ -116,7 +125,7 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 `void` > `undefined` > `null` > `never`
 
 > 是所有类型父类型意味着,不可赋值给任何类型(协变)
-> 
+>
 > 是所有类型子类型意味着,可赋值给任何类型(协变)
 
 ### undefined null void never 最小的类型
@@ -130,6 +139,7 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 `never`: 表示永远不会被执行到的类型，是所有类型子类型
 
 __可赋值关系表__
+
 | From \ To   | `void` | `undefined` | `null` | `never` |
 | ----------- | ------ | ----------- | ------ | ------- |
 | `void`      | ✅      | ❌           | ❌      | ❌       |
@@ -138,15 +148,15 @@ __可赋值关系表__
 | `never`     | ✅      | ✅           | ✅      | ✅       |
 
 > *表示在 strictNullChecks: false 或 strict: false 下成立,
-> 
+>
 > strictNullChecks:true时, 任意类型被赋值为null undefined会报错
-> 
+>
 > 除了void 永远可以被赋值 undefined
 
 > 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件
-> 
+>
 > VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration
-> 
+>
 > → 检查是否跳转到预期 tsconfig.json
 
 ```ts
@@ -172,11 +182,13 @@ d = a // ❌ never 不能接收 void
 d = b // ❌ never 不能接收 undefined
 d = c // ❌ never 不能接收 null
 ```
+
 ## 3. 联合类型
 
 表示 取值可以时多种类型中的一种
 
 未赋值时 联合类型 上只能访问 两个类型共有的 属性或方法
+
 ```TS
 let name:string | number // 联合类型  
 console.log(name!.toString()); // 公共方法
@@ -191,12 +203,14 @@ TS中，谁更具体谁是子类型，并不是属性多就是子类型，例如
 ## 4. 字面量类型和类型字面量
 
 __字面量类型__ 一个字面量就是一个类型,类型和值必须一致.
+
 ```ts
 const a: `#${string}` = '#123' // 要求#开头，模板字面量类型
 type OneToFive = 1 | 2 | 3 | 4 | 5;
 type Bool = true | false;
 const up:'Up' = 'Up' // 这样写也是字面量类型，只不过无法复用
 ```
+
 字面量类型本身并不是很实用，但是可以在一个联合类型中组合成一个强大的抽象
 
 __类型字面量__ 写法很像一个对象
@@ -216,9 +230,11 @@ enum Color {
 ```
 
 ## 5. 类型推导
+
 指 编程语言中 能自动推导出 值 的类型的能力,一般强类型语言才有
 
 定义未赋值时,会推论为any类型
+
 ```ts
 let username2;
 username2 = 25; // 自动推理为number类型
@@ -248,13 +264,13 @@ let isOK: boolean = new Boolean(1); // 编译失败 期望的 isOK 是一个原�
 ## 7. 类型断言
 
 将联合类型的变量 指定为 更加具体的类型
+
 ```ts
 let name: string | number;
 console.log((name as string).length);
 console.log((name as boolean).length); // 报错,不能指定为联合类型外的类型
 console.log((name as any as boolean).length); // 双重断言,OK
 ```
-
 
 ## 8. 函数类型
 
@@ -303,6 +319,7 @@ Function关键字声明的函数才能重载(伪重载,只是对类型的重载)
 __重载使用场景,输入和输出存在某种关联,参数的个数不一致时实现的逻辑也不一致__
 
 注意: 函数的重载，无法用泛型替代。????????? 存疑???
+
 ```ts
 // 函数重载
 // TS中的函数重载,表现为 同一个函数提供多个函数类型定义
@@ -369,12 +386,13 @@ TS中:
 函数的第一个参数处可写为this，并对其做TS约束，调用时会忽略这一参数
 
 > 注意: 如果 type 关键字后面的 typeof 会被视为 TS语法，具有获取 实例类型的功能，
-> 
+>
 > 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof，也能被识别为TS
-> 
+>
 > 返回的是 类型本身
-> 
+>
 > 而语句中的 typeof 会被视为 js语法， 非获取类型的功能，而是返回类型字符串
+
 ```ts
 const person = { name: "lzy", age: 25 }
 type Person = typeof person;
@@ -401,13 +419,10 @@ this 约束几乎只出现在该函数可能被BindCallApply调用的情况下
 
 注意: `ele?.style.color = "red"` 编译器会报错，
 
-因为 `ele?.` 真不存在时实际上是返回undefined，运行会报错。 
-
+因为 `ele?.` 真不存在时实际上是返回undefined，运行会报错。
 
 类 也是一个 类型(就像symbol,number,boolean一样),
 
 构造完一个类后得到两个类型,一个构造函数类型 一个实例类型.
-
-
 
 __dts 中，如果没有 import、export 语法，那所有的类型声明都是全局的，否则是模块内的__

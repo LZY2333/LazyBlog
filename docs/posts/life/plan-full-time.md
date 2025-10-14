@@ -24,9 +24,9 @@ categories: life
 
 ## 九月计划
 
--   上午 记忆类(八股文，技术原理)
--   下午 刷题类(leetcode，typescript)
--   晚上 代码类(博客项目，AI 组件项目)
+- 上午 记忆类(八股文，技术原理)
+- 下午 刷题类(leetcode，typescript)
+- 晚上 代码类(博客项目，AI 组件项目)
 
 ### 09/08 - 09/14
 
@@ -42,21 +42,27 @@ categories: life
 
 ## 每日
 
--   算法
--   TS-Challenge
--   家务
--   减肥三餐
--   健身运动
+- 算法
+- TS-Challenge
+- 家务
+- 减肥三餐
+- 健身运动
 
 ## 待办
 
--   八股文浏览器原理(http 缓存，跨域)
--   八股文 JS 基础
--   八股文 CSS
--   八股文 React
--   八股文 Webpack
+- 八股文浏览器原理(http 缓存，跨域)
+- 八股文 JS 基础
+- 八股文 CSS
+- 八股文 React
+- 八股文 Webpack
 
--   业务项目
--   AI 项目
--   qiankun 项目
--   博客项目
+- AI 项目
+  - AI 课程
+  - AI 提示词驱动的组件库
+
+- 博客项目(博客基础功能扩展)
+  - 博客基础功能(分类展示页 tag 展示页 timeLine 展示页)
+  - 博客文章
+
+- qiankun 项目
+- 业务项目

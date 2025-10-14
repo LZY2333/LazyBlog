@@ -1,0 +1,318 @@
+---
+title: 贪心算法题
+date: 2025-10-14 10:07:05
+categories: 技术栈
+tags: 
+    - 算法题
+---
+
+## 一些总结
+
+假设某道题需要 找到一堆 单增 或 单减，数据中 相反的那个，则用栈。
+
+贪心要 找对贪心的方向，有时候从前向后，有时候从后向前
+
+每一个数 需要和前一个数进行比较 并且含某种规律 用栈
+
+打算循环里套循环跳过数的时候,想想能不能去掉内层循环
+
+## 分发饼干(LeetCode 455)
+
+[leetcode](https://leetcode-cn.com/problems/assign-cookies/)
+
+假设你是一位很棒的家长，想要给你的孩子们一些小饼干。
+
+但是，每个孩子最多只能给一块饼干。
+
+对每个孩子 i，都有一个胃口值 g[i]，这是能让孩子们满足胃口的饼干的最小尺寸；
+
+并且每块饼干 j，都有一个尺寸 s[j] 。
+
+如果 s[j] >= g[i]，我们可以将这个饼干 j 分配给孩子 i ，这个孩子会得到满足。
+
+你的目标是尽可能满足越多数量的孩子，并输出这个最大数值。
+
+__96.95%__ 击败
+__94.08%__ 击败
+
+```js
+var findContentChildren = function(g, s) {
+    let gp = 0,sp = 0
+    g.sort((l,r) => l - r)
+    s.sort((l,r) => l - r)
+    while(gp < g.length && sp < s.length) {
+        if(g[gp] <= s[sp]) {
+            gp ++
+        }
+        sp ++
+    }
+    return gp
+};
+```
+
+## 柠檬水找零(leetcode 860)
+
+"不带零钱你卖什么柃檬水？"
+
+[leetcode](https://leetcode-cn.com/problems/lemonade-change/)
+
+在柠檬水摊上，每一杯柠檬水的售价为 5 美元。
+
+顾客排队购买你的产品，（按账单 bills 支付的顺序）一次购买一杯。
+
+每位顾客只买一杯柠檬水，然后向你付 5 美元、10 美元或 20 美元。
+
+你必须给每个顾客正确找零，也就是说净交易是每位顾客向你支付 5 美元。
+
+注意，一开始你手头没有任何零钱。
+
+给你一个整数数组 bills ，其中 bills[i] 是第 i 位顾客付的账。
+
+如果你能给每位顾客正确找零，返回 true ，否则返回 false 。
+
+__98.18%__ 击败
+__86.49%__ 击败
+
+```js
+var lemonadeChange = function(bills) {
+    let fc = 0,tc = 0,i = 0
+    for(; i < bills.length; i++) {
+        const count = bills[i] / 5 - 1
+        if(count === 0) { // + 5*1
+            fc++
+        } else if(count === 1) { // + 10*1, - 5*1
+            tc++
+            fc--
+            if(fc < 0) return false
+        } else if(count === 3) { // + 20*1(不记录), - 10*1 - 5*1 或 - 5*3
+            if(tc) {
+                tc --
+                fc --
+            } else {
+                fc = fc - 3
+            }
+            if(fc < 0) return false
+        }
+    }
+    return true
+};
+```
+
+## 用最少数量的箭引爆气球(leetcode 452)
+
+其实就是区间覆盖,给几个区间,每个区间存在重复与不充分,找出最多的重复区间
+
+[leetcode](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+
+```js
+var findMinArrowShots = function(points) {
+    if (!points.length ) {
+        return 0;
+    }
+    // 首先，按右边界从小到大排列，保证每 后一个气球 右边界 必在 当前气球 右边界 的右边
+    // 同时设置 箭位置为 1球右边(贪婪，射中1的同时又尽量能射中后面的球,射中后面的球的条件需要箭位置尽可能大)
+    // 这样 2球右边 > 1球右 = 箭位置，那么只需要判断 2球左边 < 箭位置 就代表必然同时射中2球
+    // 如果 不能射中 2球，即 2球左 > 1球右,例如:[1,2] [3,4]
+    // 则需 箭+1,并设置 新箭位置 为 2球右(如:4)
+    // 如果 能射中 2球,则继续判断下一个球是否也能射中，直到找到不能射中的，加新箭
+    // 这里的精妙之处就在于,每次都拿出新的一支箭,并设置其位置为当前球右边界时，
+    // 假设这支箭最多能射穿n个气球,那么这支箭的位置,"必然在这n个气球中最靠左的右边界位置"
+    // 而完成这一精妙操作关键一步是开头的 按右边界从小到大排列，同时 从左向右遍历
+    // 每一次 增加新箭，都是在气球右边界上，而由于是 右边界从小到大排序，所以碰到是第一个气球必然就是
+    // "必然在这n个气球中最靠左的右边界位置"
+    points.sort((a, b) => a[1] - b[1]);
+    console.log(points)
+    let pos = points[0][1] // 当前区间的 右边,位射箭位置
+    let ans = 1;
+    for (let balloon of points) {
+        if (balloon[0] > pos) { // 如果当前 区间的 左边 比 射箭位置 大
+            pos = balloon[1]; // 
+            ans++; // 则需要多射一支箭
+        }
+    }
+    return ans;
+};
+```
+
+### 我的解法
+
+```js
+var findMinArrowShots = function(points) {
+    points = points.sort((l,r) => l[0] - r[0] || l[1] - r[1]) // 左端点相等要按右端点最小的来
+    let count = 0,i = 0;
+    while(i < points.length) {
+        count ++
+        // 每一个区间,找其下j个区间,
+        // 当这下j个区间 左节点 <= 当前区间 右节点(等于也算重合)
+        // 表示有重合区域,可一箭(1count)同时射穿,所以while循环跳过
+        let j = 1,right = points[i][1] // right边界最初为当前区间right,后续为了穿过重复区间
+        while(points[i+j] && points[i+j][0] <= right) { // right会不断缩小
+            right = points[i+j][1] < right ? points[i+j][1] : right
+            j ++
+        }
+        i += j
+    }
+    return count
+};
+```
+
+## 移掉K位数字(leetcode 402)
+
+[leetcode](https://www.algomooc.com/algocamp2)
+
+这样从递增里找减少的，从递减里找增加的，就用栈！！！！
+
+__无注释版__
+
+```js
+var removeKDigits = function(num, k) {
+    const stack = [];
+    for (const now of num) {
+        while(stack.length > 0 && stack[stack.length-1] > now && k) {
+            stack.pop();
+            k -= 1;
+        }
+        stack.push(now);
+    }
+    while (k-- > 0) { stack.pop() }
+    while(stack[0] === '0') { stack.shift() }
+    return stack.join('') || '0'
+};
+```
+
+__注释版__
+
+```js
+var removeKDigits = function(num, k) {
+    const stack = []; // 维护一个单调递减栈(越栈底的数越小)
+    for (const now of num) { // 从左往右一个个遍历数
+        // 如果 栈不为空 栈顶元素大于当前元素 还需要删数
+        while (stack.length > 0 && stack[stack.length - 1] > now && k) {
+            stack.pop(); // 删了
+            k -= 1;
+        }
+        stack.push(now); // 把当前数放进去
+    }
+    // 如果轮完还有k没删够，就删后面的大数字
+    while (k-- > 0) { stack.pop() }
+    // 删掉前面的0
+    while(stack[0] === '0') { stack.shift() }
+    // 拼接并防止空字符串
+    return stack.join('') || '0'
+};
+```
+
+## 跳跃游戏(leetcode 55)
+
+[leetcode](https://leetcode-cn.com/problems/jump-game/)
+
+贪心要 找对贪心的方向，有时候从前向后，有时候从后向前
+
+__标准解法__
+从前往后轮,找最大覆盖范围
+
+```js
+var canJump = function(nums) {
+    let length = 0;
+    for (let i = 0; i < nums.length; i++) {
+        if (i <= length) { // 如果位置在覆盖范围内
+            length = Math.max(length, i + nums[i]);
+            if (length >= nums.length - 1) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+```
+
+__我的解法__
+
+从后往前轮,感觉还是标准解法好.我这解法属实迷宫玩多了.
+
+```js
+var canJump = function(nums) {
+    if(!nums.length) return
+    let i = nums.length - 1 // 从最后一个数开始
+    let length = 0 // 最后一个数需要跑的距离是0，也可从倒数第二个数开始，初始距离1
+    // 从右往左轮，相当于从迷宫出口找迷宫入口。找第一个(离当前点最近)能到达当前点的数
+    // 首先要明白一个原理，能到当前点的数，必然也能到这个数与当前点之间
+    // 如 [2,3,1,1,4]，3能到4，就能到两个nums[2] nums[3].但我们要找的下一个数是nums[3]
+    // 因为 贪心算法，找最极端的情况，因为我们并不知道前面还有个能跳3步的可以直达终点，
+    // 但我们知道，只要num[3]能到num[4],那么前面的数只要能到[num3],就必然能到num[4]
+    // 就这样一个个往前找，只要当前数能找到存在一个前面的数能到达当前数就通过，并将当前数置为
+    // 直到找到第一个数(入口)
+    // 贪心:最靠近当前点的点
+    while(i !== -1) {
+        if(nums[i] >= length) { // 当前位置记录的步数大于路程，OK
+            length = 1 // 更新路线
+        } else {
+            if(i === 0) return false // 位于初始位置的时候不能到达点，return false
+            length ++ // 当前数不能到目标位置，则试试下一个数，路程+1
+        }
+        i --
+    }
+    return true
+};
+```
+
+## 摆动序列(leetcode 376)
+
+[leetcode](https://leetcode-cn.com/problems/wiggle-subsequence/solution/bai-dong-xu-lie-by-leetcode-solution-yh2m/)
+
+可使用动态规划,或者贪心
+
+注意题目是可以删除任意位置的数，换句话说，只要不满足的，不计入就行
+
+__贪心解法__
+
+```js
+var wiggleMaxLength = function(nums) {
+    const n = nums.length;
+    if (n < 2) { return n; }
+    let prevdiff = nums[1] - nums[0];
+    let ret = prevdiff !== 0 ? 2 : 1; // 有起伏,结果数量就是2,无起伏则起始为1
+    for (let i = 2; i < n; i++) { // 从第3个数开始算.
+        const diff = nums[i] - nums[i - 1];
+        if ((diff > 0 && prevdiff <= 0) || (diff < 0 && prevdiff >= 0)) {
+            ret++;
+            prevdiff = diff;
+        }
+    }
+    return ret;
+};
+```
+
+__题解里抄的某位大佬的神级解法__
+
+```js
+var wiggleMaxLength = function(nums) {
+    let up = 1,down = 1
+    for(let i = 1;i < nums.length; i++) {
+        if(nums[i] > nums[i-1]) { 
+            up = down + 1 // 注意这里是 up = down+1,down不增加，up也不增加
+        } else if(nums[i] < nums[i-1]) {
+            down = up + 1
+        } // 等于,就两边都不加
+    }
+    return nums.length ? Math.max(up,down) : 0
+};
+```
+
+## 买卖股票的最佳时机(leetcode 122)
+
+[leetcode](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+这题目让我震惊了,这还要想??
+
+```js
+var maxProfit = function(prices) {
+    let result = 0 // 赚的总额
+    for(let i = 0;i < prices.length; i++) {
+        if(prices[i] < prices[i+1]) {
+            result += prices[i+1] - prices[i]
+        }
+    }
+    return result
+};
+```
