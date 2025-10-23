@@ -133,6 +133,7 @@ type TestInferLast<T extends string[]> =
 ```
 
 通用解决方案
+
 ```ts
 // 改 Last 调用处
 `last${Last & string}`
@@ -141,12 +142,14 @@ Last extends string ? `last${Last}` : never
 ```
 
 ts 4.7 开始进行了优化, 可以这样写 `infer xxx extends string`
+
 ```ts
 // 改 Last 生成处
 T extends [ ...infer _Rest, infer Last extends string ]
 ```
 
 __infer extends__ 对infer变量进行了类型转换
+
 ```ts
 type StrToBoolean<Str> =
     Str extends `${infer Bool extends boolean}` ? Bool : Str
@@ -159,21 +162,21 @@ type StrToNull<Str> =
 type res3 = StrToNull<'null'>
 ```
 
-另外，如果`extends 基础类型`，传入字面量会返回 字面量，而不是 基础类型
 ```ts
-type StrToNum<Str> =
+// string 转 number
+type StringToNumber<Str> =
     Str extends `${infer Num extends number}` ? Num : Str;
 
-// 123, 而不是number
-type testSingleStrToNum = StrToNum<'123'>
-```
-```ts
-// 获取enum 的value类型
+// 123
+type testStringToNumber = StringToNumber<'123'>;
+
 enum Code { a = 111, b = 222, c = 'abc' }
-// "111" | "222" | "abc"
-type testCode = `${Code}`
-// 111 | 222 | "abc"
-type testStrToNum = StrToNum<`${Code}`>
+
+// "111" | "222" | "abc". 获取enum 的value
+type getEnumValue = `${Code}`;
+
+// 111 | 222 | "abc", string转number
+type testStrToNum = StringToNumber<`${Code}`>;
 ```
 
 ## 3. 函数 提取类型
@@ -192,6 +195,7 @@ type h = GetParameters<(a: string, b: number) => void>
 __提取this类型__
 
 函数中对this 进行约束
+
 ```ts
 class Dong {
     name: string;
@@ -215,6 +219,7 @@ dong.hello.call({something: 'lazy'});
 ```
 
 函数中提取 约束过的this类型
+
 ```ts
 // 提取约束过的this的类型
 type GetThisParameter<
@@ -270,14 +275,13 @@ type GetRefProps<Props> =
 
 `Props extends { ref?: infer Value | undefined}` 匹配并推断value类型
 
-` | undefined` 作用是 从infer value 推断中额外排除了undefined，此时会是never
+`| undefined` 作用是 从infer value 推断中额外排除了undefined，此时会是never
 
 那就奇怪了，第二句 既做到了匹配ref 又做到了去除undefined，那第一句还有什么作用?
 
 在 ts3.0 里面如果没有对应的索引，Obj[Key] 返回的是 {} 而不是 never，所以这样做下兼容处理。
 
 所以第一句本质上只是一句兼容处理！！！ 没有它也一样！！！
-
 
 ## 5. 一句话用法总结
 

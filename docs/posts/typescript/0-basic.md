@@ -6,7 +6,7 @@ tags:
     - TypeScript
 ---
 
-__针对入参 动态生成 更精准的类型提示和检查__
+针对入参 动态生成 更精准的类型提示和检查
 
 ## 1. 环境准备
 
@@ -120,7 +120,7 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 
 `unknown`: 表示未知，是所有类型的父类型
 
-`any` > `unknown` > object | number | string | boolean >
+`any` > `unknown` > `object` | `number` | `string` | `boolean` >
 
 `void` > `undefined` > `null` > `never`
 

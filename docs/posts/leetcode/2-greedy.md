@@ -6,6 +6,15 @@ tags:
     - 算法题
 ---
 
+
+## 贪心算法
+
+贪心的本质是 局部最优，到 全局最优
+
+贪心 没有固定的套路
+
+如何验证可不可以用贪心算法: 举反例，如果想不到反例，那么就试一试贪心吧
+
 ## 一些总结
 
 假设某道题需要 找到一堆 单增 或 单减，数据中 相反的那个，则用栈。
@@ -16,41 +25,112 @@ tags:
 
 打算循环里套循环跳过数的时候,想想能不能去掉内层循环
 
-## 分发饼干(LeetCode 455)
+## 455. 分发饼干
 
 [leetcode](https://leetcode-cn.com/problems/assign-cookies/)
-
-假设你是一位很棒的家长，想要给你的孩子们一些小饼干。
-
-但是，每个孩子最多只能给一块饼干。
-
-对每个孩子 i，都有一个胃口值 g[i]，这是能让孩子们满足胃口的饼干的最小尺寸；
-
-并且每块饼干 j，都有一个尺寸 s[j] 。
-
-如果 s[j] >= g[i]，我们可以将这个饼干 j 分配给孩子 i ，这个孩子会得到满足。
-
-你的目标是尽可能满足越多数量的孩子，并输出这个最大数值。
-
-__96.95%__ 击败
-__94.08%__ 击败
 
 ```js
 var findContentChildren = function(g, s) {
     let gp = 0,sp = 0
-    g.sort((l,r) => l - r)
-    s.sort((l,r) => l - r)
+    g.sort((a,b) => a - b)
+    s.sort((a,b) => a - b)
     while(gp < g.length && sp < s.length) {
-        if(g[gp] <= s[sp]) {
-            gp ++
-        }
+        if(g[gp] <= s[sp]) gp ++;
         sp ++
     }
     return gp
 };
 ```
 
-## 柠檬水找零(leetcode 860)
+## 376. 摆动序列
+
+[leetcode](https://leetcode.cn/problems/wiggle-subsequence/description/)
+
+```js
+var wiggleMaxLength = function(nums) {
+    let up = 1,down = 1
+    for(let i = 1;i < nums.length; i++) {
+        if(nums[i] > nums[i-1]) { 
+            // 注意这里是 up = down+1, 假设一直是上升，则实际up不会增加
+            up = down + 1
+        } else if(nums[i] < nums[i-1]) {
+            down = up + 1
+        } // 等于,就两边都不加
+    }
+    return nums.length ? Math.max(up,down) : 0
+};
+```
+
+题目是可以删除任意位置的数，换句话说，只要计算满足最小摆动序列的数个数就行
+
+只记录峰顶，上升和下降过程中间的值，就是可以不计入的值
+
+## 53. 最大子序和
+
+[leetcode](https://leetcode.cn/problems/maximum-subarray/description/)
+
+```js
+var maxSubArray = function(nums) {
+    let result = Number.NEGATIVE_INFINITY;
+    let sum = 0;
+    for(let i = 0; i < nums.length; i++) {
+        sum += nums[i]
+        if(sum > result) result = sum
+        if(sum < 0) sum = 0
+    }
+    return result
+};
+// 6
+console.log(maxSubArray([-2,1,-3,4,-1,2,1,-5,4]));
+```
+
+当一个区间和为负，则立刻放弃该区间，也即为该区间的右边界
+
+除了贪心 还可以动态规划
+
+## 122. 买卖股票的最佳时机 II
+
+[leetcode](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/)
+
+```js
+var maxProfit = function(prices) {
+    let result = 0
+    for(let i = 1; i < prices.length; i++) {
+        result += Math.max(prices[i] - prices[i - 1], 0)
+    }
+    return result
+};
+```
+
+除了贪心 还可以动态规划
+
+## 55. 跳跃游戏
+
+[leetcode](https://leetcode-cn.com/problems/jump-game/)
+
+```js
+var canJump = function(nums) {
+    let end = nums.length - 1
+    for(let i = end; i >= 0; i--) {
+        if(nums[i] >= end - i) end = i
+    }
+    return end === 0
+};
+```
+
+贪心要 找对贪心的方向，这里正向反向的思路都行
+
+从后往前: 能够到end，就一定能够到 末尾位
+
+从前往后: 遍历每一位的最大cover位,`cover = Math.max(cover, i + nums[i])`
+
+如果当前位已经被cover了则被忽略，如果未被前面任意数cover，则可能无法到末位，很合理
+
+## 45. 跳跃游戏II
+
+[leetcode](https://leetcode.cn/problems/jump-game-ii/description/)
+
+## 860. 柠檬水找零
 
 "不带零钱你卖什么柃檬水？"
 
@@ -162,7 +242,7 @@ var findMinArrowShots = function(points) {
 
 这样从递增里找减少的，从递减里找增加的，就用栈！！！！
 
-__无注释版__
+无注释版
 
 ```js
 var removeKDigits = function(num, k) {
@@ -180,7 +260,7 @@ var removeKDigits = function(num, k) {
 };
 ```
 
-__注释版__
+注释版
 
 ```js
 var removeKDigits = function(num, k) {
@@ -199,120 +279,5 @@ var removeKDigits = function(num, k) {
     while(stack[0] === '0') { stack.shift() }
     // 拼接并防止空字符串
     return stack.join('') || '0'
-};
-```
-
-## 跳跃游戏(leetcode 55)
-
-[leetcode](https://leetcode-cn.com/problems/jump-game/)
-
-贪心要 找对贪心的方向，有时候从前向后，有时候从后向前
-
-__标准解法__
-从前往后轮,找最大覆盖范围
-
-```js
-var canJump = function(nums) {
-    let length = 0;
-    for (let i = 0; i < nums.length; i++) {
-        if (i <= length) { // 如果位置在覆盖范围内
-            length = Math.max(length, i + nums[i]);
-            if (length >= nums.length - 1) {
-                return true;
-            }
-        }
-    }
-    return false;
-};
-```
-
-__我的解法__
-
-从后往前轮,感觉还是标准解法好.我这解法属实迷宫玩多了.
-
-```js
-var canJump = function(nums) {
-    if(!nums.length) return
-    let i = nums.length - 1 // 从最后一个数开始
-    let length = 0 // 最后一个数需要跑的距离是0，也可从倒数第二个数开始，初始距离1
-    // 从右往左轮，相当于从迷宫出口找迷宫入口。找第一个(离当前点最近)能到达当前点的数
-    // 首先要明白一个原理，能到当前点的数，必然也能到这个数与当前点之间
-    // 如 [2,3,1,1,4]，3能到4，就能到两个nums[2] nums[3].但我们要找的下一个数是nums[3]
-    // 因为 贪心算法，找最极端的情况，因为我们并不知道前面还有个能跳3步的可以直达终点，
-    // 但我们知道，只要num[3]能到num[4],那么前面的数只要能到[num3],就必然能到num[4]
-    // 就这样一个个往前找，只要当前数能找到存在一个前面的数能到达当前数就通过，并将当前数置为
-    // 直到找到第一个数(入口)
-    // 贪心:最靠近当前点的点
-    while(i !== -1) {
-        if(nums[i] >= length) { // 当前位置记录的步数大于路程，OK
-            length = 1 // 更新路线
-        } else {
-            if(i === 0) return false // 位于初始位置的时候不能到达点，return false
-            length ++ // 当前数不能到目标位置，则试试下一个数，路程+1
-        }
-        i --
-    }
-    return true
-};
-```
-
-## 摆动序列(leetcode 376)
-
-[leetcode](https://leetcode-cn.com/problems/wiggle-subsequence/solution/bai-dong-xu-lie-by-leetcode-solution-yh2m/)
-
-可使用动态规划,或者贪心
-
-注意题目是可以删除任意位置的数，换句话说，只要不满足的，不计入就行
-
-__贪心解法__
-
-```js
-var wiggleMaxLength = function(nums) {
-    const n = nums.length;
-    if (n < 2) { return n; }
-    let prevdiff = nums[1] - nums[0];
-    let ret = prevdiff !== 0 ? 2 : 1; // 有起伏,结果数量就是2,无起伏则起始为1
-    for (let i = 2; i < n; i++) { // 从第3个数开始算.
-        const diff = nums[i] - nums[i - 1];
-        if ((diff > 0 && prevdiff <= 0) || (diff < 0 && prevdiff >= 0)) {
-            ret++;
-            prevdiff = diff;
-        }
-    }
-    return ret;
-};
-```
-
-__题解里抄的某位大佬的神级解法__
-
-```js
-var wiggleMaxLength = function(nums) {
-    let up = 1,down = 1
-    for(let i = 1;i < nums.length; i++) {
-        if(nums[i] > nums[i-1]) { 
-            up = down + 1 // 注意这里是 up = down+1,down不增加，up也不增加
-        } else if(nums[i] < nums[i-1]) {
-            down = up + 1
-        } // 等于,就两边都不加
-    }
-    return nums.length ? Math.max(up,down) : 0
-};
-```
-
-## 买卖股票的最佳时机(leetcode 122)
-
-[leetcode](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
-
-这题目让我震惊了,这还要想??
-
-```js
-var maxProfit = function(prices) {
-    let result = 0 // 赚的总额
-    for(let i = 0;i < prices.length; i++) {
-        if(prices[i] < prices[i+1]) {
-            result += prices[i+1] - prices[i]
-        }
-    }
-    return result
 };
 ```

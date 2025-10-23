@@ -8,35 +8,46 @@ tags:
 
 
 ## 0. 内置工具类速查
+
 ### Extract 联合类型保留指定部分
+
 `type Extract<T, U> = T extends U ? T : never;`
 
 ### Exclude 联合类型去除指定部分
+
 `type Exclude<T, U> = T extends U ? never : T`
 
 ### Record 创建索引类型
+
 `type Record<K extends keyof any, T> = { [P in K]: T };`
 
 ### Pick 选取索引
+
 `type Pick<T, K extends keyof T> = { [P in K]: T[P] };`
 
 ### Omit 去除索引
+
 `type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>`
 
 ### Partial 索引变可选
+
 `type Partial0<T> = { [P in keyof T]?: T[P] };`
 
 ### Required 索引取消可选
+
 `type Required0<T> = { [P in keyof T]-?: T[P] };`
 
 ### Readonly 索引变只读
+
 `type Readonly0<T> = { readonly [P in keyof T]: T[P] };`
 
 ### 字符串大小写
+
 大写，小写，首字母大写，字母小写
 `Uppercase`、`Lowercase`、`Capitalize`、`Uncapitalize`
 
 ### Awaited
+
 ```ts
 type Awaited<T> =
     T extends null | undefined
@@ -49,6 +60,7 @@ type Awaited<T> =
 ```
 
 ### 提取函数内类型
+
 ```ts
 // 提取函数 参数类型
 type Parameters0<T extends (...args: any) => any> =
@@ -85,6 +97,7 @@ type InstanceType0<
 这里尝试写, 删除函数this类型, 暴露了两个问题
 
 this必须显示声明类型, 数组类型 不能直接在函数中参数展开
+
 ```ts
 // 这里的实现方式也是错的
 type OmitThisParameter0<T> =
@@ -95,6 +108,7 @@ type OmitThisParameter0<T> =
 ```
 
 提取函数This类型必须显示声明this，即变量名必须写this
+
 ```TS
 // 提取函数第一个参数类型,和提取this只差个参数名， 可见this必须显示声明
 type FirstParameter<T> =
@@ -109,6 +123,7 @@ type NthParameter<T, N extends number> =
 ## 1. a=1&a=2&b=2&c=3
 
 要求
+
 ```ts
 // { a: ["1", "2"]; b: "2"; c: "3"; }
 type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
@@ -167,13 +182,14 @@ type ParseQueryString<Str extends string> =
 type ParseQueryStringResult = ParseQueryString<'a=1&a=2&b=2&c=3'>
 ```
 
-`keyof T | keyof U`不能写成 `keyof (T | U)`，这样是拿交集的Key
-
 __keyof 是一种内置操作符, 联合类型不对 keyof 分发__
+
+`keyof T | keyof U`不能写成 `keyof (T | U)`，这样是拿交集的Key
 
 ## 2. 中分线转驼峰
 
 要求
+
 ```ts
 // "aaaBbbCcc"
 type testKebaCaseToCamelCase = KebaCaseToCamelCase<'aaa-bbb-ccc'>
@@ -205,6 +221,7 @@ type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
 ## 3. 数组分组
 
 要求
+
 ```ts
 //  [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
 type testChunk = Chunk<[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3>
@@ -245,6 +262,7 @@ type TupleToNestedObject<
                 : Value }
     : Value
 ```
+
 过滤key,再给value 递归调用Rest进行赋值
 
 `[Key in First as Key extends keyof any ? Key : never]`
@@ -350,6 +368,7 @@ type AllKeyPath<Obj extends Record<string, any>> = {
 ```
 
 ## 8. 合并两个索引类型
+
 要求 a有b没有 或 a没有b有 的属性变为 可选属性
 
 ```ts
