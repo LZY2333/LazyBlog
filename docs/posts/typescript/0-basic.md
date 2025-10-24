@@ -11,8 +11,11 @@ tags:
 ## 1. 环境准备
 
 `npm i typescript -g` 全局安装TS编译器
+
 `npm i ts-node -g` 安装好后可在vscode右键run直接运行ts
+
 `tsc hello.ts`可运行编译文件
+
 `tsc --init`生成TS配置文件
 
 配置tsconfig.json
@@ -148,15 +151,10 @@ __可赋值关系表__
 | `never`     | ✅      | ✅           | ✅      | ✅       |
 
 > *表示在 strictNullChecks: false 或 strict: false 下成立,
->
 > strictNullChecks:true时, 任意类型被赋值为null undefined会报错
->
 > 除了void 永远可以被赋值 undefined
-
 > 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件
->
 > VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration
->
 > → 检查是否跳转到预期 tsconfig.json
 
 ```ts
@@ -383,15 +381,7 @@ TS中:
 
 `keyof 类型`取类型的key的集合
 
-函数的第一个参数处可写为this，并对其做TS约束，调用时会忽略这一参数
-
-> 注意: 如果 type 关键字后面的 typeof 会被视为 TS语法，具有获取 实例类型的功能，
->
-> 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof，也能被识别为TS
->
-> 返回的是 类型本身
->
-> 而语句中的 typeof 会被视为 js语法， 非获取类型的功能，而是返回类型字符串
+函数第一个参数 可写明为`this`关键字，借此对其做TS约束
 
 ```ts
 const person = { name: "lzy", age: 25 }
@@ -409,9 +399,45 @@ let a = typeof person
 
 this 约束几乎只出现在该函数可能被BindCallApply调用的情况下
 
-如果没有报错，说明没开启 strictBindCallApply 的编译选项，这个是控制是否按照原函数的类型来检查 bind、call、apply
+如果没有报错，说明没开启 strictBindCallApply 的编译选项，
 
-## 10. 其它笔记
+这个是控制是否按照原函数的类型来检查 bind、call、apply
+
+> 注意区分当前代码是 TS层面 还是 JS层面
+> 如果 type 关键字后面的 typeof 会被视为 TS语法，获取 对象的类型
+> 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof
+> 也能被识别为 TS语法，返回的是 类型本身
+> 而语句中的 typeof 会被视为 js语法，非获取类型的功能，而是返回类型字符串
+
+## 10. interface 和 type
+
+__语义和定位__:
+
+interface 代表形状, 通常用于 定义对象或类的结构
+
+type 代表工具, 用于给任意类型起别名，功能强大
+
+__interface 可重名__: 自动合并，type不可重名
+
+__type 可做 类型计算__: 如 条件类型 联合类型
+
+__都可以组合__: type 用&, interface 用extends
+
+```ts
+// 重名/声明合并, 在`.d.ts`或第三方扩展中非常重要
+interface Window {
+  myAppVersion: string;
+}
+// 组合
+type C = A & B;
+interface C extends A, B {}
+```
+
+> interface 和 class, enum 用于 描述对象结构
+> type, infer, extends, keyof 用于 构造复杂类型
+> declare, export, import 用于 声明
+
+## 其它
 
 `?.` 是js语法，链运算判断符，这个值没有值就不继续取值了
 

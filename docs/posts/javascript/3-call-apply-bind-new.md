@@ -7,32 +7,70 @@ tags:
 summary: call(context,arg1,arg2...)/apply(context,[arg1,arg2...])/bind(context,arg1,arg2...),三个函数均可以改变函数的this指向,手写一波源码
 ---
 
+`call(context,arg1,arg2...)`
 
-call/apply/bind
+`apply(context,[arg1,arg2...])`
 
-三个函数均可以改变函数的this指向
+`bind(context,arg1,arg2...)`
 
-__call(context,arg1,arg2...)__ ,改变函数的this指向 并立即执行
+不能写箭头函数,不然this出问题
 
-__apply(context,[arg1,arg2...])__ ,改变函数的this指向 并立即执行,与call接收的参数不同
+## ES6写法
 
-__bind(context,arg1,arg2...)__ ,改变函数的this指向
-
-### call(context,arg1,arg2...)
-
-ES6
 ```js
-Function.prototype.call2 = function (context = window,...args) { // 不能写箭头函数,不然this出问题
-    context.fn = this; // 可以防止变量覆盖 const key = Symbol();context[key] = this
+Function.prototype.call2 = function (context = window,...args) {
+    context.fn = this;
     let result = context.fn(...args)
     delete context.fn
     return result;
 }
+
+Function.prototype.apply2 = function (context = window, arr = []) {
+    context.fn = this;
+    let result = context.fn(...arr)
+    delete context.fn
+    return result;
+}
+
+Function.prototype.bind2 = function (context) {
+    if(typeof this !== 'function'){
+        throw new TypeError(this + 'must be a function');
+    }
+
+    const args = [...arguments].slice(1)
+    const self = this;
+    return function fn() {
+        return self.apply(context, args.concat(...arguments));
+        // return self.apply(
+        //     this instanceof fn ? this : context,
+        //     args.concat(...arguments)
+        // );
+    };
+}
+
+function myNew(constructor, ...args) {
+    // if (typeof constructor !== 'function') {
+    //     throw new Error('constructor must be a function!');
+    // }
+    // 以构造函数的prototype为原型创建一个新对象
+    const obj = Object.create(constructor.prototype);
+    // 以新对象为this调用构造函数，取得返回值
+    const res = constructor.apply(obj, args);
+
+    const isObject = typeof res === 'object' && res !== null;
+    const isFunction = typeof res === 'function';
+
+    return isObject || isFunction ? res : obj;
+}
 ```
 
-ES3
+> 防止变量覆盖可以改为 const key = Symbol(); context[key] = this
+> 防止变量覆盖可以使用 `Object.hasOwnProperty` 检查并提前储存
+
+## ES3写法
+
 ```js
-Function.prototype.call2 = function (context) { // 不能写箭头函数,不然this出问题
+Function.prototype.call2 = function (context) {
     context = context || window;
     context.fn = this;
 
@@ -46,24 +84,7 @@ Function.prototype.call2 = function (context) { // 不能写箭头函数,不然t
     delete context.fn
     return result;
 }
-```
 
-存在fn属性被覆盖的问题，`Object.hasOwnProperty`检查一下有没有成员，有得话就先保存下来，弄完后再赋值回去
-
-### apply(context,[arg1,arg2...])
-
-ES6
-```js
-Function.prototype.apply2 = function (context = window, arr = []) { // 多了一个默认空数组
-    context.fn = this;
-    let result = context.fn(...arr)
-    delete context.fn
-    return result;
-}
-```
-
-ES3
-```js
 Function.prototype.apply2 = function (context, arr) {
     var context = Object(context) || window;
     context.fn = this;
@@ -77,28 +98,7 @@ Function.prototype.apply2 = function (context, arr) {
     delete context.fn
     return result;
 }
-```
 
-### bind(context,arg1,arg2...)
-
-#### 源码(不考虑new的情况)
-ES6
-```js
-Function.prototype.bind2 = function (context) {
-    if(typeof this !== 'function'){
-        throw new TypeError(this + 'must be a function');
-    }
-
-    const args = [...arguments].slice(1)
-    const self = this;
-    return function fn() { // 用闭包保留了 原函数self
-        return self.apply(context, args.concat(...arguments) );
-    };
-}
-```
-
-ES3
-```js
 Function.prototype.bind2 = function bind(context){
     if(typeof this !== 'function'){
         throw new TypeError(this + 'must be a function');
@@ -112,15 +112,15 @@ Function.prototype.bind2 = function bind(context){
 }
 ```
 
-#### bind的三条特性
+## 手写bind解析
 
-第三条尤为麻烦
+bind有三条特性，第三条最特殊
 
 1.函数.bind(context,arg1,arg2...) 返回 一个 this绑定context 新函数
 
 2.可以在bind时 传入 函数的 部分参数
 
-3.可以 new新函数 创建对象,此时 构造函数是 旧函数, 绑定的新context失效,但bind时 传入的参数有效
+3.可以 new新函数 创建对象,此时 绑定的新context失效, 但bind时 传入的参数有效
 
 ```js
 var value = 2;
@@ -150,35 +150,37 @@ console.log(obj.friend);
 // kevin
 ```
 
-#### 源码(简单实现带new效果)
+### 简单实现new优先效果
 
 ES6
 ```js
 Function.prototype.bind2 = function (context) {
-    if(typeof this !== 'function'){
+    if (typeof this !== 'function') {
         throw new TypeError(this + 'must be a function');
     }
 
-    const args = [...arguments].slice(1)
+    const args = [...arguments].slice(1);
     const self = this;
-    return function fn() { // 用闭包保留了 原函数self
-        return self.apply( this instanceof fn ? this : context, args.concat(...arguments) );
+    return function fn() {
+        // 用闭包保留了 原函数self
+        return self.apply(
+            this instanceof fn ? this : context,
+            args.concat(...arguments)
+        );
     };
-}
-}
+};
 ```
+new 操作中, 会执行当前函数 以获取其返回值(new特性:构造函数执行返回值就是实例)
 
-注意 `if (this instanceof fn) {}`
+执行当前函数时，会将 当前函数 的this 绑定在 由其自身原型创建的新对象上，再执行
 
-new 函数 的时候,会将当前 函数 的this绑定 由其自己为构造函数，创建的新对象，再执行
+因而 `if (this instanceof fn) {}` 可以判断是否正在进行 new操作
 
-换句话说，当 this 指向的是 该函数的实例 时，代表正在进行new操作。
+且有要求，执行当前函数时，需要使用原函数的this，而非bind给的context
 
-new 新函数 时，需要使用 原函数 绑定 new 的时候创建的 新对象 执行原函数,也就是apply(this)
+或称，new 优先级高于 bind, 故写下 `this instanceof fn ? this : context`
 
-正常调用 新函数时，需要 apply(context) 绑定 context进行调用。
-
-#### 源码(完全实现)
+### 完全实现new特性
 
 过于复杂，先贴着，待续...
 
@@ -238,8 +240,7 @@ Function.prototype.bind2 = function bind(thisArg){
 
 [若川 面试官问：能否模拟实现JS的bind方法](https://juejin.cn/post/6844903718089916429)
 
-## 手写new
-
+## 手写new解析
 ES5
 ```js
 function myNew(constructor, ...args) {
@@ -247,8 +248,10 @@ function myNew(constructor, ...args) {
         throw new Error('constructor must be a function!');
     }
 
-    const obj = Object.create(constructor.prototype); // 以构造函数的prototype为原型创建一个新对象
-    const res = constructor.apply(obj, args); // 以新对象为this调用构造函数，取得返回值
+    // 以构造函数的prototype为原型创建一个新对象
+    const obj = Object.create(constructor.prototype);
+    // 以新对象为this调用构造函数，取得返回值
+    const res = constructor.apply(obj, args);
 
     const isObject = typeof res === 'object' && res !== null;
     const isFunction = typeof res === 'function';

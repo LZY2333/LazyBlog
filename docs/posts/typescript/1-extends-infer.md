@@ -192,9 +192,7 @@ type GetParameters<Func extends Function> = Func extends (
 type h = GetParameters<(a: string, b: number) => void>
 ```
 
-__提取this类型__
-
-函数中对this 进行约束
+### 约束this
 
 ```ts
 class Dong {
@@ -218,10 +216,9 @@ dong.hello2.call({something: 'lazy'});
 dong.hello.call({something: 'lazy'});
 ```
 
-函数中提取 约束过的this类型
+### 提取this类型
 
 ```ts
-// 提取约束过的this的类型
 type GetThisParameter<
     Func extends (this: any, ...args: any[]) => any
 > = Func extends ( this: infer ThisType, ...args: any[] ) => any
@@ -232,13 +229,11 @@ type i = GetThisParameter<typeof dong.hello> // unknown
 type j = GetThisParameter<typeof dong.hello2> // Dong
 ```
 
-注意，不能直接 Dong.hello 访问hello，除非hello是静态属性
+> 不能直接 Dong.hello 访问hello，除非hello是静态属性
+> 因为 class 只是一个语法糖，只有在 new关键字执行时，hello才被创建并挂载进实例
+> Dong本身并不是变量值，也不是命名空间，仅仅是一个类型，所以不能Dong.hello
 
-本质是因为 class 只是一个语法糖，只有在 new关键字执行时，hello才被创建并挂载进实例
-
-Dong本身并不是变量值，也不是命名空间，仅仅是一个类型，所以不能Dong.hello
-
-__提取构造器类型__
+### 提取构造器类型
 
 ```ts
 // 首先约束GetInstanceType<T>接收的T为构造器类型
@@ -271,13 +266,11 @@ type GetRefProps<Props> =
         : never;
 ```
 
-`'ref' extends keyof Props` 的作用是:明确限制只有在 'ref' 存在时才进行下一步infer推断
+`'ref' extends keyof Props`: 确保 Props 有 ref 属性
 
-`Props extends { ref?: infer Value | undefined}` 匹配并推断value类型
+`Props extends { ref?: infer Value | undefined}`: 推断 ref 的类型
 
-`| undefined` 作用是 从infer value 推断中额外排除了undefined，此时会是never
-
-那就奇怪了，第二句 既做到了匹配ref 又做到了去除undefined，那第一句还有什么作用?
+`| undefined` 有什么作用
 
 在 ts3.0 里面如果没有对应的索引，Obj[Key] 返回的是 {} 而不是 never，所以这样做下兼容处理。
 

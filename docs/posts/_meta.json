@@ -48,5 +48,10 @@
         "type": "dir",
         "name": "leetcode",
         "label": "Leetcode"
+    },
+    {
+        "type": "dir",
+        "name": "microFrontend",
+        "label": "MicroFrontend"
     }
 ]

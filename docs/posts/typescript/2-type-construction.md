@@ -10,9 +10,9 @@ TS类型系统不能对原类型进行修改，而是每次都构造新类型
 
 extends + infer 提取类型，下一步便是 __构造新类型__
 
-## 1. 数组:解构
+## 1. 构造数组
 
-__解构__,只需要掌握解构语法
+解构
 
 ```ts
 type Push<Arr extends  unknown[], Ele> = [...Arr, Ele];
@@ -45,12 +45,12 @@ type testZip2 = Zip2<[1, 2, 3], [4, 5, 6]>
 
 ```
 
-## 字符串:解构,正则,内置工具
+## 2. 构造字符串
 
-__解构__,__正则__,__内置工具类__
+解构, 正则, 内置工具类
 
-下划线改驼峰
 ```ts
+// 下划线改驼峰
 type CamelCase<Str extends string> = 
     Str extends `${infer Left}_${infer Right}${infer Rest}`
         ? `${Left}${Uppercase<Right>}${CamelCase<Rest>}`
@@ -59,9 +59,9 @@ type CamelCase<Str extends string> =
 type camelCase = CamelCase<'hello_world_test'>;
 ```
 
-## 函数:解构
+## 3. 构造函数
 
-__解构__
+解构
 
 ```ts
 // 加一个参数
@@ -69,16 +69,17 @@ type AppendArgument<T extends Function, arg> =
     T extends (...args: infer Args) => infer ReturnType ?
     (...args: [...Args, arg]) => ReturnType : never;
 
-type appendArgument = AppendArgument<() => void, boolean>; // (args_0: boolean) => void
+// (args_0: boolean) => void
+type appendArgument = AppendArgument<() => void, boolean>;
 ```
 
-## 索引:keyof,in,as
+## 4. 构造索引类型(重点)
 
-__keyof__ 生成Key的联合类型
+`keyof` 生成Key的联合类型
 
-__in__ 进行key遍历,以修改value
+`in` 进行key遍历,以修改value
 
-__as__ 修改key
+`as` 修改key
 
 ### 修改value
 
@@ -96,11 +97,11 @@ type Mapping<Obj extends object> = {
 type mapping = Mapping<obj>;
 ```
 
-### 修改key, as 重命名
+### 修改key
 
-__as__ 修改key叫做 Key Remapping（键重映射）
+`as` 修改key 叫做 Key Remapping（键重映射）
 
-```ts 
+```ts
 type UppercaseKey<Obj extends object> = { 
     [Key in keyof Obj as Uppercase<Key & string>]: Obj[Key]
 }
@@ -119,13 +120,14 @@ type UppercaseKey2<Obj extends Record<string, any>> = {
     [Key in keyof Obj as Uppercase<Key & string>]: Obj[Key]
 }
 ```
+
 `& string` 是 __通用写法__, Key 可能为string、number、symbol, 代表只取string
 
 `<K extends keyof any>`  约束 K 是可以作为对象键的类型
 
 `K extends string | number | symbol` 与这条完全相等
 
-## `Record<string, any>` 
+### `Record<string, any>`
 
 `Record` 专门用来创建索引类型,class、对象 等都是 索引类型
 
@@ -159,6 +161,7 @@ type filterByValueType = FilterByValueType<
     string
 >
 ```
+
 `Key in keyof Obj` 遍历Obj的key,用 as 修改key
 
 这些key 如果 `extends ValueType`，则保留该key,否则剔除
@@ -180,7 +183,20 @@ type ToRequired<T> = {
 }
 ```
 
+```ts
+// 指定的 key 变 readonly
+type ReadonlyObjectKey<
+  T extends Record<string, any>,
+  Key extends keyof T
+> = {
+  readonly [K in Key]: T[K];
+} & {
+  [K in Exclude<keyof T, Key>]: T[K]; // 其余保持原样
+};
+```
+
 __联合类型 归一化技巧__
+
 ```ts
 // 删除指定属性的readonly修饰符
 type RemoveReadonly<
@@ -218,13 +234,11 @@ type test2 = RemoveReadonly2<
 
 `extends infer O` 这里是小type推导出大type，而之前常见的是大type中infer提取小type
 
-`P in Exclude<keyof T, K>` 属于是 `K in keyof T` 高阶用法，对T进行了先一步过滤，再遍历
-
 `type Exclude<T, U> = T extends U ? never : T` T中排除U
 
 `type Extract<T, U> = T extends U ? T : never` T中只保留U
 
-上面两个内置类型同时还用到了 __联合类的分发策略__ 
+上面两个内置类型同时还用到了 __联合类的分发策略__
 
 ## 其他
 
@@ -241,4 +255,3 @@ keyof 是解构索引类型
 as 键重映射
 
 [神光大佬的TypeScript 类型体操通关秘籍](https://juejin.cn/book/7047524421182947366/section/7048282176701333508)
-

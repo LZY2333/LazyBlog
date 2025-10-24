@@ -6,12 +6,14 @@ LazyBlog 是一个基于 [Rspress](https://rspress.rs/) 构建的个人 __技术
 
 ## 功能与特性
 
-- 自定义主题与组件：见 `theme/` 目录（导航、首页页脚、样式等）
-- 内容组织完善：按分类与标签归档，目录在 `docs/` 与 `docs/posts/` 下
-- 实用插件：
+- https证书持续生成
+- github action持续集成，自动发布
+- rspress主题修改，自定义首页
+-
+- 辅助脚本：`src/scripts/generateOverview.ts` 预览页自动生成
+- 辅助插件：
   - `ChinesePunctuationReplacePlugin`：中文半角/全角标点修正
   - `FrontMatterCountPlugin`：FrontMatter 标签统计与计数
-- 辅助脚本：`src/scripts/generateOverview.ts` 预览页自动生成
 
 ## 目录结构
 
@@ -64,7 +66,7 @@ hide: true
 ## 快速开始
 
 ```bash
-npm i && npm run dev
+pnpm i && pnpm run dev
 # 构建与预览
-npm run build && npm run preview
+pnpm run build && pnpm run preview
 ```

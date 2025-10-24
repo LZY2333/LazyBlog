@@ -13,11 +13,12 @@ return结果值：非thenable、非promise（不等待）
 return结果值：thenable（等待 1个then的时间）
 return结果值：promise（等待 2个then的时间）
 
+await 的后续代码(等待 1个then的时间)
 await 结果值：非thenable、非promise、promise（不等待）
 await 结果值：thenable（等待 1个then的时间）
 
 async函数的缺点，调用async的函数也必须是async或promise
-### Promise.all()
+## Promise.all()
 
 ```js
 Promise.myAll = function (promises) {
@@ -44,7 +45,7 @@ Promise.myAll = function (promises) {
 
 `Promise.resolve(item)`如果是普通函数,常数,立即返回结果
 
-### Promise.race()
+## Promise.race()
 
 ```js
 Promise.MyRace = function (promises) {
@@ -60,7 +61,7 @@ Promise.MyRace = function (promises) {
 
 [滑稽鸭:请实现promise.all](https://juejin.cn/post/7069805387490263047#heading-5)
 
-### 实现mergePromise函数
+## 实现mergePromise函数
 如果有多个异步函数，怎么串行执行？回答 async/await
 如果不使用 async/await 怎么实现？写一下。
 
@@ -113,7 +114,7 @@ mergePromise([ajax1, ajax2, ajax3]).then(data => {
 // 注意，mergePromise([ajax1, ajax2, ajax3])也是立即开始任务，而非.then之后才执行。
 ```
 
-### JS异步并发调度器
+## JS异步并发调度器
 
 ```js
 class Scheduler {
@@ -181,7 +182,7 @@ addTask(timer,text) {
 ```
 
 
-### 封装一个异步加载图片的方法
+## 封装一个异步加载图片的方法
 
 这个相对简单一些，只需要在图片的onload函数中，使用resolve返回一下就可以了。
 
@@ -189,6 +190,7 @@ addTask(timer,text) {
 function loadImg(url) {
     return new Promise((resolve, reject) => {
         const img = new Image();
+        img.src = url;
         img.onload = function () {
             console.log("一张图片加载完成");
             resolve(img);
@@ -196,23 +198,20 @@ function loadImg(url) {
         img.onerror = function () {
             reject(new Error('Could not load image at' + url));
         };
-        img.src = url;
     })
 }
 ```
-这里属实是有点没看懂,应该是对onload API不认识,整完这波Promise回头补一补.
 
-todo..
+## Promise 和 async/await 有什么联系
 
+1. async/await 是 Promise 的语法糖, 底层基于 Promise 实现
 
-### Promise 和 async/await 有什么联系
-
-### 使用Promise实现每隔1秒输出1,2,3
+## 使用Promise实现每隔1秒输出1,2,3
 
 ```js
 const arr = [1, 2, 3]
-arr.reduce((p, item) => {
-    return p.then(() => {
+arr.reduce((pre, item) => {
+    return pre.then(() => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 console.log(item)
@@ -223,10 +222,10 @@ arr.reduce((p, item) => {
 }, Promise.resolve())
 ```
 
-其实就是拼了一个 `Promise().resolve().then(setTimeout).then(setTimeout).then(setTimeout)` 的结构,
+`Promise().resolve().then(setTimeout).then(setTimeout).then(setTimeout)`
 
 
-### 使用Promise实现红绿灯交替重复亮
+## 使用Promise实现红绿灯交替重复亮
 
 红灯3秒亮一次，黄灯2秒亮一次，绿灯1秒亮一次；如何让三个灯不断交替重复亮灯？
 
@@ -259,11 +258,11 @@ p()
 ```
 自己写是写出来了，但是没有想到light函数，三个灯一个个写的promise，没想到通用函数
 
-### ajax请求相同资源时，实际只发出一次请求
+## ajax请求相同资源时，实际只发出一次请求
 
 [前端并发10个相同的请求，怎么控制为只发一个请求？](https://juejin.cn/post/7052700635154219015)
 
-### 第十题
+## 第十题
 
 ```js
 async function test () {
@@ -290,8 +289,9 @@ Promise.resolve()
 
 await 结果值：非thenable、非promise、promise（不等待）
 await 结果值：thenable（等待 1个then的时间）
+await 后续代码再加 1个then的实践
 
-### 第九题
+## 第九题
 
 ```js
 async function async1 () {
@@ -331,7 +331,7 @@ console.log('11')
 // 最终结果: 5 1 3 4 7 11 8 9 AAA 10 6
 ```
 
-### 第八题
+## 第八题
 
 ```js
 async function async1 () {
@@ -411,7 +411,7 @@ return结果值：非thenable、非promise（不等待）
 return结果值：thenable（等待 1个then的时间）
 return结果值：promise（等待 2个then的时间）
 
-### 第一题
+## 第一题
 ```js
 const fn = () => (new Promise((resolve, reject) => {
   console.log(1);
@@ -427,7 +427,7 @@ console.log('start')
 // 'success'
 ```
 
-### 第二题
+## 第二题
 
 ```js
 Promise.resolve().then(() => {
@@ -446,7 +446,7 @@ Promise.resolve().then(() => {
 
 被包裹成了`return Promise.resolve(new Error('error!!!'))`
 
-### 第三题
+## 第三题
 
 ```js
 Promise.resolve(1)
@@ -462,7 +462,7 @@ Promise.resolve(1)
 
 因此发生了透传，将resolve(1) 的值直接传到最后一个then里。
 
-### 第四题
+## 第四题
 
 ```js
 function runAsync (x) {
@@ -491,7 +491,7 @@ Promise.all([runAsync(1), runReject(4), runAsync(3), runReject(2)])
 
 且不会影响数组中其它的异步任务的执行
 
-### 第五题
+## 第五题
 
 ```js
 async function async1() {
@@ -517,7 +517,7 @@ async 视为 new promise，await(包括await这行)之前都是立即执行的 e
 await下一行开始都是promise.then
 
 
-### 第六题
+## 第六题
 
 ```js
 async function async1 () {
@@ -541,7 +541,7 @@ console.log('script end')
 
 await后面的Promise是没有返回值，始终是pending状态，await却始终没有响应...
 
-### 第七题
+## 第七题
 
 ```js
 async function fn () {
@@ -569,7 +569,7 @@ await 就算跟个常量也会 将其包装为一个promise，因此多一层微
 
 `return await 2`完全等于 `return await Promise.resolve(2)`
 
-### 感谢
+## 感谢
 
 [LinDaiDai_霖呆呆：【建议星星】要就来45道Promise面试题一次爽到底(1.1w字用心整理)](https://juejin.cn/post/6844904077537574919)
 

@@ -1,9 +1,8 @@
-import * as path from 'node:path'
-import { defineConfig } from 'rspress/config'
-import { FrontMatterCountPlugin } from './src/plugins/FrontMatterCountPlugin'
-import { pluginOpenGraph } from 'rsbuild-plugin-open-graph'
-
-const docsPath = path.join(__dirname, 'docs')
+import * as path from 'node:path';
+import { defineConfig } from 'rspress/config';
+import { FrontMatterCountPlugin } from './src/plugins/FrontMatterCountPlugin';
+import { pluginOpenGraph } from 'rsbuild-plugin-open-graph';
+const docsPath = path.join(__dirname, 'docs');
 
 export default defineConfig({
     root: docsPath,
@@ -37,8 +36,8 @@ export default defineConfig({
             rspack: async (config) => {
                 config.plugins?.unshift(
                     new FrontMatterCountPlugin()
-                )
-                return config
+                );
+                return config;
             },
         },
         html: {
@@ -55,5 +54,4 @@ export default defineConfig({
         light: '/rspress-icon.svg',
         dark: '/rspress-icon.svg',
     },
-    
-})
+});
