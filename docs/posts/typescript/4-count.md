@@ -29,6 +29,7 @@ type Add<Num1 extends number, Num2 extends number> =
 ## 2. 减法
 
 `infer Rest`提取 本质上就是减法
+
 ```ts
 type Subtract<Num1 extends number, Num2 extends number> =
     BuildArray<Num1> extends [...arr1: BuildArray<Num2>, ...arr2: infer Rest]
@@ -54,6 +55,7 @@ type Multiply<
 > = N2 extends 0 ? R['length']
     : Multiply<N1, Subtract<N2, 1>, [...R, ...BuildArray<N1>]>;
 ```
+
 Result 每次加N1, N2每次-1, 直到N2为0, 返回Result
 
 ## 4. 除法
@@ -100,18 +102,19 @@ type GreaterThan<
 
 ```ts
 type FibonacciLoop<
-    // 之前累加的数值
-    PrevArr extends unknown[], 
-    // 当前数值
-    CurrentArr extends unknown[], 
-    // index
-    IndexArr extends unknown[] = [], 
-    // 数列的第几个数
+    // 前一项
+    PrevArr extends unknown[],
+    // 当前项
+    CurrentArr extends unknown[],
+    // 当前索引
+    IndexArr extends unknown[] = [],
+    // 目标索引
     Num extends number = 1
 > = IndexArr['length'] extends Num
     ? CurrentArr['length']
-    : FibonacciLoop<CurrentArr, [...PrevArr, ...CurrentArr], [...IndexArr, unknown], Num> 
+    : FibonacciLoop<CurrentArr, [...PrevArr, ...CurrentArr], [...IndexArr, unknown], Num>
 
-// 构建斐波那契数列，真正要传入的是Num
+// 取第 Num 项的斐波那契数
 type Fibonacci<Num extends number> = FibonacciLoop<[1], [], [], Num>;
+
 ```

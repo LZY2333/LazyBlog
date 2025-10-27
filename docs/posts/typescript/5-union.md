@@ -14,10 +14,10 @@ TypeScript 对联合类型做了专门的处理，具有 Distributive 特性, �
 
 缺点: 带来了理解上的门槛
 
-
 ## 1. 条件类型
 
 这种效果叫 __分布式条件类型__
+
 ```ts
 type UppercaseA<Item extends string> = 
     Item extends 'a' ?  Uppercase<Item> : Item;
@@ -66,17 +66,16 @@ type IsUnion<A, B = A> = A extends A
 type test3 = IsUnion<'a' | 'b'>
 ```
 
-`B = A` 复制一个 `A`
+`B = A` 首先复制一个 `A`
 
-`A extends A` 仅为了 触发分布式条件类型, 让A 变成单独的子类型
+`A extends A` 必然为true, 但联合类型, 会被分发为子类型分别进行后续推导
 
-`[B] extends [A]` 避免触发`B`的分布式条件类型，与 已经变成子类型的 `A` 比较
+`[B] extends [A]` 避免了`B`的分布式条件类型，与 多个拆成子类型的 `A` 比较
 
-如果相等，就是不存在分发，就不是 联合类型，
-
-如果不相等，            就是 联合类型
+此时 相等 则代表`A`不存在分发 `false`, 不相等 则代表`A` 产生了分发 `true`
 
 __只有extends左边的联合类型会触发 分别单独传入计算__
+
 ```ts
 // A B 是同一个类型，属性a b却不同
 type TestUnion<A, B = A> = A  extends A ? { a: A, b: B} : never;
@@ -126,16 +125,19 @@ type Keys = T['a' | 'b'];
 
 ## 5. 利用分发机制
 
-对数组进行全组合(4 和 3 中的内容), 下面只需要传入数组
+利用 4.数组转联合类型 3.联合类型自动交叉组合, 对数组进行全组合。
+
 ```ts
 type test4<T extends string[]> = `__${T[number]}`
 
 // "__aaa" | "__bbb"
 type test5 = test4<['aaa', 'bbb']>
 ```
+
 `T extends string[]` 和 `T[number]` 这两点是实现能传入数组变成联合类型的关键
 
 联合类型的分发 代替 循环， 达到遍历子类型的效果
+
 ```ts
 // 任意两个类型的全组合
 type Combination<A extends string, B extends string> =
@@ -177,6 +179,7 @@ type testActiveDistribute2 = ActiveDistribute<never>
 联合类型不能直接 infer 来取其中的某个类型, 必须通过特殊技巧
 
 联合类型转元组
+
 ```ts
 // [1, 2, 3]
 type testUnionToTuple = UnionToTuple<1 | 2 | 3>
@@ -187,8 +190,8 @@ type testUnionToTuple = UnionToTuple<1 | 2 | 3>
 type UnionToIntersection<U> =
     (U extends U ? (x: U) => unknown : never) extends
     (x: infer R) => unknown
-    ? R // { [K in keyof R]: R[K] }
-    : never
+        ? R // { [K in keyof R]: R[K] }
+        : never
 
 // 联合类型转元组类型
 type UnionToTuple<T> = 
@@ -202,17 +205,32 @@ type UnionToTuple<T> =
 type testUnionToTuple = UnionToTuple<1 | 2 | 3>
 ```
 
-`T extends any ? () => T : never` 联合类型转 函数联合类型
+__UnionToIntersection__ A | B | C 转成交叉类型 A & B & C
 
-`UnionToIntersection<>`函数联合类型 转 函数交叉类型
+0. 假设传入 `A | B | C`
 
-函数交叉类型 即 函数重载(见TS基础8函数重载)
+1. `(x: A) => unknown | (x: B) => unknown | (x: C) => unknown`
 
-`函数重载 extends () => infer ReturnType` 获取函数重载的 ReturnType
+2. 与`extends (x: infer R) => unknown`比较, 此时由于函数参数为逆变
 
-__函数重载的ReturnType 特性是: 其值为最后一个重载的ReturnType__
+3. `infer R` 收紧为 交叉类型 `A & B & C`
 
-至此我们拿到了联合类型的最后一个类型！！
+__UnionToTuple__ `1 | 2 | 3` 转 `[1, 2, 3]`
+
+0. 传入 `1 | 2 | 3`
+
+1. `UnionToIntersection<() => 1 | () => 2 | () => 3>`
+
+2. `(() => 1) & (() => 2) & (() => 3)`
+
+3. 与 `extends () => infer ReturnType`比较, 此时由于 函数返回值为协变
+
+4. `infer ReturnType` 取最后一个函数的返回值类型, 即 `3`
+
+5. `[...UnionToTuple<1 | 2>, 3]` 进入递归
+
+> 函数交叉类型 即 函数重载(见TS基础8函数重载)
+> 函数重载的 ReturnType 特性是: 其值为最后一个重载的 ReturnType
 
 ## 9. 其他
 

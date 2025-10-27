@@ -10,19 +10,24 @@ tags:
 ## 1. IsAny
 
 __any 与任何类型的交叉类型都是 any__
+
 ```ts
-type IsAny<T> = 0 extends (2 & T) ? true : false
+type IsAny<T> = 0 extends (1 & T) ? true : false
 ```
+
 0 和 1 可以换成任意两个不同的类型
 
 ## 2. IsEqual
 
 ```ts
-// 之前的简易实现
-type IsEqual0<A, B> = (A extends B ? true : false) &
+// 无法应对 分布式条件类型 和 any
+type IsEqual1<A, B> = T extends U ? U extends T ?
+    true : false : false
+// 利用交集防止分布式行为，无法应对 any
+type IsEqual2<A, B> = (A extends B ? true : false) &
     (B extends A ? true : false)
 // true, 无法判别any
-type isEqualRes0 = IsEqual0<'a', any>
+type isEqualRes2 = IsEqual2<'a', any>
 ```
 
 ```ts
@@ -55,6 +60,7 @@ type F2 = <T>() => T extends string ? 1 : 2;
 
 type Test = F1 extends F2 ? true : false;    // false ✅
 ```
+
 如果 F1 是完全相同的结构，它应该被认为是 F2 的子类型；
 
 但由于 F1 总是返回 1，而 F2 的行为依赖于 T，因此两者不等。
@@ -87,6 +93,7 @@ type IsNever<T> = [T] extends [never] ? true : false
 ```
 
 如果条件类型左边是never, 那永远返回never
+
 ```ts
 type BadIsNever<T> = T extends never ? true : false;
 // never
@@ -115,6 +122,7 @@ type test9 = IsTuple<[1, 2, 3]>
 函数参数处会发生逆变，可以用来实现联合类型转交叉类型。
 
 联合类型转交叉类型
+
 ```ts
 type UnionToIntersection<U> =
     (U extends U ? (x: U) => unknown : never) extends
@@ -142,6 +150,7 @@ TS 中有函数参数是有逆变性，如果参数是多个类型，参数类�
 提取索引类型中的可选索引
 
 可选属性其Key可能没有,即`{}`是其子类型
+
 ```ts
 type GetOptional<Obj extends Record<string, any>> = {
     [Key in keyof Obj as {} extends Pick<Obj, Key>
@@ -159,6 +168,7 @@ type testGetOptional = GetOptional<{ a: 1; b?: number }>
 ## 9. GetRequired
 
 与可选索引相反的就是required
+
 ```ts
 type isRequired<
     Key extends keyof Obj,
@@ -197,6 +207,7 @@ type testGetRemoveIndexSignature = RemoveIndexSignature<{
 过滤出 class 的 public属性
 
 keyof 只能拿到 class 的 public 索引，不能拿到 private 和 protected
+
 ```ts
 type ClassPublicProps<Obj extends Record<string, any>> = {
     [Key in keyof Obj]: Obj[Key]
@@ -213,6 +224,7 @@ type testGetClassPublicProps = ClassPublicProps<testClass>
 ## 12. as const
 
 TS 默认推导出来的类型不会是字面量类型,也就是某一固定值
+
 ```ts
 const obj = { a:1,b:2 }
 // { a: number; b: number; }
@@ -235,16 +247,15 @@ type arrConstType = typeof arrConst
 
 type IsConstOnly<Arr> =
     // 这里必须加 readonly
-    Arr extends readonly [infer A, infer B] ? true : false
+    Arr extends readonly [any, any] ? true : false
 // true
 type testGetConstOnly = IsConstOnly<arrConstType>
 ```
 
 `as const` 常见使用场景, 模拟枚举
+
 ```ts
 const colors = ['red', 'green', 'blue'] as const;
 // "red" | "green" | "blue"
 type Color = typeof colors[number];
 ```
-
-## 13. 

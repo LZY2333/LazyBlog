@@ -1,3 +1,4 @@
+export {};
 // 下划线转驼峰
 type CamelCase<Str extends string> =
     Str extends `${infer Left}_${infer Right}${infer Rest}`
