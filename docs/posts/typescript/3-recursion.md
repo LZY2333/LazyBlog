@@ -226,13 +226,21 @@ type obj1 = DeepReadonly<obj>
 type obj2 = DeepReadonly2<obj>
 ```
 
-`Obj extends any ? { ... } : never` 是 __强制计算,触发归一化的技巧__
+`Obj extends any ? { ... } : never` 是 借用条件类型引发 __强制计算/归一化__ 的技巧
 
-## 技巧！强制计算, 类型归一化
+## 技巧！强制计算/归一化
+
+### 延迟推导(Deferred Type Resolution)
 
 `type obj1 = {readonly a: DeepReadonly<{b: { c: string}}>}`
 
 非归一化的类型, TS 默认类型推导是惰性的
+
+一个类型别名或泛型引用，在没有访问其属性或结构的上下文中时，不会被立即展开。
+
+只有当上下文 需要 知道类型的具体结构时才会展开,例如`a.b.c`
+
+### 归一化(Normalized)
 
 `type obj2 = {readonly a: {readonly b: {readonly c: string}}}`
 
@@ -240,14 +248,15 @@ __归一化类型(Normalized Type)__, 即表现为最终结构的类型
 
 解开了所有类型别名, 条件类型, 类型推导, 并合并了结果
 
-### 分布式条件类型的计算 触发 归一化
-
-__延迟推导(Deferred Type Resolution)__
-
-一个类型别名或泛型引用，在没有访问其属性或结构的上下文中时，不会被立即展开。
-
-只有当上下文 需要 知道类型的具体结构时才会展开
-
-__分布式条件类型的计算__ 具有优先性 / 触发强制计算 / 触发归一化, 导致当前层被展开
+__条件类型的计算__ 具有优先性 / 触发强制计算 / 触发归一化, 导致当前层被展开
 
 每一层的 `Obj extends any ? ... : never` 都会触发 __分布式条件类型的计算__
+
+```ts
+// 条件类型归一化/强制计算
+type Distribute<T> = T extends unknown ? T : never;
+// 映射类型归一化
+type Simplify<T> = { [P in keyof T]: T[P] }
+```
+
+条件类型归一化(Distribute, ForceCompute)，映射类型归一化(Simplify)

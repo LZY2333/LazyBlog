@@ -88,12 +88,6 @@ JoinType 就用到了这个技巧，JoinType本可以不使用积累参数
 declare const join:Join;
 let res = join('-')('l', 'z', 'y')
 
-interface Join{
-    <Delimiter extends string>(delimiter: Delimiter):
-        <Items extends string[]>(...items: Items) =>
-            JoinType<Items, Delimiter>
-}
-
 type RemoveFirstDelimiter<Str extends string> =
     Str extends `${infer _}${infer Rest}` ? Rest : Str
 
@@ -104,27 +98,46 @@ type JoinType<
 > = Items extends [infer Cur, ...infer Rest]
     ? JoinType<Rest, Delimiter, `${Result}${Delimiter}${Cur & string}`>
     : RemoveFirstDelimiter<Result>
-```
 
-另外注意到:
+interface Join{
+    <Delimiter extends string>(delimiter: Delimiter):
+        <Items extends string[]>(...items: Items) =>
+            JoinType<Items, Delimiter>
+}
+```
 
 __Join 中第一个函数返回值使用了`:`,第二个函数返回值使用了`=>`__
 
-`:` 是 `interface` 中定义函数的要求
+`:` 是 `interface` 定义函数/定义调用签名 的语法要求
 
-`=>` 是 `type` 中定义函数的要求
+`=>` 是 `type` 定义函数 的语法, Join 可以改成 下面示例Join2
 
 ```ts
-// interface 定义函数
-interface Add1 {
-  (a: number): (b: number) => number;
-}
+type Join2 =
+    <Delimiter extends string>(delimiter: Delimiter) =>
+        <Items extends string[]>(...items: Items) =>
+            JoinType<Items, Delimiter>
+// interface 定义函数/定义调用签名
+interface Add1 { (a: number): (b: number) => number; }
+// type 定义函数/定义调用签名
+type Add2 = { (a: number): (b: number) => number; }
 // type 定义函数
-type Add2 = (a: number) => (b: number) => number;
-// 二者用法一致
+type Add3 = (a: number) => (b: number) => number;
+// 三者用法一致
 declare const add1:Add1
 declare const add2:Add2
+declare const add3:Add3
 ```
+
+## 调用签名
+
+| 类型     | 示例                            | 含义             |
+|----------|---------------------------------|------------------|
+| 调用签名 | `{ (x: number): string }`       | 对象本身可被调用 |
+| 属性签名 | `{ foo: (x: number)=> string }` | 对象的属性       |
+| 方法签名 | `{ foo(x: number): string }`    | 对象的方法       |
+| 构造签名 | `{ new (x: number): Person }`   | 对象可被 new     |
+| 索引签名 | `{ [key: string]: number }`     | 索引类型约束     |
 
 ## 泛型函数类型
 

@@ -31,15 +31,15 @@ tags:
 
 ### Partial 索引变可选
 
-`type Partial0<T> = { [P in keyof T]?: T[P] };`
+`type Partial<T> = { [P in keyof T]?: T[P] };`
 
 ### Required 索引取消可选
 
-`type Required0<T> = { [P in keyof T]-?: T[P] };`
+`type Required<T> = { [P in keyof T]-?: T[P] };`
 
 ### Readonly 索引变只读
 
-`type Readonly0<T> = { readonly [P in keyof T]: T[P] };`
+`type Readonly<T> = { readonly [P in keyof T]: T[P] };`
 
 ### 字符串大小写
 
@@ -52,7 +52,7 @@ tags:
 type Awaited<T> =
     T extends null | undefined
         ? T 
-        : T extends object & { then(onfulfilled: infer F): any }
+        : T extends object & { then(onfulfilled: infer F, ...args: any): any }
             ? F extends ((value: infer V, ...args: any) => any)
                 ? Awaited<V>
                 : never 
@@ -78,8 +78,10 @@ type ThisParameterType0<T> =
 // 移除函数 this类型
 type OmitThisParameter0<T> =
     unknown extends ThisParameterType<T>
-        ? T : T extends (...args: infer A) => infer R
-            ? (...args: A) => R : T
+        ? T
+        : T extends (...args: infer A) => infer R
+            ? (...args: A) => R
+            : T
 
 // 提取构造器 参数类型
 type ConstructorParameters0<
@@ -421,4 +423,46 @@ const a: FormatDate<'YY-MM-DD'> = '2023-01-02';
 const b: FormatDate<'DD/MM/YY'> = '01/02/2024';
 
 const c: FormatDate<'DD/MM/YY'> = '2024-01-02';
+```
+
+## 10. TupleToObject
+
+```ts
+type TupleToObject<T extends readonly (keyof any)[]> =
+    { [Key in T[number]]: Key}
+```
+
+`T extends readonly (keyof any)[]` 是限定 元组类型 标准写法
+
+```ts
+// readonly 修饰数组，代表是一个元组类型
+const tupleNumber = [1, 2, 3, 4] as const
+// typeof tupleNumber(内涵as const) 就是元组类型，无readonly会报错
+type test = TupleToObject<typeof tupleNumber>
+```
+
+## MyReadOnly2
+
+将 T 中的 K属性变为ReadOnly, 且没传K时, 全部变为ReadOnly
+
+```ts
+type MyReadonly2<T, K extends keyof T = keyof T> =
+    Simplify<Omit1<T, K> & Readonly1<Pick1<T,K>>>
+// 下面是用到的工具类型
+type Exclude1<T, U> = T extends U ? never: T;
+type Pick1<T, K extends keyof T> = 
+    { [P in K]: T[P] }
+type Omit1<T, K extends keyof T> =
+    Pick1<T, Exclude1<keyof T, K>>
+type Readonly1<T> =
+    { readonly [ P in keyof T ]: T[P]}
+type Simplify<T> =
+    { [P in keyof T]: T[P] }
+// 下面是test Case
+interface Todo1 {
+  title: string
+  description?: string
+  completed: boolean
+}
+type test = MyReadonly2<Todo2, 'title' | 'description'>
 ```
