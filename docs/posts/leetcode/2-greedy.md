@@ -1,13 +1,10 @@
 ---
-title: 贪心算法题
+title: 贪心算法
 date: 2025-10-14 10:07:05
 categories: 技术栈
 tags: 
     - 算法题
 ---
-
-
-## 贪心算法
 
 贪心的本质是 局部最优，到 全局最优
 
@@ -129,6 +126,17 @@ var canJump = function(nums) {
 ## 45. 跳跃游戏II
 
 [leetcode](https://leetcode.cn/problems/jump-game-ii/description/)
+
+i从前往后，记录 当前最远下标 curDistance
+
+[i, curDistance] 内寻找 下一步远下标  nextDistance
+
+遍历完时模拟跳跃，nextDistance 赋值给 curDistance, result步数+1
+
+> for循环中i < nums.length - 1无等号, 因为:  
+> 假设 末位i(nums.length - 1) 恰好等于 curDistance, 会多执行一次 result++  
+> 为什么说这次是多执行的，因为当前 nextDistance能cover的范围是已经计算过 result++的  
+> 在i为0的第一轮 curDistance, nextDistance 均为 0, 已经 result++, nextDistance 赋值
 
 ## 860. 柠檬水找零
 
