@@ -40,5 +40,5 @@ Jupyter 自带的默认内核是 IPython kernel(Python 的解释器)
 
 Deno优势(对比NodeJS Kernel): TypeScript支持,原生ESM,跨平台
 
-> Jupyter 是 AI 技术栈中 __交互与展示层__ 的工具
+> Jupyter 是 AI 技术栈中 __交互与展示层__ 的工具  
 > LangChain / LlamaIndex 是 __应用层__ 的工具

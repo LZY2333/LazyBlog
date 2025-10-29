@@ -9,12 +9,12 @@ summary: Promise各种题，Promise各种题，Promise各种题，Promise各种�
 
 async函数在抛出返回值时，会根据返回值类型开启不同数目的微任务
 
-return结果值：非thenable、非promise（不等待）
-return结果值：thenable（等待 1个then的时间）
+return结果值：非thenable、非promise（不等待）  
+return结果值：thenable（等待 1个then的时间）  
 return结果值：promise（等待 2个then的时间）
 
-await 的后续代码(等待 1个then的时间)
-await 结果值：非thenable、非promise、promise（不等待）
+await 的后续代码(等待 1个then的时间)  
+await 结果值：非thenable、非promise、promise（不等待）  
 await 结果值：thenable（等待 1个then的时间）
 
 async函数的缺点，调用async的函数也必须是async或promise
@@ -62,7 +62,7 @@ Promise.MyRace = function (promises) {
 [滑稽鸭:请实现promise.all](https://juejin.cn/post/7069805387490263047#heading-5)
 
 ## 实现mergePromise函数
-如果有多个异步函数，怎么串行执行？回答 async/await
+如果有多个异步函数，怎么串行执行？回答 async/await  
 如果不使用 async/await 怎么实现？写一下。
 
 把传进去的数组按顺序先后执行，并且把返回的数据先后放到数组data中,
@@ -287,8 +287,8 @@ Promise.resolve()
 // 最终结果: 1 3 4 2 5 6 7
 ```
 
-await 结果值：非thenable、非promise、promise（不等待）
-await 结果值：thenable（等待 1个then的时间）
+await 结果值：非thenable、非promise、promise（不等待）  
+await 结果值：thenable（等待 1个then的时间）  
 await 后续代码再加 1个then的实践
 
 ## 第九题
@@ -407,8 +407,8 @@ Promise.resolve()
 
 async函数在抛出返回值时，会根据返回值类型开启不同数目的微任务
 
-return结果值：非thenable、非promise（不等待）
-return结果值：thenable（等待 1个then的时间）
+return结果值：非thenable、非promise（不等待）  
+return结果值：thenable（等待 1个then的时间）  
 return结果值：promise（等待 2个then的时间）
 
 ## 第一题

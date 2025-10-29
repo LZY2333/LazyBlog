@@ -1,3 +1,7 @@
+/**
+ * 生成各目录的 Overview 及其 _meta.json 的脚本
+ * 风格：中文控制台输出，与 addLineBreakSpaces.ts 一致
+ */
 import fs from 'fs/promises';
 import path from 'path';
 import { pathToFileURL } from 'url';
@@ -11,7 +15,7 @@ interface MetaItem {
 }
 
 async function generateOverviewPages() {
-    console.log('正在生成 Overview 页面...');
+    console.log('【generateOverview】开始生成 Overview 页面...');
 
     // 获取 Rspress 配置
     const configPath = path.resolve(process.cwd(), 'rspress.config.ts');
@@ -29,7 +33,7 @@ async function generateOverviewPages() {
         .filter(entry => entry.isDirectory())
         .map(entry => entry.name);
 
-    // 为每一个子文件夹，在根目录创建Overview
+    // 为每一个子文件夹，在根目录创建 Overview
     await Promise.all(
         subDirs.map(dirName => processSubDir(postsPath, dirName))
     );
@@ -41,6 +45,8 @@ async function generateOverviewPages() {
     await Promise.all(
         subDirs.map(dirName => updateSubDirMetaJson(postsPath, dirName))
     );
+
+    console.log('【generateOverview】生成完成。');
 }
 
 async function processSubDir(postsPath: string, dirName: string) {
@@ -98,7 +104,7 @@ async function updateMetaJson(postsPath: string, subDirs: string[]) {
     metaItems = metaItems.filter(item =>
         item.label === 'Overview' || subDirs.includes(item.name)
     );
-    console.log();
+    // 写入 _meta.json
     // 确保目录存在并写入文件
     await fs.mkdir(path.dirname(metaJsonPath), { recursive: true });
     await fs.writeFile(metaJsonPath, JSON.stringify(metaItems, null, 4), 'utf-8');
@@ -147,6 +153,6 @@ async function updateSubDirMetaJson(postsPath: string, dirName: string) {
 
 // 执行脚本
 generateOverviewPages().catch(error => {
-    console.error('生成 Overview 页面时发生错误:', error);
+    console.error('【generateOverview】执行失败：', error);
     process.exit(1);
-}); 
+});

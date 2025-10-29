@@ -43,7 +43,7 @@ tags:
 
 ### 字符串大小写
 
-大写，小写，首字母大写，字母小写
+大写，小写，首字母大写，字母小写  
 `Uppercase`、`Lowercase`、`Capitalize`、`Uncapitalize`
 
 ### Awaited

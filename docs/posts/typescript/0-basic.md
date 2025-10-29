@@ -127,8 +127,8 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 
 `void` > `undefined` > `null` > `never`
 
-> 是所有类型父类型意味着,不可赋值给任何类型(协变)
->
+> 是所有类型父类型意味着,不可赋值给任何类型(协变)  
+>  
 > 是所有类型子类型意味着,可赋值给任何类型(协变)
 
 ### undefined null void never 最小的类型
@@ -150,11 +150,11 @@ __可赋值关系表__
 | `null`      | ✅\*    | ✅\*         | ✅      | ❌       |
 | `never`     | ✅      | ✅           | ✅      | ✅       |
 
-> *表示在 strictNullChecks: false 或 strict: false 下成立,
-> strictNullChecks:true时, 任意类型被赋值为null undefined会报错
-> 除了void 永远可以被赋值 undefined
-> 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件
-> VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration
+> *表示在 strictNullChecks: false 或 strict: false 下成立,  
+> strictNullChecks:true时, 任意类型被赋值为null undefined会报错  
+> 除了void 永远可以被赋值 undefined  
+> 如果配置未生效，请检查tsconfig中的 include属性是否包含当前文件  
+> VSCode → Ctrl+Shift+P → TypeScript: Go to Project Configuration  
 > → 检查是否跳转到预期 tsconfig.json
 
 ```ts
@@ -403,10 +403,10 @@ this 约束几乎只出现在该函数可能被BindCallApply调用的情况下
 
 这个是控制是否按照原函数的类型来检查 bind、call、apply
 
-> 注意区分当前代码是 TS层面 还是 JS层面
-> 如果 type 关键字后面的 typeof 会被视为 TS语法，获取 对象的类型
-> 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof
-> 也能被识别为 TS语法，返回的是 类型本身
+> 注意区分当前代码是 TS层面 还是 JS层面  
+> 如果 type 关键字后面的 typeof 会被视为 TS语法，获取 对象的类型  
+> 或 getName(this: typeof person, key: PersonKey) 冒号后的typeof  
+> 也能被识别为 TS语法，返回的是 类型本身  
 > 而语句中的 typeof 会被视为 js语法，非获取类型的功能，而是返回类型字符串
 
 ## 10. interface 和 type
@@ -433,8 +433,8 @@ type C = A & B;
 interface C extends A, B {}
 ```
 
-> interface 和 class, enum 用于 描述对象结构
-> type, infer, extends, keyof 用于 构造复杂类型
+> interface 和 class, enum 用于 描述对象结构  
+> type, infer, extends, keyof 用于 构造复杂类型  
 > declare, export, import 用于 声明
 
 ## 其它

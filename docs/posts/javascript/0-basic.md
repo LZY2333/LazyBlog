@@ -48,11 +48,11 @@ __53位精度__: 52位尾数位，并且隐含一个最高有效位 1，可表�
 
 `Number.MAX_SAFE_INTEGER` `Number.POSITIVE_INFINITY` `Number.MAX_VALUE` `Infinity`
 
-> 9007199254740991 = 90亿亿
-> 计算机采用科学计数法储存数，科学计数法 与 原码 反码 补码 移码 计算机原理，大学学过。
-> 二进制1 = 2^1-1，二进制 11 = 2^2-1,二进制 111 = 2^3-1, 二进制 53位1 = 2^53-1
-> 2^53 - 1 双精度64位浮点格式 默认整数位1, 加上52位尾数位全为 1，共 53位1, 为最大安全整数
-> 2^53     指数位储存53, 尾数位需要储存53个0, 但最后1位0被忽略, 能被JS正常储存
+> 9007199254740991 = 90亿亿  
+> 计算机采用科学计数法储存数，科学计数法 与 原码 反码 补码 移码 计算机原理，大学学过。  
+> 二进制1 = 2^1-1，二进制 11 = 2^2-1,二进制 111 = 2^3-1, 二进制 53位1 = 2^53-1  
+> 2^53 - 1 双精度64位浮点格式 默认整数位1, 加上52位尾数位全为 1，共 53位1, 为最大安全整数  
+> 2^53     指数位储存53, 尾数位需要储存53个0, 但最后1位0被忽略, 能被JS正常储存  
 > 2^53 + 1 指数位储存53，尾数位需要储存52个0, 和最后1位1被忽略, 因此与 2^53 相等。
 
 ### 为什么 0.1 + 0.2 不等于 0.3
@@ -134,11 +134,11 @@ Object.prototype.toString.call([]).slice(8,-1) === 'Array' // true
 
 ### 如何遍历对象属性
 
-仅`for/in`返回 原型链属性，仅 `Reflect.ownKeys()`返回 Symbol
-`for ... in ...`                  继承，可枚举
-`Object.keys()`                 非继承，可枚举
-`Object.entries()`              非继承，可枚举
-`Object.getOwnPropertyNames()`  非继承，可枚举，不可枚举
+仅`for/in`返回 原型链属性，仅 `Reflect.ownKeys()`返回 Symbol  
+`for ... in ...`                  继承，可枚举  
+`Object.keys()`                 非继承，可枚举  
+`Object.entries()`              非继承，可枚举  
+`Object.getOwnPropertyNames()`  非继承，可枚举，不可枚举  
 `Reflect.ownKeys()`             非继承，可枚举，不可枚举，Symbol
 
 可枚举属性 指 `enumerable` 标志设置为 true 的属性
@@ -208,10 +208,10 @@ JS垃圾回收机制就是 定期找出 不再用到的变量 释放其内存。
 
 ## CommonJS AMD CMD UMD ES6Module
 
-CommonJS(NodeJS): exports/require 模块作用域，同步加载，值的拷贝
-AMD(RequireJS):   define/require  异步加载，加载完立即执行解析依
-CMD(SeaJS):       define/use      异步加载，需要的时候才执行依赖
-UMD:              判断用的是哪种规范，再执行返回输出
+CommonJS(NodeJS): exports/require 模块作用域，同步加载，值的拷贝  
+AMD(RequireJS):   define/require  异步加载，加载完立即执行解析依  
+CMD(SeaJS):       define/use      异步加载，需要的时候才执行依赖  
+UMD:              判断用的是哪种规范，再执行返回输出  
 ES6Module:        export/import   异步加载，值的引用
 
 ## 事件循环/宏任务和微任务
@@ -285,10 +285,10 @@ history模式下，url发生改变并刷新页面，浏览器会认为是请求�
 
 nginx 配置静态资源代理，告诉服务器返回什么静态文件。
 
-server{
-     listen 8080;
-     server_name localhost;
-     root /usr/share/nginx/lhtml/dist;
+server{  
+     listen 8080;  
+     server_name localhost;  
+     root /usr/share/nginx/lhtml/dist;  
      try_files $uri /index.html;  // 添加这一条
      index index.html;
      charset utf-8;

@@ -188,8 +188,8 @@ for (let i = 1; i <= n; i++) {
 
 <https://leetcode.cn/problems/combination-sum-iii/description/>
 
-找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：
-只使用数字1到9
+找出所有相加之和为 n 的 k 个数的组合，且满足下列条件：  
+只使用数字1到9  
 每个数字 最多使用一次
 
 ```js

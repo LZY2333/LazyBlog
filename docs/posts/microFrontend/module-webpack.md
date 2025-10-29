@@ -118,7 +118,7 @@ __解析__
 
 4. 上述准备完毕后,执行入口文件代码,项目启动
 
-> 早期浏览器本身不支持模块化,使用函数来模拟模块化的效果
+> 早期浏览器本身不支持模块化,使用函数来模拟模块化的效果  
 > node也是如此,require exports等全局变量其实就是函数的参数
 
 热身完毕，来看看最重要，最常用的 ESModule，Webpack又是如何打包的吧。
@@ -241,8 +241,8 @@ __打包后的全部源码带注释__
 
 实现了 __三个重要部分__:
 
-`__webpack_modules__` 文件路径为key,包裹为函数的模块为value 的Map结构
-`__webpack_require__` 函数类型,实现导入功能(`import`)
+`__webpack_modules__` 文件路径为key,包裹为函数的模块为value 的Map结构  
+`__webpack_require__` 函数类型,实现导入功能(`import`)  
 `__webpack_exports__` 对象类型,实现导出功能(`export`)
 
 `__webpack_require__`,通过 key(文件路径) 从 Map`__webpack_modules__`
@@ -253,12 +253,12 @@ __打包后的全部源码带注释__
 传入`__webpack_require__`函数 供 被引用的模块函数 递归调用 引用模块
 
 
-__三个工具函数__:
-`__webpack_require__.o` 判断某对象是否有某属性
-`__webpack_require__.r` 将exports对象标记为ESModule
+__三个工具函数__:  
+`__webpack_require__.o` 判断某对象是否有某属性  
+`__webpack_require__.r` 将exports对象标记为ESModule  
 `__webpack_require__.d` 通过给exports对象设置getter属性,绑定要导出的数据
 
-> CommonJS 导出值是拷贝（执行时确定）
+> CommonJS 导出值是拷贝（执行时确定）  
 > ESModule 导出的是绑定（live binding）
 
 ## 总结

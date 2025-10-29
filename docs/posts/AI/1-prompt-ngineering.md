@@ -5,8 +5,8 @@ tags:
     - AI
 ---
 
-https://doc.iamkasong.com
-https://kyscj.xetlk.com/s/3pm8Df
+https://doc.iamkasong.com  
+https://kyscj.xetlk.com/s/3pm8Df  
 https://kyscj.xetslk.com/s/OFLZ0
 
 ## 1.明确需求
@@ -21,8 +21,8 @@ https://kyscj.xetslk.com/s/OFLZ0
 
 使用 AI 生成提示词，输入以下语句
 
-> 我的需求是“用武侠故事情节为代码添加注释”，
-> 我认为需求的最佳实践是“将代码逻辑与故事情节映射”。
+> 我的需求是“用武侠故事情节为代码添加注释”，  
+> 我认为需求的最佳实践是“将代码逻辑与故事情节映射”。  
 > 请基于最佳实践给出完整实现步骤
 
 AI 生成提示词，将提示词给大模型，大模型生成应用

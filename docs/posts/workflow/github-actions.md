@@ -76,9 +76,9 @@ GitHub Actions 是 GitHub 提供的原生 CI/CD 工具，支持在如下事件�
 
 ## 2. 自动部署流程（示例：Node 项目构建部署）
 
-开发者提交代码(Gitee)
-DevOps 平台监听代码变更（Webhook）
-DevOps 触发 Jenkins Job
+开发者提交代码(Gitee)  
+DevOps 平台监听代码变更（Webhook）  
+DevOps 触发 Jenkins Job  
 Jenkins 执行 拉取代码 安装依赖 测试 构建 部署
 
 ## 3. 常用工具部署说明

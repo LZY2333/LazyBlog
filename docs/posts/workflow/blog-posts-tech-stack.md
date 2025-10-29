@@ -5,7 +5,7 @@ date: 2025-05-08 10:49:05
 
 写一篇博客文章除了干货以外 你还需要知道这些技术栈支持
 
-> 建议直接将vscode的默认格式化插件全改为prettier, 那个 vscode-language-features 有各种问题
+> 建议直接将vscode的默认格式化插件全改为prettier, 那个 vscode-language-features 有各种问题  
 > "editor.defaultFormatter": "esbenp.prettier-vscode", 并删除其他 defaultFormatter 配置
 
 ## Markdown语法 和 markdown-it

@@ -229,8 +229,8 @@ type i = GetThisParameter<typeof dong.hello> // unknown
 type j = GetThisParameter<typeof dong.hello2> // Dong
 ```
 
-> 不能直接 Dong.hello 访问hello，除非hello是静态属性
-> 因为 class 只是一个语法糖，只有在 new关键字执行时，hello才被创建并挂载进实例
+> 不能直接 Dong.hello 访问hello，除非hello是静态属性  
+> 因为 class 只是一个语法糖，只有在 new关键字执行时，hello才被创建并挂载进实例  
 > Dong本身并不是变量值，也不是命名空间，仅仅是一个类型，所以不能Dong.hello
 
 ### 提取构造器类型

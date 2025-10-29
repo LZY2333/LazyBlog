@@ -64,7 +64,7 @@ function myNew(constructor, ...args) {
 }
 ```
 
-> 防止变量覆盖可以改为 const key = Symbol(); context[key] = this
+> 防止变量覆盖可以改为 const key = Symbol(); context[key] = this  
 > 防止变量覆盖可以使用 `Object.hasOwnProperty` 检查并提前储存
 
 ## ES3写法
@@ -274,12 +274,12 @@ function myNew(constructor, ...args) {
 又可以访问 构造函数调用时通过 this给 新对象 赋值的属性。
 
 
-> __proto__ ，绝大部分浏览器都支持这个非标准的方法访问原型，
-> 然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，
-> 与其说是一个属性，不如说是一个 getter/setter，当使用 obj.__proto__ 时，
+> __proto__ ，绝大部分浏览器都支持这个非标准的方法访问原型，  
+> 然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，  
+> 与其说是一个属性，不如说是一个 getter/setter，当使用 obj.__proto__ 时，  
 > 可以理解成返回了 Object.getPrototypeOf(obj)。
 
-冴羽大佬的评论区是必看的
+冴羽大佬的评论区是必看的  
 [JavaScript深入之new的模拟实现](https://github.com/mqyqingfeng/Blog/issues/13)
 
 [面试官问：能否模拟实现JS的new操作符](https://juejin.cn/post/6844903704663949325#heading-7)
