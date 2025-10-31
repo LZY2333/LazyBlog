@@ -127,6 +127,25 @@ var canJump = function(nums) {
 
 [leetcode](https://leetcode.cn/problems/jump-game-ii/description/)
 
+```js
+var jump = function(nums) {
+    let result = 0;
+    let curDistance = 0;
+    let nextDistance = 0;
+
+    for(let i = 0; i < nums.length - 1; i++) {
+        nextDistance = Math.max(nextDistance, i + nums[i])
+        if(i === curDistance) {
+            curDistance = nextDistance
+            result++
+        }
+    }
+    return result
+};
+// 2
+console.log(jump([2,3,1,1,4]));
+```
+
 i从前往后，记录 当前最远下标 curDistance
 
 [i, curDistance] 内寻找 下一步远下标  nextDistance
@@ -138,154 +157,284 @@ i从前往后，记录 当前最远下标 curDistance
 > 为什么说这次是多执行的，因为当前 nextDistance能cover的范围是已经计算过 result++的  
 > 在i为0的第一轮 curDistance, nextDistance 均为 0, 已经 result++, nextDistance 赋值
 
-## 860. 柠檬水找零
+## 1005. K次取反后最大化的数组和
 
-"不带零钱你卖什么柃檬水？"
-
-[leetcode](https://leetcode-cn.com/problems/lemonade-change/)
-
-在柠檬水摊上，每一杯柠檬水的售价为 5 美元。
-
-顾客排队购买你的产品，（按账单 bills 支付的顺序）一次购买一杯。
-
-每位顾客只买一杯柠檬水，然后向你付 5 美元、10 美元或 20 美元。
-
-你必须给每个顾客正确找零，也就是说净交易是每位顾客向你支付 5 美元。
-
-注意，一开始你手头没有任何零钱。
-
-给你一个整数数组 bills ，其中 bills[i] 是第 i 位顾客付的账。
-
-如果你能给每位顾客正确找零，返回 true ，否则返回 false 。
-
-__98.18%__ 击败  
-__86.49%__ 击败
+[leetcode](<https://leetcode.cn/problems/maximize-sum-of-array-after-k-negations/>
 
 ```js
-var lemonadeChange = function(bills) {
-    let fc = 0,tc = 0,i = 0
-    for(; i < bills.length; i++) {
-        const count = bills[i] / 5 - 1
-        if(count === 0) { // + 5*1
-            fc++
-        } else if(count === 1) { // + 10*1, - 5*1
-            tc++
-            fc--
-            if(fc < 0) return false
-        } else if(count === 3) { // + 20*1(不记录), - 10*1 - 5*1 或 - 5*3
-            if(tc) {
-                tc --
-                fc --
-            } else {
-                fc = fc - 3
-            }
-            if(fc < 0) return false
+var largestSumAfterKNegations = function (nums, k) {
+    nums.sort((a, b) => a - b);
+    let sum = 0;
+    let min = Number.POSITIVE_INFINITY;
+    for (let num of nums) {
+        if (k > 0 && num < 0) {
+            num = -num;
+            k--;
+        }
+        sum += num;
+        min = Math.min(min, num);
+    }
+    return sum - (k % 2 === 1 ? min * 2 : 0);
+};
+// 11
+console.log(largestSumAfterKNegations([-2, 5, 0, 2, -2], 3));
+```
+
+## 134. 加油站
+
+[leetcode](https://leetcode.cn/problems/gas-station/description/)
+
+```js
+var canCompleteCircuit = function (gas, cost) {
+    let start = 0;
+    let curGain = 0;
+    let totalGain = 0;
+
+    for (let i = 0; i < gas.length; i++) {
+        curGain += gas[i] - cost[i];
+        totalGain += gas[i] - cost[i];
+
+        // 如果当前油量小于 0，说明无法从 start 到 i+1
+        if (curGain < 0) {
+            start = i + 1; // 改变起点
+            curGain = 0; // 重置油量
         }
     }
-    return true
+
+    return totalGain < 0 ? -1 : start;
+};
+
+// 代码含义: 最后一个 totalGain < 0 的路段的下一个坐标即为 start
+
+// 首先 totalGain >= 0，说明总油量能走完，必然有答案
+
+// 假设路段(0-i)totalGain变负，代表其无法走到下一站，
+// 也代表 其缺少了前面的gain，即 段内无start
+// 代码执行过程: 前期连续发现 totalGain为负 的路段，
+// 但由于总 totalGain >= 0，最后一段必为start
+
+// 另外，假设路段(0-i)totalGain一直为正，从未变负，则0就是 start
+// 当然，这情况也可能是多解，但题目条件保证了单解，因此只能是0
+
+// 最后，从某点出发后，任何中途的油量都不为负
+// 这题其实就是找 最小前缀和的 下一个坐标
+```
+
+## 135. 分发糖果
+
+[leetcode](https://leetcode.cn/problems/candy/)
+
+```js
+var candy = function (ratings) {
+    const l = ratings.length;
+    const rank = new Array(l).fill(1);
+
+    for (let i = 1; i < l; i++) {
+        if (ratings[i] > ratings[i - 1])
+            rank[i] = rank[i - 1] + 1;
+    }
+    for (let i = l - 2; i >= 0; i--) {
+        if (ratings[i] > ratings[i + 1])
+            rank[i] = Math.max(rank[i], rank[i + 1] + 1);
+    }
+
+    return rank.reduce((pre, cur) => pre + cur, 0);
+};
+// 两次遍历，每个item满足积累rank的 左规则或右规则时，取二者大值
+// 比较左边时，必须 从左往右 遍历
+// 因为最左边一个0号本身已是最终结果，rank是需要从最边开始累加的
+// 比较右边时，必须 从右往左 遍历
+// 此时则要比较两次rank 取大值
+```
+
+## 860. 柠檬水找零
+
+[leetcode](https://leetcode.cn/problems/lemonade-change/description/)
+
+```js
+var lemonadeChange = function (bills) {
+    let rank1 = 0;
+    let rank2 = 0;
+    for (let i = 0; i < bills.length; i++) {
+        if (bills[i] === 5) {
+            rank1 += 1;
+        }
+        if (bills[i] === 10) {
+            if (!rank1) return false;
+            rank2 += 1;
+            rank1 -= 1;
+        }
+        if (bills[i] === 20) {
+            if (rank1 && rank2) {
+                rank1 -= 1;
+                rank2 -= 1;
+            } else if (rank1 >= 3){
+                rank1 -= 3;
+            } else return false
+        }
+    }
+    return true;
 };
 ```
 
-## 用最少数量的箭引爆气球(leetcode 452)
+## 406. 根据身高重建队列
+
+[leetcode](https://leetcode.cn/problems/queue-reconstruction-by-height/description/)
+
+```ts
+var reconstructQueue = function (people) {
+    people.sort((a, b) => b[0] - a[0] || a[1] - b[1]);
+    const queue = [];
+    for (let i = 0; i < people.length; i++) {
+        queue.splice(people[i][1], 0, people[i]);
+    }
+    return queue;
+};
+```
+
+__两个维度先确定一个维度__
+一个是 身高无明显提示 一个是 要求前面比自己高的人数
+一定是尽量大h的i在前，先根据h从高到低排
+__贪心: 大h小k的i先入栈__
+优先满足限定要求最小的
+排序完成后，对i来说，左侧调换序 都不影响 后续i的座序
+相较左侧，i是小h，往前插也不会影响左侧已经排好的限制k
+同h小k 必须在 同h大k 前入queue，即排序时靠左，
+如果同h小k在同h大k 的后续压入queue,则必被在 同h大k 左侧，同h大k超额
+
+## 452. 用最少数量的箭引爆气球
 
 其实就是区间覆盖,给几个区间,每个区间存在重复与不充分,找出最多的重复区间
 
-[leetcode](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons/)
+[leetcode](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/description/)
 
 ```js
-var findMinArrowShots = function(points) {
-    if (!points.length ) {
-        return 0;
-    }
-    // 首先，按右边界从小到大排列，保证每 后一个气球 右边界 必在 当前气球 右边界 的右边
-    // 同时设置 箭位置为 1球右边(贪婪，射中1的同时又尽量能射中后面的球,射中后面的球的条件需要箭位置尽可能大)
-    // 这样 2球右边 > 1球右 = 箭位置，那么只需要判断 2球左边 < 箭位置 就代表必然同时射中2球
-    // 如果 不能射中 2球，即 2球左 > 1球右,例如:[1,2] [3,4]
-    // 则需 箭+1,并设置 新箭位置 为 2球右(如:4)
-    // 如果 能射中 2球,则继续判断下一个球是否也能射中，直到找到不能射中的，加新箭
-    // 这里的精妙之处就在于,每次都拿出新的一支箭,并设置其位置为当前球右边界时，
-    // 假设这支箭最多能射穿n个气球,那么这支箭的位置,"必然在这n个气球中最靠左的右边界位置"
-    // 而完成这一精妙操作关键一步是开头的 按右边界从小到大排列，同时 从左向右遍历
-    // 每一次 增加新箭，都是在气球右边界上，而由于是 右边界从小到大排序，所以碰到是第一个气球必然就是
-    // "必然在这n个气球中最靠左的右边界位置"
+var findMinArrowShots = function (points) {
     points.sort((a, b) => a[1] - b[1]);
-    console.log(points)
-    let pos = points[0][1] // 当前区间的 右边,位射箭位置
-    let ans = 1;
-    for (let balloon of points) {
-        if (balloon[0] > pos) { // 如果当前 区间的 左边 比 射箭位置 大
-            pos = balloon[1]; // 
-            ans++; // 则需要多射一支箭
+    let result = 0;
+    let preEnd = -Infinity;
+
+    for (const [start, end] of points) {
+        if (preEnd < start) {
+            result++;
+            preEnd = end;
         }
     }
-    return ans;
+    return result;
 };
 ```
 
-### 我的解法
+贪心: 尽可能留下`i[end]`小的区间，给后面留位置
+思路: `i[end]` 由小到大排序，找不重叠区间数
+`preEnd < i[start]`：当前箭无法命中i，`result++`新加箭射当前`i[end]`
+每一箭 必然在这n个气球中最靠左的右边界位置
+
+## 435. 无重叠区间
+
+[leetcode](https://leetcode.cn/problems/non-overlapping-intervals/)
 
 ```js
-var findMinArrowShots = function(points) {
-    points = points.sort((l,r) => l[0] - r[0] || l[1] - r[1]) // 左端点相等要按右端点最小的来
-    let count = 0,i = 0;
-    while(i < points.length) {
-        count ++
-        // 每一个区间,找其下j个区间,
-        // 当这下j个区间 左节点 <= 当前区间 右节点(等于也算重合)
-        // 表示有重合区域,可一箭(1count)同时射穿,所以while循环跳过
-        let j = 1,right = points[i][1] // right边界最初为当前区间right,后续为了穿过重复区间
-        while(points[i+j] && points[i+j][0] <= right) { // right会不断缩小
-            right = points[i+j][1] < right ? points[i+j][1] : right
-            j ++
+var eraseOverlapIntervals = function(intervals) {
+    intervals.sort((a,b) => a[1] - b[1]);
+    let count = 0;
+    let preEnd = -Infinity;
+
+    for (const [start, end] of intervals) {
+        if (preEnd <= start) {
+            count++;
+            preEnd = end;
         }
-        i += j
     }
-    return count
+    return intervals.length - count;
 };
 ```
 
-## 移掉K位数字(leetcode 402)
+贪心: 尽可能留下`i[end]`小的区间，给后面留位置
+思路: `i[end]` 由小到大排序，找不重叠区间数
+与 452. 引爆气球(找不重叠区间数) 完全一致
+这里是开区间，if (preEnd <= start) 代替 if (preEnd < start) 就行
 
-[leetcode](https://www.algomooc.com/algocamp2)
+## 763. 划分字母区间
 
-这样从递增里找减少的，从递减里找增加的，就用栈！！！！
-
-无注释版
+[leetcode](https://leetcode.cn/problems/partition-labels/)
 
 ```js
-var removeKDigits = function(num, k) {
-    const stack = [];
-    for (const now of num) {
-        while(stack.length > 0 && stack[stack.length-1] > now && k) {
-            stack.pop();
-            k -= 1;
+var partitionLabels = function (s) {
+    const map = {};
+    for (let i = 0; i < s.length; i++) map[s[i]] = i;
+    const result = [];
+    let start = 0;
+    let end = 0;
+    for (let i = 0; i < s.length; i++) {
+        end = Math.max(end, map[s[i]]);
+        if (i === end) {
+            result.push(end - start + 1);
+            start = end + 1;
         }
-        stack.push(now);
     }
-    while (k-- > 0) { stack.pop() }
-    while(stack[0] === '0') { stack.shift() }
-    return stack.join('') || '0'
+    return result;
+};
+// [ 9, 7, 8 ]
+console.log(partitionLabels('ababcbacadefegdehijhklij'));
+```
+
+## 56. 合并区间
+
+[leetcode](https://leetcode.cn/problems/merge-intervals/description/)
+
+```js
+var merge = function(intervals) {
+    intervals.sort((p, q) => p[0] - q[0]);
+    const result = [];
+    for (const range of intervals) {
+        const l = result.length;
+        if (l && result[l - 1][1] >= range[0]) {
+            result[l - 1][1] = Math.max(result[l - 1][1], range[1]);
+        } else {
+            result.push(range);
+        }
+    }
+    return result;
 };
 ```
 
-注释版
+452「射最少箭」、435「保留最多不重叠区间」
+贪婪: 希望尽早结束，给后续留更多空间 => i[end]升序
+56「合并区间」
+贪婪: 希望尽早吞并，保证连续 => i[start]升序
+
+如果这里还 i[end]升序 正序遍历, [[1,2],[4,5],[1,6]] 就会出问题
+实际上 i[end]升序 倒序遍历 确实也能做这题
+
+另外，发现新range立即push，再在result中修改，这种写法很优秀
+而不是使用额外变量，计算到每个区间最大最终结果时(发现下一个区间时)才push
+因为计算最后一个区间时，是没有(发现下一个区间)这种时机的。
+
+## 738. 单调递增的数字
+
+[leetcode](https://leetcode.cn/problems/monotone-increasing-digits/)
 
 ```js
-var removeKDigits = function(num, k) {
-    const stack = []; // 维护一个单调递减栈(越栈底的数越小)
-    for (const now of num) { // 从左往右一个个遍历数
-        // 如果 栈不为空 栈顶元素大于当前元素 还需要删数
-        while (stack.length > 0 && stack[stack.length - 1] > now && k) {
-            stack.pop(); // 删了
-            k -= 1;
+var monotoneIncreasingDigits = function(n) {
+    let result = `${n}`.split('')
+    const l = result.length;
+    let flag = l
+    for(let i = l - 1; i > 0; i--) {
+        if(result[i-1] > result[i]) {
+            flag = i
+            result[i-1]-- 
         }
-        stack.push(now); // 把当前数放进去
     }
-    // 如果轮完还有k没删够，就删后面的大数字
-    while (k-- > 0) { stack.pop() }
-    // 删掉前面的0
-    while(stack[0] === '0') { stack.shift() }
-    // 拼接并防止空字符串
-    return stack.join('') || '0'
+    for(let i = flag; i < l; i++) result[i] = 9
+    return +result.join('')
 };
+console.log(monotoneIncreasingDigits(53321));
+// 只要发现 n[i-1] > n[i], n[i-1]退一位, i到末尾全变9
+// 如果左往右遍历, 当 n[i-1] === n[i] > n[i+1] 会出错
+// 332, 从前往后轮 得到错误答案 329(正确答案299)
+// 53321
+// 53319
+// 53299
+// 52999
+// 49999
 ```
