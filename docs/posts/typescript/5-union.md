@@ -162,6 +162,17 @@ type test6 = AllCombinations<'A' | 'B' | 'C'>
 
 接下来对每个 单A 都调用一次 Combination，循环+递归 完成全组合
 
+```ts
+type Permutation<T, B = T> =
+    [T] extends [never]
+        ? []
+        : T extends T
+            ? [T, ...Permutation<Exclude<B,T>>]
+            : []
+// ['a', 'b'] | ['b' | 'a']
+type Permuted = Permutation<'a' | 'b'>
+```
+
 ## 7. boolean any never 的分发
 
 ```ts

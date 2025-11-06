@@ -43,7 +43,7 @@ tags:
 
 ### 字符串大小写
 
-大写，小写，首字母大写，字母小写  
+大写，小写，首字母大写，首字母小写  
 `Uppercase`、`Lowercase`、`Capitalize`、`Uncapitalize`
 
 ### Awaited
@@ -188,37 +188,42 @@ __keyof 是一种内置操作符, 联合类型不对 keyof 分发__
 
 `keyof T | keyof U`不能写成 `keyof (T | U)`，这样是拿交集的Key
 
-## 2. 中分线转驼峰
-
-要求
+## 2. 大小驼峰转中分线
 
 ```ts
-// "aaaBbbCcc"
-type testKebaCaseToCamelCase = KebaCaseToCamelCase<'aaa-bbb-ccc'>
+// PascalCase/CamelCase To KebabCase
+// 遍历Letter转小写, 同时发现下一个Rest首字母大写就加`-`
 
-// "aaa-bbb-ccc"
-type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
+// Letter = "F", Rest = "ooBarBaz"
+// Rest 首字母小写 => "f" + KebabCase<"ooBarBaz">
+// Letter = "o", Rest = "oBarBaz"
+// Rest 首字母小写 => "o" + KebabCase<"oBarBaz">
+// Letter = "o", Rest = "BarBaz"
+// Rest 首字母大写 => "o" + "-" + KebabCase<"BarBaz">
+// Letter = "B", Rest = "arBaz"
+// Rest 首字母小写 => "b" + KebabCase<"arBaz">
+type KebabCase<S> =
+    S extends `${infer Letter}${infer Rest}`
+        ? Rest extends Uncapitalize<Rest>
+            ? `${Lowercase<Letter>}${KebabCase<Rest>}` 
+            : `${Lowercase<Letter>}-${KebabCase<Rest>}`
+        : S;
+// "foo-bar-baz"
+type testKebabCase = KebabCase<'FooBarBaz'>
+// 只能用 Uncapitalize 不能用 Capitalize
+// 因为 二者对于 遍历到末尾必现的 Rest为'' extends结果均为true
+// Capitalize 为true 会导致 末尾多加一个'-'
 ```
 
 ```ts
+// 中分线转小驼峰
 type KebaCaseToCamelCase<T extends string> =
     T extends `${infer First}-${infer Rest}`
         ? `${First}${KebaCaseToCamelCase<Capitalize<Rest>>}`
         : T
 // "aaaBbbCcc"
 type testKebaCaseToCamelCase = KebaCaseToCamelCase<'aaa-bbb-ccc'>
-
-type CamelCaseToKebaCase<T extends string> =
-    T extends `${infer First}${infer Rest}`
-        ? First extends Lowercase<First>
-            ? `${First}${CamelCaseToKebaCase<Rest>}`
-            : `-${Lowercase<First>}${CamelCaseToKebaCase<Rest>}`
-        : T
-// "aaa-bbb-ccc"
-type testCamelCaseToKebaCase = CamelCaseToKebaCase<'aaaBbbCcc'>
 ```
-
-字符串不需要 增加结果储存变量
 
 ## 3. 数组分组
 
@@ -465,4 +470,30 @@ interface Todo1 {
   completed: boolean
 }
 type test = MyReadonly2<Todo2, 'title' | 'description'>
+```
+
+## Promise.all
+
+```ts
+import type { Equal, Expect } from './test-utils'
+const promiseAllTest1 = PromiseAll([1, 2, 3] as const)
+const promiseAllTest2 = PromiseAll([1, 2, Promise.resolve(3)] as const)
+const promiseAllTest3 = PromiseAll([1, 2, Promise.resolve(3)])
+const promiseAllTest4 = PromiseAll<Array<number | Promise<number>>>([1, 2, 3])
+const promiseAllTest5 = PromiseAll<(number | Promise<string>)[]>([1, 2, Promise.resolve('3')])
+
+type cases = [
+  Expect<Equal<typeof promiseAllTest1, Promise<[1, 2, 3]>>>,
+  Expect<Equal<typeof promiseAllTest2, Promise<[1, 2, number]>>>,
+  Expect<Equal<typeof promiseAllTest3, Promise<[number, number, number]>>>,
+  Expect<Equal<typeof promiseAllTest4, Promise<number[]>>>,
+  Expect<Equal<typeof promiseAllTest5, Promise<(number | string)[]>>>,
+]
+
+declare function PromiseAll<T extends unknown[]>(values: readonly [...T] ): Promise<{
+    [ K in keyof T ]: Awaited<T[K]>
+}>
+    // Awaited<>：用于展开 PromiseLike(或普通值),获取内部类型
+    // readonly [...T]：用于限定T 强制「保留传入元组的结构」, 不然后续推断结果会不准确(test3)
+    // 同时，实现的时候也会限制函数体内 不能修改values参数
 ```

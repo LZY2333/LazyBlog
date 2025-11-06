@@ -108,17 +108,23 @@ type subString = SubString<'hello_world_t_t_t', '_t'>
 __Trim__
 
 ```ts
+type Space = ' ' | '\n' | '\t';
 // 去除所有空格
-type Trim<str extends string> =
-    str extends `${infer Prefix}${
-        | ' '
-        | '\n'
-        | '\t'}${infer Suffix}`
+type Trim<S extends string> =
+    S extends `${infer Prefix}${Space}${infer Suffix}`
         ? Trim<`${Prefix}${Suffix}`>
-        : str
+        : S
+
+// 去除两边的空格
+type TrimSides<S extends string> =
+    S extends | `${infer R}${Space}` | `${Space}${infer R}`
+        ? Trim<R>
+        : S;
 
 // 'helloworld'
-type g = Trim<' hello world '>
+type testTrim = Trim<' hello world '>
+// 'hello world'
+type testTrimSides = Trim<' hello world '>
 ```
 
 ## infer extends 和 & string
