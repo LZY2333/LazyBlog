@@ -53,5 +53,10 @@
         "type": "dir",
         "name": "microFrontend",
         "label": "MicroFrontend"
+    },
+    {
+        "type": "dir",
+        "name": "React",
+        "label": "React"
     }
 ]
