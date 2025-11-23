@@ -1,8 +1,6 @@
 [
     "large-model",
-    "my-gpt-promt",
     "1-prompt-ngineering",
     "2-promt-generate",
-    "3-prompt-trick",
-    "rag-rspress"
+    "3-prompt-trick"
 ]

@@ -64,26 +64,42 @@ var wiggleMaxLength = function(nums) {
 
 ## 53. 最大子序和
 
-[leetcode](https://leetcode.cn/problems/maximum-subarray/description/)
+[leetcode](https://leetcode.cn/problems/maximum-subarray/description/)  
+子数组是连续的，子序列 同序不连续的  
+当连续区间和为负，则立刻放弃该区间，也即为该区间的右边界
 
 ```js
+// 1维动态规划
+var maxSubArray = function (nums) {
+    // dp[i] 以nums[i]结尾的最大连续子数组和
+    const dp = Array(nums.length + 1).fill(0);
+    let result = -Infinity;
+    for (let i = 1; i <= nums.length; i++) {
+        dp[i] = Math.max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+        result = Math.max(result, dp[i]);
+    }
+    return result;
+};
+// 0维动态规划
+const maxSubArray = (nums) => {
+    let sum = 0, result = -Infinity;
+    for (let i = 0; i < nums.length; i++) {
+        sum = Math.max(sum + nums[i], nums[i]);
+        result = Math.max(result, sum);
+    }
+    return result;
+};
+// 贪心 其实就是 0维
 var maxSubArray = function(nums) {
-    let result = Number.NEGATIVE_INFINITY;
-    let sum = 0;
+    let [sum, result] = [0, -Infinity]
     for(let i = 0; i < nums.length; i++) {
+        sum < 0 && (sum = 0)
         sum += nums[i]
-        if(sum > result) result = sum
-        if(sum < 0) sum = 0
+        sum > result && (result = sum)
     }
     return result
 };
-// 6
-console.log(maxSubArray([-2,1,-3,4,-1,2,1,-5,4]));
 ```
-
-当一个区间和为负，则立刻放弃该区间，也即为该区间的右边界
-
-除了贪心 还可以动态规划
 
 ## 122. 买卖股票的最佳时机 II
 

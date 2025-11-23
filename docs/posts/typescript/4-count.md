@@ -41,9 +41,13 @@ type Subtract<Num1 extends number, Num2 extends number> =
 
 `arr1:` 和 `arr2` 并不能作为变量供后续使用，仅 `infer Rest` 可供后续使用
 
-`[...BuildArray<Num2>, ...infer Rest]` 完全等同
+使用上述 元组标签时, `Rest['length']` 会被视为元组类型（tuple）
 
-仅 `TS 4.1–4.9` 必须整个元组都带标签，或整个都不带，上半arr1，而下半没有标签
+不使用时`[...BuildArray<Num2>, ...infer Rest]`,
+
+`Rest['length']` 会视为数组类型而报错: 类型`length`无法用于索引类型`Rest`
+
+仅 `TS 4.1–4.9` 必须整个元组都带标签，或整个都不带, 这里其实只留arr2就行
 
 ## 3. 乘法
 

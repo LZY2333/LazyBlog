@@ -1,18 +1,17 @@
 ---
-title: qiankun学习笔记
+title: qiankun 学习笔记
 date: 2023-09-22 16:33:05
 categories: 技术栈
 tags:
   - 微前端
 ---
 
-## qiankun 学习笔记
 
-### 微前端
+## 微前端
 
 https://www.lumin.tech/blog/micro-frontends-1-concept/
 
-#### 第一步，解决了什么痛点:
+### 第一步，解决了什么痛点
 
 **大应用拆分**  
 **渐进式技术栈升级**
@@ -22,18 +21,18 @@ https://www.lumin.tech/blog/micro-frontends-1-concept/
 **技术栈无关**  
 **不同微应用可以组合形成新的产品**
 
-#### 第二步，实现了什么功能:
+### 第二步，实现了什么功能
 
 **沙箱:CSS 隔离，JS 隔离，路由隔离**  
 **微应用调度**
 
-#### 第三步，如何实现沙箱和微应用调度....
+### 第三步，如何实现沙箱和微应用调度
 
 qiankun: 实现沙箱，实现微应用接入配置简化，无痛接入  
 singleSpa: 实现基于路由进行微应用调度，定义了微应用生命周期  
 systemJS: 实现动态加载模块
 
-### Why Not Iframe
+## Why Not Iframe
 
 iframe 优势是能完美解决 样式隔离、js 隔离, 劣势是 无法突破这些隔离.
 
@@ -57,13 +56,13 @@ Why Not Single-spa: 无 JS 沙箱，无通信机制，无预加载
 
 当然还有更重要的一点: 我们的大佬指定要阿里的 qiankun
 
-### 微应用通信
+## 微应用通信
 
 路由参数、localStorage/sessionStorage 、eventBus
 
 官方提供的props: 注册时挂载的props变量，可以在子应用render函数内拿到
 
-### import-html-entry
+## import-html-entry
 
 1.通过 正则匹配，解析出 html 中的 CSS 和 js 文件  
 2.拉取CSS和JS文件，并内嵌到 微应用HTML文件中  
@@ -73,15 +72,15 @@ Why Not Single-spa: 无 JS 沙箱，无通信机制，无预加载
 singleSpa 使用 js entry  
 qiankun 使用 html entry
 
-__js entry的缺点__
+**js entry的缺点**
 
-__微应用需要被打包成一个JS文件__:  
+**微应用需要被打包成一个JS文件**:  
 微应用无法分包，按需加载、首屏资源加载优化、css 独立打包
 
-__主应用需要配置微应用地址__:  
+**主应用需要配置微应用地址**:  
 微应用无法使用哈希串 否则每次打包都需修改主应用配置, CDN加速时无法解决浏览器缓存
 
-__多个chunk加载顺序需手动配置__:  
+**多个chunk加载顺序需手动配置**:  
 无按需加载
 
 而 html entry 可以获得独立开发完全相同的体验
@@ -102,7 +101,7 @@ importHTML("./xxxApp/index.html").then((res) => {
 });
 ```
 
-### CSS 隔离方案
+## CSS 隔离方案
 
 css-module，scoped 打包的时候生成选择器名字实现隔离  
 BEM 规范  
@@ -112,7 +111,7 @@ shadowDOM 严格的隔离
 insertBefore, appendChild 和 removeChild  
 防止主应用样式DOM被修改
 
-### JS 隔离方案
+## JS 隔离方案
 
 **snapshotSandbox： 记录 window 对象，每次 unmount 都要和微应用的环境进行 Diff**  
 激活沙箱时，将 window 的快照信息存到 windowSnapshot 中，  
@@ -138,33 +137,33 @@ addedPropsMapInSandbox、modifiedPropsOriginalValueMapInSandbox
 
 支持多个子应用同时运行，不污染全局 window
 
-### qiankun 接入过程中遇到的问题
+## qiankun 接入过程中遇到的问题
 
 解决方案去哪找: 谷歌，qiankun github的issue，qiankun的微信支持群。
 
-__微应用通信__
+**微应用通信**
 
-__路由跳转问题__  
+**路由跳转问题**  
 子应用的路由跳转会基于子应用的base，无法使用`<router-link>` `router.push/router.replace`  
 `<a>`标签可以跳，但会刷新页面  
 解决：将主应用路由实例传给子应用，子应用进行封装
 
-__qiankun在子应用中引入资源时报错解决__  
+**qiankun在子应用中引入资源时报错解决**  
 qiankun会把静态资源的加载拦截，改用fetch方式获取资源，所以要求这些资源支持跨域，  
 解决: 使用qiankun提供的 start 接收的对象内的 excludeAssetFilter 判断url放行。
 
-__对微应用实现 keep-alive 需求__  
+**对微应用实现 keep-alive 需求**  
 直接display:none
 
-__样式相互影响__  
+**样式相互影响**  
 css module，每个模块配置自己的模块前缀
 
-__各个微应用UI风格不统一__  
+**各个微应用UI风格不统一**  
 css token，边距 颜色 字体大小，根据场景不同强制要求使用token变量，宣讲
 
 
-### 性能优化
-__async__ 一些插件，埋点，用户调研，字体包  
+## 性能优化
+**async** 一些插件，埋点，用户调研，字体包  
 `<script>` html文件的解析，会等待 script 的 加载及执行  
 `<script async>` 会异步加载脚本，加载完时会停止html解析，执行script  
 `<script defer>` 会异步加载脚本，加载完时会等待html解析结束，执行script
@@ -178,10 +177,10 @@ https://juejin.cn/post/7306786497712537650?searchId=202404242116183A016FC0387413
 
 CDN
 
-### keep-alive
+## keep-alive
 
 
-### qiankun 使用
+## qiankun 使用
 
 ```js
 registerMicroApps(

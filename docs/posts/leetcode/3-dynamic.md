@@ -8,13 +8,15 @@ tags:
 
 解决的问题: __重叠子问题__ __无后效性的问题__
 
-解题的本质: __递归__(思想) + __记忆化搜索__(工具) + __递推__(实现)
+解题的本质: __递归__(思想) + __记忆化搜索DP__(工具) + __递推__(实现)
 
-解题的思路: 通过 状态定义(保留求解所需的最小信息) 消除后效性, 转变成小问题, 得到递推
+获得无后效性: __状态定义增加维度__ __状态定义更细致准确__
 
-如何无后效性: __状态定义增加维度__ __状态定义更细致准确__
+获得递推公式: 状态定义消除后效性, 转变成小问题, 得到递推
 
-贪心每次选最优解，与上一个状态无关
+__无后效性__: 当前状态仅依赖前面状态确定, 不依赖 历史的路径 未来的选择
+
+贪心 每次选最优解，与上一个状态无关
 
 1. 确定dp数组含义
 2. 确定递推公式
@@ -26,11 +28,14 @@ tags:
 
 [leetcode](https://leetcode.cn/problems/maximum-subarray/solutions/9058/dong-tai-gui-hua-fen-zhi-fa-python-dai-ma-java-dai)
 
-__无后效性__: 后续求解问题新增加的
+## 技巧
 
-将问题定义成一个个 无后效性的子问题，
+关键在于 如何将问题转化定义成 __无后效性__ __重叠子问题__
 
-在通过找第一个子问题与第二个子问题的递进联系得到递推公式
+- 无后效性:定义dp, 减小dp负责的范围, 如 以`nums[i]`为结尾
+- 无后效性:定义dp, 状态定义增加维度, 如 买入与不买入
+- 递推公式:动态规划有「选或不选」和「枚举选哪个」两种基本思考方式。
+- 递推公式:尝试递归思路，倒推得到子问题
 
 ## 基础问题
 
@@ -807,7 +812,7 @@ const rob = root => {
 
 背包问题 不需要记录前一次状态, i选择效果 只依赖于 剩余容量, 只需记录容量唯一维度
 
-买卖股票本质上是一个有后效性的问题, i选择效果 依赖于 i-1的状态
+买卖股票本质上是一个有后效性的问题, i选择效果 依赖于 i-1的 __历史路径__
 
 我们通过设定 多个维度的状态记录器, 将其变为无后效性问题
 
@@ -1103,10 +1108,10 @@ lengthOfLIS([1, 3, 6, 7, 9, 4, 10, 5, 6])
 ```js
 const findLength = (nums1, nums2) => {
     const [m, n] = [nums1.length, nums2.length];
-    const dp = new Array(m + 1).fill(0).map(x => new Array(n + 1).fill(0));
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
     let res = 0;
     // 用二维数组记录所有比较情况
-    // dp[i][j] 表示 nums1 前 i 个元素和 nums2 前 j 个元素的公共的、长度最长的子数组的长度
+    // dp[i][j] 以 nums1[i-1] 和 nums2[j-1] 结尾的最长公共连续子序列的长度
     // 递推公式需要用到i-1，所以要初始化0位置，并从1位置开始
     for (let i = 1; i <= m; i++) {
         // 每放入一个nums1[i],遍历nums2[j],找有没有跟自己相等的,有就是当前dp+1
@@ -1114,7 +1119,7 @@ const findLength = (nums1, nums2) => {
             if (nums1[i - 1] === nums2[j - 1]) {
                 dp[i][j] = dp[i - 1][j - 1] + 1;
             }
-            res = dp[i][j] > res ? dp[i][j] : res;
+            res = Math.max(res, dp[i][j])
         }
     }
     return res;
@@ -1122,18 +1127,17 @@ const findLength = (nums1, nums2) => {
 
 const findLength2 = (nums1, nums2) => {
     const [m, n] = [nums1.length, nums2.length];
-    const dp = new Array(m + 1).fill(0)
+    const dp = Array(n + 1).fill(0)
     let res = 0;
     // 由于每次都只需要用到i-1层，可使用滚动数组
-    // 由于是组合问题，需要内层倒序
-    for (let i = 1; i <= m; i++) {
-        for (let j = n; j > 0; j--) {
-            dp[j] = nums1[i - 1] === nums2[j - 1] ? dp[j - 1] + 1 : 0
+    // 由于需要用到前面的值，需要内层倒序
+    for(let i = 1; i <= m; i++) {
+        for(let j = n; j > 0; j--) {
+            dp[j] = nums1[i-1] === nums2[j-1] ? dp[j-1]+1 : 0
             res = Math.max(res, dp[j])
         }
-        console.log(dp)
     }
-    return res;
+    return res
 };
 
 findLength2([1, 2, 3, 2, 1], [3, 2, 1, 4, 7])
@@ -1152,33 +1156,64 @@ findLength2([1, 2, 3, 2, 1], [3, 2, 1, 4, 7])
 [leetcode](https://leetcode.cn/problems/longest-common-subsequence/)
 
 ```js
-const longestCommonSubsequence = (text1, text2) => {
+var longestCommonSubsequence = function (text1, text2) {
     // dp[i][j] text1中的前i 和 text2中的前j 的公共子序列最长长度
-    let dp = Array.from(Array(text1.length+1), () => Array(text2.length+1).fill(0));
+    const [m, n] = [text1.length, text2.length];
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
 
-    for(let i = 1; i <= text1.length; i++) {
-        for(let j = 1; j <= text2.length; j++) {
-            if(text1[i-1] === text2[j-1]) {
-                dp[i][j] = dp[i-1][j-1] +1;;
-            } else {
-                // 如果不相等，那就通过i延伸，或者通过j延伸
-                dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1])
-            }
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            // dp[i - 1][j - 1]:除这两个外的最长长度 + 1:这两个相等
+            // 如果不相等, i-1: 丢掉当前i, j-1: 丢掉当前j
+            dp[i][j] = text1[i - 1] === text2[j - 1]
+                ? dp[i - 1][j - 1] + 1
+                : Math.max(dp[i - 1][j], dp[i][j - 1]);
         }
     }
-    return dp[text1.length][text2.length];
+    return dp[m][n];
 };
-longestCommonSubsequence("abcde","ace")
-[
-       a  c  e
-  [ 0, 0, 0, 0 ],
-a [ 0, 1, 1, 1 ],
-b [ 0, 1, 1, 1 ],
-c [ 0, 1, 2, 2 ],
-d [ 0, 1, 2, 2 ],
-e [ 0, 1, 2, 3 ]
-]
+// 一维DP
+var longestCommonSubsequence = function (text1, text2) {
+    // dp[i][j] text1中的前i 和 text2中的前j 的公共子序列最长长度
+    const n = text2.length;
+    const dp = new Array(n + 1).fill(0);
+
+    for (let i = 1; i <= text1.length; i++) {
+        let pre = 0; // 后续对应 dp[i-1][j-1]
+        // 倒序虽然能避免覆盖前值, 轻松拿到dp[i-1][j-1]
+        // 但 dp[i][j-1] 代表当前轮i, 必须正序遍历才能拿到,即dp[j - 1]
+        for (let j = 1; j <= n; j++) {
+            const tmp = dp[j]; // 下一轮的 dp[i-1][j-1]
+            // 一维中不论正序倒序, dp[i-1][j]就是dp[j]本身
+            dp[j] = text1[i - 1] === text2[j - 1]
+                ? pre + 1
+                : Math.max(dp[j], dp[j - 1]);
+            pre = tmp;
+        }
+    }
+    return dp[n];
+};
+// longestCommonSubsequence("abcde","ace")
+// [
+//        a  c  e
+//   [ 0, 0, 0, 0 ],
+// a [ 0, 1, 1, 1 ],
+// b [ 0, 1, 1, 1 ],
+// c [ 0, 1, 2, 2 ],
+// d [ 0, 1, 2, 2 ],
+// e [ 0, 1, 2, 3 ]
+// ]
 ```
+
+| 对比点       | __718. 最长重复子数组__                            | __1143. 最长公共子序列__                         |
+|--------------|----------------------------------------------------|--------------------------------------------------|
+| 题目关键词   | subArray / 子数组                                  | subSequence / 子序列                             |
+| 是否连续     | ✅ 必须连续                                         | ❌ 不要求连续                                     |
+| 状态定义     | 以 nums1[i-1], nums2[j-1] 结尾的连续公共子数组长度 | 前 i、前 j 个字符的公共子序列长度                 |
+| 相等时       | `dp[i][j] = dp[i-1][j-1] + 1`                      | `dp[i][j] = dp[i-1][j-1] + 1`                    |
+| 不相等时     | `dp[i][j] = 0`（断了连续性）                         | `dp[i][j] = max(dp[i-1][j], dp[i][j-1])`（可跳过） |
+| 结果         | 所有 `dp[i][j]` 中的最大值                           | `dp[m][n]`                                       |
+| 图形延伸方向 | 仅沿 ↖️ 对角线延伸（连续）                           | 三方向（⬆️、⬅️、↖️）取最大                           |
 
 ### 1035.不相交的线
 
@@ -1186,89 +1221,127 @@ e [ 0, 1, 2, 3 ]
 
 ```js
 var maxUncrossedLines = function (nums1, nums2) {
-    // 找相同元素连线，而线不相交
-    // 也即，在两个数组间，找相同顺序的子序列,也即最长公共子序列
-    const dp = new Array(nums1.length + 1).fill(0).map(() => new Array(nums2.length + 1).fill(0))
-    for(let i = 1; i <= nums1.length; i++) {
-        for(let j = 1; j <= nums2.length; j++) {
-            // 考虑顺序，也即排列，每次的计算都基于当前轮的计算，最新j的排列
-        if(nums1[i-1] === nums2[j-1]) {
-            dp[i][j] = dp[i-1][j-1] + 1
-        } else {
-            // 如果不相等，就考虑采用i更多，还是采用j更多,双重动态规划
-            dp[i][j] = Math.max(dp[i-1][j],dp[i][j-1])
+    // dp[i][j] 前ij项能连最多的线
+    const [m, n] = [nums1.length, nums2.length];
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            // 相等时必然比去掉一个的情况更大
+            dp[i][j] = nums1[i-1] === nums2[j-1]
+                ? dp[i - 1][j - 1] + 1
+                : Math.max( dp[i - 1][j], dp[i][j - 1])
         }
+        // console.log(i,nums1[i-1],dp[i]);
+    }
+    return dp[m][n]
+};
+// 一维DP
+var maxUncrossedLines = function (nums1, nums2) {
+    const n = nums2.length;
+    const dp = new Array(n + 1).fill(0);
+
+    for (let i = 1; i <= nums1.length; i++) {
+        let pre = dp[0]; // 对应 dp[i-1][j-1]
+        for (let j = 1; j <= n; j++) {
+            const tmp = dp[j];
+            dp[j] = nums1[i - 1] === nums2[j - 1]
+                ? pre + 1
+                : Math.max(dp[j], dp[j - 1]);
+            pre = tmp;
         }
     }
-    return dp[nums1.length][nums2.length]
+    return dp[n];
 };
+// 3
+// console.log(maxUncrossedLines([2,5,1,2,5],[10,5,2,1,5,2]));
 ```
 
-### 53. 最大子序和
+### 53. 最大子数组和
 
 [leetcode](https://leetcode.cn/problems/maximum-subarray/)
 
-```JS
+```js
+// 1维动态规划
 var maxSubArray = function (nums) {
-    // 连续：基于上一个计算，并且是排列
-    let pre = max = Number.NEGATIVE_INFINITY
-    // 如果pre + nums[i] 还没nums[i]大，那nums[i]就是新的头
-    for (const item of nums) {
-        pre = Math.max(item, pre + item)
-        max = Math.max(max, pre)
+    // dp[i] 以nums[i]结尾的最大连续子数组和
+    const dp = Array(nums.length + 1).fill(0);
+    let result = -Infinity;
+    for (let i = 1; i <= nums.length; i++) {
+        dp[i] = Math.max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+        result = Math.max(result, dp[i]);
     }
-    return max
+    return result;
+};
+// 0维动态规划
+const maxSubArray = (nums) => {
+    let sum = 0, result = -Infinity;
+    for (let i = 0; i < nums.length; i++) {
+        sum = Math.max(sum + nums[i], nums[i]);
+        result = Math.max(result, sum);
+    }
+    return result;
+};
+// 贪心 其实就是 0维
+var maxSubArray = function(nums) {
+    let [sum, result] = [0, -Infinity]
+    for(let i = 0; i < nums.length; i++) {
+        sum < 0 && (sum = 0)
+        sum += nums[i]
+        sum > result && (result = sum)
+    }
+    return result
 };
 ```
 
-```js
-// 标准动态规划
-const maxSubArray = nums => {
-    const len = nums.length;
-    let dp = new Array(len).fill(0);
-    dp[0] = nums[0];
-    let max = dp[0];
-    for (let i = 1; i < len; i++) {
-        dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
-        max = Math.max(max, dp[i]);
-    }
-    return max;
-};
-```
+1. ✅`dp[i]` 以 i 项结尾的最大子数组和
+2. ❌`dp[i]` 前 i 项的最大子数组和
+定义2中无法确定对应 子数组是否连续  
+i代表的子数组可能不含i项,而i+1项最大值可能要保证前面连续
 
 ### 392.判断子序列
 
 [leetcode](https://leetcode.cn/problems/is-subsequence/)
 
 ```js
-const isSubsequence = (s, t) => {
-    // 1143.最长公共子序列的递推公式基本一样，区别是本题如果删元素一定是字符串t
-    // dp[i][j] = dp[i-1][j-1] + 1
-    // dp[i][j] = dp[i][j-1]
-    const dp = new Array(s.length + 1).fill(0).map(() => new Array(t.length + 1).fill(0))
-    for (let i = 1; i <= s.length; i++) {
-        // 针对每个i遍历j，找有没有相等的，有相等的就在上一轮的基础+1
-        // 如果存在i遍历j，都没找到，则都是0.则后续也全为0
-        for (let j = 1; j <= t.length; j++) {
-            if (s[i - 1] === t[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1] + 1
-            } else {
-                dp[i][j] = dp[i][j - 1]
-            }
+var isSubsequence = function (s, t) {
+    // dp[i][j]: 前s[i]项 前t[j]项 相同子序列长度
+    // 相等, 则看除了这两个数, 前面的数是否找到, 上一轮且小于当前j
+    // 不相等, 则继承i轮j前面的(前面找到了就行)
+    const [m, n] = [s.length, t.length];
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+            dp[i][j] = s[i - 1] === t[j - 1]
+                ? dp[i - 1][j - 1] + 1
+                : dp[i][j - 1];
+    return dp[m][n] === m;
+};
+// 一维DP
+var isSubsequence = function (s, t) {
+    const [m, n] = [s.length, t.length];
+    const dp = Array(n + 1).fill(0);
+
+    for (let i = 1; i <= m; i++) {
+        let pre = dp[0]; // 对应 dp[i-1][j-1]
+        for(let j = 1; j <= n; j++) {
+            const tmp = dp[j];
+            dp[j] = s[i - 1] === t[j - 1]
+                ? pre + 1
+                : dp[j - 1];
+            pre = tmp
         }
     }
-    return dp[s.length][t.length] === s.length
+    return dp[n] === m;
 };
-// 每次都不是 只需要上一层，或者说左上角的数据，所以不可以用滚动数组优化
-// dp[i-1] 和 dp[i] 都要用到
-isSubsequence("abc", "ahbgdc")
-
-[
-    [0, 0, 0, 0, 0, 0, 0],
-    a[0, 1, 1, 1, 1, 1, 1],
-    b[0, 0, 0, 2, 2, 2, 2],
-    c[0, 0, 0, 0, 0, 0, 3]
-]
+// [
+//     [0, 0, 0, 0, 0, 0, 0],
+//     a[0, 1, 1, 1, 1, 1, 1],
+//     b[0, 0, 0, 2, 2, 2, 2],
+//     c[0, 0, 0, 0, 0, 0, 3]
+// ]
+// isSubsequence("abc", "ahbgdc")
 ```
 
 ```js
@@ -1284,20 +1357,16 @@ var isSubsequence = function(s, t) {
 
 ```js
 var numDistinct = function (s, t) {
-
-    // dp[i][j] i中出现了j多少次
-    // s[i-1] === t[j-1]
-    // dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j] 代表继承数量 + 前面匹配上的次数
-    // dp[i][j] = dp[i - 1][j]  代表 新进的j和i不匹配，数量不加减
-    // 不能用滚动数组化简，因为需要用到当前层前面的j
-    const dp = new Array(s.length + 1).fill(0).map(() => new Array(t.length + 1).fill(0))
+    // dp[i][j]        s[i]中出现了多少次t[j]
+    // dp[i - 1][j]    不用当前字符s[i]
+    // dp[i - 1][j - 1]用当前字符
+    const [m,n] = [s.length,t.length]
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0))
 
     // s中找 t长度为0，初始化为1
-    for (let i = 0; i <= s.length; i++) {
-        dp[i][0] = 1;
-    }
-    for (let i = 1; i <= s.length; i++) {
-        for (let j = 1; j <= t.length; j++) {
+    for (let i = 0; i <= m; i++)dp[i][0] = 1;
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
             if (s[i - 1] === t[j - 1]) {
                 dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
             } else {
@@ -1305,11 +1374,9 @@ var numDistinct = function (s, t) {
             }
         }
     }
-    console.log(dp)
-    return dp[s.length][t.length]
+    return dp[m][n]
 };
-
-numDistinct("rabbbit","rabbit")
+console.log(numDistinct('rabbbit', 'rabbit'));
 [
           r, a, b, b, i, t 
      [ 1, 0, 0, 0, 0, 0, 0 ],

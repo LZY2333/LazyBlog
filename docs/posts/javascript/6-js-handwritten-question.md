@@ -93,13 +93,13 @@ function deepClone(target, map = new WeakMap()) {
 
 ### WeakMap弱引用 与 {}强引用
 
-Map 和Weakmap 的区别
+Map 和 WeakMap 的区别
 
 WeakMap是ES6中新增的一种集合类型，叫做弱映射。它和Map是兄弟关系，与Map的区别在于这个弱字，API还是Map那套API。
 
 Map的键可以是任意类型，WeakMap只接受对象作为键，不接受其它类型的值作为键
 
-Map的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键；WeakMap的键是弱引用，如果创建了一个弱引用对象，不会被垃圾回收关注，如果不再需要，weakmap中的键名对象和所对应的键值对会自动消失，不再手动删除引用。
+Map的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键；WeakMap的键是弱引用，如果创建了一个弱引用对象，不会被垃圾回收关注，如果不再需要，WeakMap 中的键名对象和所对应的键值对会自动消失，不再手动删除引用。
 
 Map可以被遍历，WeakMap不能被遍历
 
@@ -134,8 +134,7 @@ function debounce(fn, wait) {
 
 ### 节流
 
-节流重在加锁 `timer=timeout`,控制事件发生频率,限流,单位时间内只发生一次  
-防抖是在等用户给出最终答案 再触发，节流就是防止频繁触发 限流 锁。
+节流是加锁 限流防止频繁触发 单位时间内只发生一次
 
 ```js
 function throttle(fn, wait) {
@@ -150,7 +149,22 @@ function throttle(fn, wait) {
 }
 ```
 
-## 如果防抖在首次触发怎么写？
+### 防抖首次触发
+
+```js
+function debounce(fn, wait, immediate = false) {
+    let timer;
+    return function (...args) {
+        const callNow = immediate && !timer; // 首次立即执行
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            timer = null; // 允许下次立即执行
+            if (!immediate) fn.apply(this, args); // 非立即模式执行
+        }, wait);
+        if (callNow) fn.apply(this, args);
+    };
+}
+```
 
 实现一个节流函数? 如果想要最后一次必须执行的话怎么实现?
 

@@ -7,11 +7,9 @@ tags:
 ---
 
 
-## SingleSpa原理
+## 微前端
 
-### 微前端
-
-#### 第一步，解决了什么痛点:
+### 第一步，解决了什么痛点
 __大应用拆分__  
 __渐进式技术栈升级__
 
@@ -19,11 +17,11 @@ __渐进式技术栈升级__
 __多团队合作，独立部署__  
 __技术栈无关__
 
-#### 第二步，实现了什么功能:
+### 第二步，实现了什么功能
 __沙箱:CSS隔离，JS隔离，路由隔离__  
 __微应用调度__
 
-#### 第三步，如何实现沙箱和微应用调度....
+### 第三步，如何实现沙箱和微应用调度
 qiankun:   实现沙箱，实现微应用接入配置简化，无痛接入  
 singleSpa: 实现基于路由进行微应用调度，定义了微应用生命周期  
 systemJS:  实现动态加载模块
@@ -32,7 +30,7 @@ systemJS:  实现动态加载模块
 
 本文将从从最基础的singleSpa展开，singleSpa的原理
 
-### SingleSpa
+## SingleSpa
 
 SingleSpa本身已是一个成熟的微前端框架
 
@@ -46,11 +44,11 @@ __多团队合作，独立部署__: 微应用可独立部署
 
 其原理是: 基于路由进行微应用调度，基于微应用暴露的生命周期，对微应用进行控制
 
-### publicPath
+## publicPath
 
 请求文件路径不是当前路径时，webpack需要配置publicPath
 
-### 使用方法
+## 使用方法
 
 ```html
 <!-- 基座index.html 中需用如下格式写入 公共包CDN地址映射，微应用地址映射，并import基座entry包-->
@@ -94,7 +92,7 @@ let app1 = {
 }
 ```
 
-如果是对接vue react的微应用，有专门的 single-spa-react包 single-spa-vue包 
+如果是对接vue react的微应用，有专门的 single-spa-react包 single-spa-vue包
 
 用于生成暴露给singleSpa的接口，也就是 bootstrap，mount，unmount
 ```js
@@ -126,7 +124,7 @@ export const { bootstrap, mount, unmount } = lifecycle;
 singleSpa 监听路由的变化，通过调用微应用的生命周期接口，调度微应用
 
 
-### 实现原理
+## 实现原理
 
 __调度微应用__
 

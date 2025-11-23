@@ -6,6 +6,11 @@
     },
     {
         "type": "dir",
+        "name": "react",
+        "label": "React"
+    },
+    {
+        "type": "dir",
         "name": "life",
         "label": "Life"
     },
@@ -41,7 +46,7 @@
     },
     {
         "type": "dir",
-        "name": "AI",
+        "name": "ai",
         "label": "AI"
     },
     {
@@ -51,12 +56,7 @@
     },
     {
         "type": "dir",
-        "name": "microFrontend",
-        "label": "MicroFrontend"
-    },
-    {
-        "type": "dir",
-        "name": "React",
-        "label": "React"
+        "name": "qiankun",
+        "label": "qiankun"
     }
 ]
