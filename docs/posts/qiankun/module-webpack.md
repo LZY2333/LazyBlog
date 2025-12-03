@@ -16,6 +16,7 @@ tags:
 -> ES Module 是标准规范, 取代 UMD，是大势所趋。
 
 __PS:本文章使用的Webpack配置如下:__
+
 ```js
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -34,6 +35,7 @@ module.exports = {
     ]
 }
 ```
+
 ## CommonJS规范
 
 有模块化,就有模块化规范,所谓的规范,便是大家约定好的代码语法,
@@ -49,6 +51,7 @@ Webpack 会基于 AST（抽象语法树）解析项目中的模块依赖，
 Webpack对 __CommonJS规范__ 的打包方式代码相对简单,其语法如此次模拟文件所示
 
 __模拟的文件结构__
+
 ```js
 // index.js 引用index2.js
 let index2 = require('./index2.js')
@@ -65,6 +68,7 @@ module.exports = 'index2'
 多说无益，话都在源码里! __仅仅 35 行__,你上你也行.
 
 __打包后的全部源码带注释__
+
 ```js
 // 打包结束后的main.js,自执行函数,script标记加载完后立即执行
 (() => {
@@ -128,6 +132,7 @@ __解析__
 ESModule规范的语法如下，同时也是此次模拟打包的项目文件
 
 __模拟的文件结构__
+
 ```js
 // 入口文件index
 import index2 from './index2'
@@ -145,6 +150,7 @@ export default index2
 (为了Word排版，做了一定的折叠。)
 
 __打包后的全部源码带注释__
+
 ```js
 (() => { // webpackBootstrap
     "use strict";
@@ -251,7 +257,6 @@ __打包后的全部源码带注释__
 传入`__webpack_exports__`对象 供 被引用的模块函数 导出数据
 
 传入`__webpack_require__`函数 供 被引用的模块函数 递归调用 引用模块
-
 
 __三个工具函数__:  
 `__webpack_require__.o` 判断某对象是否有某属性  

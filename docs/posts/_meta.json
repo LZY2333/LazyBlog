@@ -58,5 +58,15 @@
         "type": "dir",
         "name": "qiankun",
         "label": "qiankun"
+    },
+    {
+        "type": "dir",
+        "name": "http",
+        "label": "Http"
+    },
+    {
+        "type": "dir",
+        "name": "webpack",
+        "label": "Webpack"
     }
 ]

@@ -5,8 +5,6 @@ categories: 技术栈
 tags: 
     - 微前端
 ---
-
-
 ## 微前端
 
 ### 第一步，解决了什么痛点
@@ -95,6 +93,7 @@ let app1 = {
 如果是对接vue react的微应用，有专门的 single-spa-react包 single-spa-vue包
 
 用于生成暴露给singleSpa的接口，也就是 bootstrap，mount，unmount
+
 ```js
 import React from "react";
 import ReactDOM from "react-dom";
@@ -123,7 +122,6 @@ export const { bootstrap, mount, unmount } = lifecycle;
 
 singleSpa 监听路由的变化，通过调用微应用的生命周期接口，调度微应用
 
-
 ## 实现原理
 
 __调度微应用__
@@ -150,10 +148,6 @@ __监听路由__
 
     因为这两个原生接口的调用，造成的路由切换不会触发 'hashchange','popstate'的事件派发，
 
-
 如果有vue-router react-router的源码基础，对微前端更好理解，其实是一样的东西
 
 但是微前端的对路由的拦截，比vue-router react-router更高一层，因为微前端拦截了addEventListener
-
-
-

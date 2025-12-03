@@ -49,6 +49,8 @@ Reconciler（协调器）—— 操作虚拟DOM，标记出变更
 Renderer（渲染器）—— 将虚拟DOM的变更体现在真实DOM上  
 Scheduler Reconciler 随时可因 __更高优先级任务__  __当前帧剩余时间不足__ 中止
 
+且不同任务有不同 expirationTime, 用户输入优先级为UserBlocking,仅次于Immediate
+
 __render阶段__,Reconciler工作的阶段。  
 __commit阶段__,Renderer工作的阶段。  
 render与commit阶段统称为work，即React在工作中。  
@@ -130,6 +132,7 @@ function performUnitOfWork() {
 ## 模拟 StackReconciler 与 FiberReconciler
 
 __StackReconciler__
+
 ```js
 //我们有一个虚拟DOM
 let element = (
@@ -192,6 +195,7 @@ function render(vdom, container) {
 ```
 
 __FiberReconciler__
+
 ```js
 //1.把虚拟DOM构建成fiber树
 let A1 = { type: 'div', props: { id: 'A1' } };
@@ -249,9 +253,6 @@ nextUnitOfWork = A1;
 workLoop();
 ```
 
-
-
-
 ## 代数效应(未完成,待加深理解)
 
 代数效应 是 函数式编程 中的一个概念，
@@ -287,3 +288,6 @@ Generator执行的中间状态是上下文关联的，所以计算y时无法复�
 ## 感谢
 
 感谢卡颂大佬的[React技术揭秘](https://react.iamkasong.com/)
+
+## Lanes模型
+React 17 开始使用 从 expirationTime 模型切换为 Lanes模型

@@ -1,0 +1,6 @@
+[
+    "cors",
+    "cross-origin",
+    "xss",
+    "sso-oauth2-jwt"
+]

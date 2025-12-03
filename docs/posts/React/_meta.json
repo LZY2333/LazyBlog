@@ -1,7 +1,12 @@
 [
     "0-basic",
     "1-question",
-    "2.evolution",
-    "3.fiber",
-    "4.hooks"
+    "2-evolution",
+    "3-fiber",
+    "4-hooks",
+    "5-router",
+    "6-zustand",
+    "history-vs-hash",
+    "redux-recoil-zustand",
+    "性能优化"
 ]

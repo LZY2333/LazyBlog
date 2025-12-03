@@ -5,7 +5,6 @@ categories: 技术栈
 tags: 
     - 微前端
 ---
-
 ## 微前端
 
 ### 第一步，解决了什么痛点
@@ -30,51 +29,33 @@ systemJS:  实现动态加载模块
 本文将从从最基础的systemJS展开，systemJS的原理
 
 ## 模块规范
-
-前端的工程化中最重要的就是模块化
-
-模块: 实现特定功能的文件，每个文件作用域相互独立，通过暴露接口相互引用
-
-模块化优势: 复用性 可维护性 命名冲突 按需加载
-
+前端的工程化中最重要的就是模块化  
+模块: 实现特定功能的文件，每个文件作用域相互独立，通过暴露接口相互引用  
+模块化优势: 复用性 可维护性 命名冲突 按需加载  
 模块化规范: ESM，CJS，UMD，AMD，CMD
 
 > 就像主机间的沟通需要各种协议，模块化也有各类规范，其实都是一种统一约定
 
 ## systemJS
-
-systemJS 通用模块加载器，支持多种模块化规范，无window变量污染
-
+systemJS 通用模块加载器，支持多种模块化规范，无window变量污染  
 使用systemJS可以让使用者，在指定的时机加载模块文件并运行，
 
 ## systemJS原理简述
-
-1. 通过JSONP的方式去异步加载指定路径的模块文件。
-
-2. 同时监听到模块文件加载，完成后执行模块代码，并触发用户注册好的回调。
-
+1.通过JSONP的方式去异步加载指定路径的模块文件。  
+2.同时监听到模块文件加载，完成后执行模块代码，并触发用户注册好的回调。  
 > JSONP是一种跨域请求的方法，通过动态创建script标签实现。Ajax请求普通文件存在跨域问题。
 
 ## systemJS在微前端中的职责
-
-systemJS的职责非常纯粹，动态加载模块
-
-后文systemJS的使用 章节中，
-
-仅仅是为了展示systemJS的原理，动态加载并调用了react 与 react-dom
-
-看上去似乎普普通通，
-
-但注意这个动态加载时机是可以由使用者控制的，那变成了 __按需动态加载__
-
+systemJS的职责非常纯粹，动态加载模块  
+后文systemJS的使用 章节中，  
+仅仅是为了展示systemJS的原理，动态加载并调用了react 与 react-dom  
+看上去似乎普普通通，  
+但注意这个动态加载时机是可以由使用者控制的，那变成了 __按需动态加载__  
 有了systemJS的加入，qiankun拥有了 __拆分大应用__, __按需动态加载__ 模块/微应用 的功能。
 
 ## systemJS与webpack懒加载
-
-动态加载分为两个部分 __加载模块文件__ 和 __监听加载结果__
-
-二者 __加载模块文件__ 原理相同都是 __JSONP__
-
+动态加载分为两个部分 __加载模块文件__ 和 __监听加载结果__  
+二者 __加载模块文件__ 原理相同都是 __JSONP__  
 二者 __监听加载结果__ 原理不同，
 
 systemJS的原理是 __监听window的属性修改__ ，  
@@ -84,19 +65,12 @@ webpack懒加载原理是 __window上挂载回调函数供调用__ ，
 打包时被分离出去的模块，最外层会包裹一层对window上该回调函数的调用。
 
 ## iframe(待更新)
-
-完美的沙箱机制，自带应用隔离
-
-可以通过postMessage进行通讯
-
-应用之间沟通差，状态无法保存，弹窗只能在iframe中
-
+完美的沙箱机制，自带应用隔离  
+可以通过postMessage进行通讯  
+应用之间沟通差，状态无法保存，弹窗只能在iframe中  
 > Web Component。浏览器支持问题
-
 ## 跨域(待更新)
-
-说起JSONP，就想起跨域的知识点了，回头总结一下
-
+说起JSONP，就想起跨域的知识点了，回头总结一下  
 __看到这里就可以结束了,后面是比较繁琐的内容.仅代表,记一下以防自己以后忘记__
 
 ## systemJS使用
@@ -145,6 +119,7 @@ module.exports = (env) => {
 上述文件配置好后，运行webpack，在dist目录下生成index.js
 
 随后再创建一个html文件，如下
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -174,27 +149,24 @@ module.exports = (env) => {
 </body>
 </html>
 ```
+
 浏览器打开index.html文件,hello world 展示完成
 
 ## systemJS原理
 
 打包为system模块规范的 index.js文件如下
+
 ```js
 System.register(["react-dom","react"], function(__WEBPACK_DYNAMIC_EXPORT__, __system_context__) {
 })
 ```
 
-0. 首先拿到`type="systemjs-importmap"`中的map模块路径进行解析,拿到依赖模块的CDN路径
-
-1. `System.import('./index.js')` 通过JSONP的方式，异步从服务器获取 `index.js`
-
-2. 加载完的script都会自动执行, 即执行`System.register(执行包的依赖包,执行包)`,
-
+0.首先拿到`type="systemjs-importmap"`中的map模块路径进行解析,拿到依赖模块的CDN路径  
+1.`System.import('./index.js')` 通过JSONP的方式，异步从服务器获取 `index.js`  
+2.加载完的script都会自动执行, 即执行`System.register(执行包的依赖包,执行包)`,
     将setters依赖包安装函数，execute执行包，挂载在全局对象
-
-3. 要运行执行包，需要先加载依赖包，`promise.all(load(map(setters[])))`
-
-4. 通过JSONP的方式,异步加载依赖`["react-dom","react"]`,监听load事件加载完时触发回调
+3.要运行执行包，需要先加载依赖包，`promise.all(load(map(setters[])))`  
+4.通过JSONP的方式,异步加载依赖`["react-dom","react"]`,监听load事件加载完时触发回调
 
 ```js
 // 引入index.js 和 依赖包都使用了load方法，此方法为JSONP加载包
@@ -210,11 +182,9 @@ function load(id) {
 }
 ```
 
-5. 加载完的script都会自动执行, umd格式的模块执行完会在window挂载一个具有自身所有API的对象.
-
-6. systemJS 在load事件后,检查window上是否有新增属性,通过setters将其加入 执行包的执行上下文.
-
-7. 两个依赖包都加载完成后，开始执行执行包,执行包内部会调用依赖包的API,hello world!
+5.加载完的script都会自动执行, umd格式的模块执行完会在window挂载一个具有自身所有API的对象.  
+6.systemJS 在load事件后,检查window上是否有新增属性,通过setters将其加入 执行包的执行上下文.  
+7.两个依赖包都加载完成后，开始执行执行包,执行包内部会调用依赖包的API,hello world!
 
 ## systemJS简单实现
 
