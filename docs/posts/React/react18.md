@@ -7,30 +7,30 @@ tags:
     - React
 ---
 
-React18有三类链
-1️⃣ Fiber 通过 child / sibling 形成一棵可遍历的树
-2️⃣ Update 以链表形式保存状态更新
-3️⃣ Hook 以链表形式保存 Hook 顺序
-React18有两大循环
-1️⃣ Render 循环（render work loop） performUnitOfWork
+React18有三类链  
+1️⃣ Fiber 通过 child / sibling 形成一棵可遍历的树  
+2️⃣ Update 以链表形式保存状态更新  
+3️⃣ Hook 以链表形式保存 Hook 顺序  
+React18有两大循环  
+1️⃣ Render 循环（render work loop） performUnitOfWork  
 2️⃣ Commit 循环（commit work loop） commitRoot
 
 ## Fiber树链表
-用途: 非递归DFS遍历
-fiberRoot
-树状链表(child/sibling/return)
+用途: 非递归DFS遍历  
+fiberRoot  
+树状链表(child/sibling/return)  
 双缓冲
 
 ## updateQueue链表
-用途：管理状态更新，支持优先级调度
-fiber.updateQueue
+用途：管理状态更新，支持优先级调度  
+fiber.updateQueue  
 环形链表（pending）+ 单向链表（baseUpdate）
 
 什么时候会插入数据?
 
 ## Hooks 链表
-用途：保存函数组件的状态和副作用
-Fiber.memoizedState
+用途：保存函数组件的状态和副作用  
+Fiber.memoizedState  
 单向链表（next）
 
 ## Fiber架构
@@ -41,51 +41,51 @@ Fiber架构 + 时间切片, 做到了暂停和继续, 以让渡主线程
 ## 其他待整理
   完整流程对比
 
-  ┌─────────────────────────────────────────┐
-  │         Render Phase (可中断)            │
-  ├─────────────────────────────────────────┤
-  │                                         │
-  │ 输入：                                   │
-  │ ├─ current tree                        │
-  │ ├─ ReactElement (新的)                 │
-  │ └─ updateQueue                         │
-  │                                         │
-  │ 处理：                                   │
-  │ ├─ 执行组件函数                         │
-  │ ├─ reconcileChildren (Diff)           │
-  │ ├─ beginWork (向下)                    │
-  │ └─ completeWork (向上)                 │
-  │                                         │
-  │ 【如果被打断】⭐                         │
-  │ ├─ 丢弃 workInProgress 树               │
-  │ ├─ 保存 updateQueue 到 current 树       │
-  │ └─ 下次从头重新开始                     │
-  │                                         │
-  │ 产出：⭐⭐⭐                              │
-  │ ├─ workInProgress 树（完整新树）        │
-  │ ├─ flags（副作用标记）                  │
-  │ ├─ subtreeFlags（子树副作用）           │
-  │ ├─ updateQueue（具体更新内容）          │
-  │ └─ finishedWork（指向根节点）           │
-  │                                         │
+  ┌─────────────────────────────────────────┐  
+  │         Render Phase (可中断)            │  
+  ├─────────────────────────────────────────┤  
+  │                                         │  
+  │ 输入：                                   │  
+  │ ├─ current tree                        │  
+  │ ├─ ReactElement (新的)                 │  
+  │ └─ updateQueue                         │  
+  │                                         │  
+  │ 处理：                                   │  
+  │ ├─ 执行组件函数                         │  
+  │ ├─ reconcileChildren (Diff)           │  
+  │ ├─ beginWork (向下)                    │  
+  │ └─ completeWork (向上)                 │  
+  │                                         │  
+  │ 【如果被打断】⭐                         │  
+  │ ├─ 丢弃 workInProgress 树               │  
+  │ ├─ 保存 updateQueue 到 current 树       │  
+  │ └─ 下次从头重新开始                     │  
+  │                                         │  
+  │ 产出：⭐⭐⭐                              │  
+  │ ├─ workInProgress 树（完整新树）        │  
+  │ ├─ flags（副作用标记）                  │  
+  │ ├─ subtreeFlags（子树副作用）           │  
+  │ ├─ updateQueue（具体更新内容）          │  
+  │ └─ finishedWork（指向根节点）           │  
+  │                                         │  
   └─────────────────────────────────────────┘
                 ↓
-  ┌─────────────────────────────────────────┐
-  │        Commit Phase (同步)               │
-  ├─────────────────────────────────────────┤
-  │                                         │
-  │ 输入：                                   │
-  │ └─ finishedWork (render phase 产出)    │
-  │                                         │
-  │ 处理：                                   │
-  │ ├─ 遍历 Fiber 树                        │
-  │ ├─ 根据 flags 执行 DOM 操作              │
-  │ ├─ 切换 current 树                      │
-  │ └─ 执行副作用                            │
-  │                                         │
-  │ 产出：                                   │
-  │ └─ 更新的 DOM，用户可见 ✅               │
-  │                                         │
+  ┌─────────────────────────────────────────┐  
+  │        Commit Phase (同步)               │  
+  ├─────────────────────────────────────────┤  
+  │                                         │  
+  │ 输入：                                   │  
+  │ └─ finishedWork (render phase 产出)    │  
+  │                                         │  
+  │ 处理：                                   │  
+  │ ├─ 遍历 Fiber 树                        │  
+  │ ├─ 根据 flags 执行 DOM 操作              │  
+  │ ├─ 切换 current 树                      │  
+  │ └─ 执行副作用                            │  
+  │                                         │  
+  │ 产出：                                   │  
+  │ └─ 更新的 DOM，用户可见 ✅               │  
+  │                                         │  
   └─────────────────────────────────────────┘
 
 高优先级
@@ -94,7 +94,7 @@ Fiber架构 + 时间切片, 做到了暂停和继续, 以让渡主线程
 
   在内存中操作，不影响 UI
 
-  // beginWork + completeWork 遍历整棵树
+  // beginWork + completeWork 遍历整棵树  
   performUnitOfWork(workInProgress)
     ↓
   beginWork(current, workInProgress)

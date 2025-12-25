@@ -34,8 +34,8 @@ __React 18__
 【并发渲染】  Lane+Scheduler 优先级调度, 可以切换任务  
 【自动批处理】所有上下文 自动合并只更新一次, 无论同步异步  
 【createRoot】ReactDOM.render 改变为 ReactDOM.createRoot  
-【Lanes模型】 作为调度模型, 取代expirationTime
-【subtreeFlags】 收集副作用, 取代 17的Effect List
+【Lanes模型】 作为调度模型, 取代expirationTime  
+【subtreeFlags】 收集副作用, 取代 17的Effect List  
 【useSyncExternalStore】 大小1Kb 的Zustand 核心原理
 
 ## JSX是什么
@@ -105,7 +105,7 @@ Scheduler包 调度workLoop
 ### Reconciliation协调
 与React15相同，也是旧Fiber树 与 新VDOM 对比, 构建 WorkInProgress Fiber 树  
 不同type不同key卸载,同type同key 复用并更新自己 再子节点Diff  
-`reconcileChildren`顺序遍历 新Vdom, 标记旧Vdom update move placement unmount
+`reconcileChildren`顺序遍历 新Vdom, 标记旧Vdom update move placement unmount  
 产出 workInProgress Fiber 树 + 副作用标记
 
 ### BeginWork阶段

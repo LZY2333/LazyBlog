@@ -2,6 +2,5 @@
     "0-chrome",
     "1-URL-to-render",
     "2-render-process",
-    "4-event-loop",
-    "3-cdn-cache-control"
+    "3-event-loop"
 ]

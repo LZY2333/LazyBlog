@@ -7,11 +7,11 @@ tags:
 
 ## ----网络安全----
 ## XSS
-反射型XSS
-存储型XSS
+反射型XSS  
+存储型XSS  
 DOM-based XSS
 
-React的转译机制天然克制, string不会被转换为DOM而被浏览器渲染
+React的转译机制天然克制, string不会被转换为DOM而被浏览器渲染  
 只需要检查, dangerouslySetInnerHTML 富文本组件 href
 
 ## CSRF
@@ -28,7 +28,7 @@ React的转译机制天然克制, string不会被转换为DOM而被浏览器渲�
 `SameSite=Strict`必须同时设置`Secure;`
 
 ### CSRF防御
-CSRF Token
+CSRF Token  
 HttpOnly  
 Access-Control-Allow-Origin: https://app.example.com 精确白名单  
 关键请求二次验证 且存在过期时间 防止批量自动化攻击
