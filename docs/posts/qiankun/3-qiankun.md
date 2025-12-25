@@ -94,6 +94,7 @@ importHTML("./xxxApp/index.html").then((res) => {
 
 ### 执行流程
 qiankun的微应用须打包为 UMD格式, 即自动执行往window上挂载对象
+
 ```js
 window["myApp"] = { bootstrap, mount, unmount }
 ```
@@ -102,8 +103,6 @@ window["myApp"] = { bootstrap, mount, unmount }
 2. 解析 HTML → 提取 JS/CSS 链接
 3. 通过 onload, 顺序 拉取并执行 JS包, 再拉取并执行 下一个JS包
 4. 最后一个 JS包 onload检查 `window["myApp"]` 属性
-
-
 
 ## CSS 隔离方案
 

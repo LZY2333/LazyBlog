@@ -34,7 +34,8 @@ __React 18__
 【并发渲染】  Lane+Scheduler 优先级调度, 可以切换任务  
 【自动批处理】所有上下文 自动合并只更新一次, 无论同步异步  
 【createRoot】ReactDOM.render 改变为 ReactDOM.createRoot  
-【Lanes模型】  取代expirationTime模型  
+【Lanes模型】 作为调度模型, 取代expirationTime
+【subtreeFlags】 收集副作用, 取代 17的Effect List
 【useSyncExternalStore】 大小1Kb 的Zustand 核心原理
 
 ## JSX是什么
@@ -91,7 +92,7 @@ Diff原则 __同层比较__ __key比较__ __type比较__
 此时性能最差，vue中存在双端Diff 解决了这个极端情况。  
 React团队 希望保持算法简单 极端场景较少。
 
-## Diff算法(React16)
+## Diff算法(React16-17)
 关键特性: __性能进一步提升__ __可中断__  
 关键机制: 双Fiber树 Fiber链 EffectList Scheduler调度  
 >批量更新: 双Fiber树 EffectList  
@@ -105,6 +106,7 @@ Scheduler包 调度workLoop
 与React15相同，也是旧Fiber树 与 新VDOM 对比, 构建 WorkInProgress Fiber 树  
 不同type不同key卸载,同type同key 复用并更新自己 再子节点Diff  
 `reconcileChildren`顺序遍历 新Vdom, 标记旧Vdom update move placement unmount
+产出 workInProgress Fiber 树 + 副作用标记
 
 ### BeginWork阶段
 BeginWork()  

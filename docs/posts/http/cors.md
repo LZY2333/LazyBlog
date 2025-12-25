@@ -1,5 +1,5 @@
 ---
-title: CORS跨域
+title: CORS 跨域
 date: 2025-12-01 15:30:30
 tags:
     - http
@@ -11,6 +11,7 @@ tags:
 静态资源服务器地址 由Webpack配置  
 数据服务器地址     由Axios配置  
 如果是CDN, 两者都需要服务器配置CORS
+
 ## 跨区请求流程
 ```text
 前端发起跨域请求

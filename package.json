@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "prestart": "ts-node --project src/scripts/tsconfig.json src/scripts/generateOverview.ts && ts-node --project src/scripts/tsconfig.json src/scripts/addLineBreakSpaces.ts",
-        "prebuild": "ts-node --project src/scripts/tsconfig.json src/scripts/generateOverview.ts && ts-node --project src/scripts/tsconfig.json src/scripts/addLineBreakSpaces.ts",
+        "prestart": "ts-node --project src/scripts/tsconfig.json src/scripts/replaceChinesePunctuation.ts && ts-node --project src/scripts/tsconfig.json src/scripts/generateOverview.ts && ts-node --project src/scripts/tsconfig.json src/scripts/addLineBreakSpaces.ts",
+        "prebuild": "ts-node --project src/scripts/tsconfig.json src/scripts/replaceChinesePunctuation.ts && ts-node --project src/scripts/tsconfig.json src/scripts/generateOverview.ts && ts-node --project src/scripts/tsconfig.json src/scripts/addLineBreakSpaces.ts",
         "start": "rspress dev",
         "build": "rspress build",
         "preview": "rspress preview"

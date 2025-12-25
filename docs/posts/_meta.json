@@ -6,28 +6,8 @@
     },
     {
         "type": "dir",
-        "name": "react",
-        "label": "React"
-    },
-    {
-        "type": "dir",
         "name": "life",
         "label": "Life"
-    },
-    {
-        "type": "dir",
-        "name": "chrome",
-        "label": "Chrome"
-    },
-    {
-        "type": "dir",
-        "name": "typescript",
-        "label": "Typescript"
-    },
-    {
-        "type": "dir",
-        "name": "practices",
-        "label": "Practices"
     },
     {
         "type": "dir",
@@ -36,8 +16,23 @@
     },
     {
         "type": "dir",
+        "name": "typescript",
+        "label": "Typescript"
+    },
+    {
+        "type": "dir",
         "name": "javascript",
         "label": "Javascript"
+    },
+    {
+        "type": "dir",
+        "name": "react",
+        "label": "React"
+    },
+    {
+        "type": "dir",
+        "name": "chrome",
+        "label": "Chrome"
     },
     {
         "type": "dir",
@@ -68,5 +63,10 @@
         "type": "dir",
         "name": "webpack",
         "label": "Webpack"
+    },
+    {
+        "type": "dir",
+        "name": "practices",
+        "label": "Practices"
     }
 ]

@@ -7,26 +7,16 @@ tags:
 
 ## ----网络安全----
 ## XSS
-
 反射型XSS
-
 存储型XSS
-
 DOM-based XSS
 
-
-| 项目                 | 自查项                                         |
-|----------------------|------------------------------------------------|
-| DOM 渲染方式         | 禁止直接使用 innerHTML dangerouslySetInnerHTML |
-| 用户输入             | 输入输出均做 Escape 处理或白名单过滤           |
-| URL / Query 参数渲染 | 禁止未经处理直接插 DOM                         |
-| 富文本内容           | 使用 DOMPurify / xss 库进行白名单过滤          |
-
+React的转译机制天然克制, string不会被转换为DOM而被浏览器渲染
+只需要检查, dangerouslySetInnerHTML 富文本组件 href
 
 ## CSRF
-跨站请求伪造
+跨站请求伪造, 利用 cookie 自动携带的特性 伪装用户身份
 
-本质: 利用 cookie 自动携带的特性 伪装用户身份  
 `SameSite=Strict`可以直接解决
 
 ### CSRF配置
@@ -38,11 +28,10 @@ DOM-based XSS
 `SameSite=Strict`必须同时设置`Secure;`
 
 ### CSRF防御
-CSRF Token  
+CSRF Token
 HttpOnly  
 Access-Control-Allow-Origin: https://app.example.com 精确白名单  
 关键请求二次验证 且存在过期时间 防止批量自动化攻击
-
 
 > 默认 SameSite=Lax, 只有get请求会带cookie  
 > SameSite=None, 必须配Secure, 否则浏览器不会保持该cookie,  
