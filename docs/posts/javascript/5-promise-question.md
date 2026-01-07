@@ -1,5 +1,5 @@
 ---
-title: Promise题
+title: Promise困难题
 date: 2022-06-23 22:17:31
 categories: 经验帖
 tags:
@@ -262,7 +262,9 @@ p()
 
 [前端并发10个相同的请求，怎么控制为只发一个请求？](https://juejin.cn/post/7052700635154219015)
 
-## 第十题
+## 例题收集
+
+### 第十题
 
 ```js
 async function test () {
@@ -291,7 +293,7 @@ await 结果值：非thenable、非promise、promise（不等待）
 await 结果值：thenable（等待 1个then的时间）  
 await 后续代码再加 1个then的实践
 
-## 第九题
+### 第九题
 
 ```js
 async function async1 () {
@@ -331,7 +333,7 @@ console.log('11')
 // 最终结果: 5 1 3 4 7 11 8 9 AAA 10 6
 ```
 
-## 第八题
+### 第八题
 
 ```js
 async function async1 () {
@@ -411,7 +413,7 @@ return结果值：非thenable、非promise（不等待）
 return结果值：thenable（等待 1个then的时间）  
 return结果值：promise（等待 2个then的时间）
 
-## 第一题
+### 第一题
 ```js
 const fn = () => (new Promise((resolve, reject) => {
   console.log(1);
@@ -427,7 +429,7 @@ console.log('start')
 // 'success'
 ```
 
-## 第二题
+### 第二题
 
 ```js
 Promise.resolve().then(() => {
@@ -446,7 +448,7 @@ Promise.resolve().then(() => {
 
 被包裹成了`return Promise.resolve(new Error('error!!!'))`
 
-## 第三题
+### 第三题
 
 ```js
 Promise.resolve(1)
@@ -462,7 +464,7 @@ Promise.resolve(1)
 
 因此发生了透传，将resolve(1) 的值直接传到最后一个then里。
 
-## 第四题
+### 第四题
 
 ```js
 function runAsync (x) {
@@ -491,7 +493,7 @@ Promise.all([runAsync(1), runReject(4), runAsync(3), runReject(2)])
 
 且不会影响数组中其它的异步任务的执行
 
-## 第五题
+### 第五题
 
 ```js
 async function async1() {
@@ -517,7 +519,7 @@ async 视为 new promise，await(包括await这行)之前都是立即执行的 e
 await下一行开始都是promise.then
 
 
-## 第六题
+### 第六题
 
 ```js
 async function async1 () {
@@ -541,7 +543,7 @@ console.log('script end')
 
 await后面的Promise是没有返回值，始终是pending状态，await却始终没有响应...
 
-## 第七题
+### 第七题
 
 ```js
 async function fn () {

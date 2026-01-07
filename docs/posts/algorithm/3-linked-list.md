@@ -1,0 +1,318 @@
+---
+title: 链表
+date: 2021-07-13 09:37:56
+categories: 技术栈
+tags: 
+    - 算法
+---
+
+## 什么是链表
+
+1. 数组需要连续的内存空间存储,而链表只需要 __零散的内存块__.
+
+2. 链表 由 __结点__ 组成,储存 数据 和 下一个结点的地址(后继指针next)
+
+3. 单链表 存在 __头结点__ 和 __尾结点__,尾结点的后继指针指向空地址 null
+
+4. 数组 的 插入删除 时间复杂度O(n),__为了保持内存连续性__ 需要做数据搬移
+   链表 的 插入删除 时间复杂度O(1),__不需要保持内存的连续性__ 而搬移结点
+
+5. 链表 的 随机元素访问 时间复杂度 O(n)
+
+6. __循环链表__ 尾结点指向头结点,适合处理具有环形结构特点问题,约瑟夫问题.
+
+7. __双向链表__ 具有 __前驱指针__ (prev)指向前面的结点,支持O(1)找到前驱结点
+
+8. __数组__ 的空间在 __栈__ 中分配,__链表__ 的空间在 __堆__ 中分配
+
+> 双向链表更高效,比单链表占内存高却应用更加广泛,如Java中的 LinkedHashMap.  
+> Java ArrayList的动态扩容,实际上是无空间时申请更大的内存空间,并将数据拷贝过去,耗费时间.  
+> 链表的缺点有,Java中对链表频繁的插入删除操作,可能导致频繁的GC  
+> 数组简单易用,连续的内存空间 可以借助CPU的缓存机制,预读数组数据,访问效率高  
+> CPU缓存机制,CPU从内存里读取数据不是只读特定的访问地址,而是读取一个数据块,> 然后下次访问内存机制会先从CPU缓存开始查找,找不到再从内存中取.  
+> CPU缓存机制的意义,弥补内存访问速度过慢,CPU执行速度过快 之间的差异
+
+## 数组 和 链表
+
+__数组的优点__:
+
+简单易用,随机访问效率高,查找速度快
+
+__数组的缺点__:
+
+插删效率低,空间利用率低,空间大小固定,空间必须是连续的内存空间
+
+1.头插和头删的效率低,时间复杂度为O(N)
+
+2.空间利用率不高
+
+3.数组空间的大小固定,不能动态拓展,扩容必须拷贝旧数据到新数组
+
+4.内存空间要求高,必须有足够的连续的内存空间
+
+__链表的优点__:
+
+插删效率高,内存利用率高,空间大小不固定
+
+__链表的缺点__:
+
+内存消耗更多,随机访问效率低
+
+## LRU缓存淘汰策略
+
+最近最少使用策略(Least Recently Used)
+
+1.维护一个有序链表,尾部的结点是最早访问过的.
+
+2.当一个新数据被访问时,从头结点开始遍历.
+
+3.如果此数据 已经在链表中,将其充原本的位置删除,再插入到 链表头部,成为头结点.
+
+4.如果此数据 没在缓存链表中,且 缓存未满, 直接插入到链表头部.
+
+5.如果此数据 没在缓存链表中,且 缓存已满, 删除 尾结点,再 此数据插入链表头部.
+
+> 不管缓存满没满,都需要遍历一遍链表,时间复杂度为O(n)  
+> 后续引入 散列表(Hash table)记录每个数据的位置,将缓存访问的时间复杂度降为O(1)
+
+```js
+/**
+ * 1) 单链表反转
+ * 2) 链表中环的检测
+ * 3) 两个有序的链表合并
+ * 4) 删除链表倒数第n个结点
+ * 5) 求链表的中间结点
+ *
+ */
+class Node {
+    constructor(element) {
+        this.element = element
+        this.next = null
+    }
+}
+
+class LinkedList {
+    constructor() {
+        this.head = new Node('head')
+    }
+    // 根据value查找节点 
+    findByValue(item) {
+        let currentNode = this.head
+        while (currentNode !== null && currentNode.element !== item) {
+            currentNode = currentNode.next
+        }
+        return currentNode === null ? -1 : currentNode
+    }
+    // 根据index查找节点 
+    findByIndex(index) {
+        let currentNode = this.head
+        let pos = 0
+        while (currentNode !== null && pos !== index) {
+            currentNode = currentNode.next
+            pos++
+        }
+        return currentNode === null ? -1 : currentNode
+    }
+    // 向链表末尾追加节点
+    append(newElement) {
+        const newNode = new Node(newElement)
+        let currentNode = this.head
+        while(currentNode.next) {
+            currentNode = currentNode.next
+        }
+        currentNode.next = newNode
+    }
+    // 指定元素向后插入
+    insert(newElement, element) {
+        const currentNode = this.findByValue(element)
+        if (currentNode === -1) {
+            console.log('未找到插入位置')
+            return
+        }
+        const newNode = new Node(newElement)
+        newNode.next = currentNode.next
+        currentNode.next = newNode
+    }
+    // 查找前一个
+    findPrev(item) {
+        let currentNode = this.head
+        while (currentNode.next !== null && currentNode.next.element !== item) {
+            currentNode = currentNode.next
+        }
+        if (currentNode.next === null) {
+            return -1
+        }
+        return currentNode
+    }
+    // 根据值删除
+    remove(item) {
+        const desNode = this.findByValue(item)
+        if (desNode === -1) {
+            console.log('未找到元素')
+            return
+        }
+        const prevNode = this.findPrev(item)
+        prevNode.next = desNode.next
+    }
+    // 遍历显示所有节点
+    display() {
+        //先检查是否为环
+        if(this.checkCircle()) return false
+
+        let currentNode = this.head
+        while (currentNode !== null) {
+            console.log(currentNode.element)
+            currentNode = currentNode.next
+        }
+    }
+
+    // 尾插法 反转单链表
+    reverseList() {
+        const root = new Node('head')
+        let currentNode = this.head.next
+        while (currentNode !== null) {
+            const next = currentNode.next
+            currentNode.next = root.next
+            root.next = currentNode
+            currentNode = next
+        }
+        this.head = root
+    }
+
+    //增强尾插法可读性，便于初学者理解
+    reverseList1(){
+      //head节点即哨兵，作用就是使所有链表，
+      // 包括空链表的头节点不为null,并使对单链表的插入、删除操作不需要区分是否为空表或是否在第一个位置进行，
+      // 从而与其他位置的插入、删除操作一致
+      //所以反转链表的时候不需要带上head节点
+      let currentNode=this.head.next
+      //第一个节点头结点让其指向null
+      let previousNode=null
+      while(currentNode!==null){
+        //务必先保留下一节点的指针地址
+        let nextNode=currentNode.next
+        //第一次是null
+        currentNode.next=previousNode
+        //此时将previousNode赋值为当前节点，
+        // 那么下次循环的时候，方便下次的currentNode指向previousNode
+        previousNode=currentNode
+        //抬走，下一个！
+        currentNode=nextNode
+      }
+    //最后将反转好的链表加上头节点
+    this.head.next=previousNode
+    }
+
+    // 环验证
+    checkCircle() {
+        let fast = this.head.next
+        let slow = this.head
+        while (fast !== null && fast.next !== null) {
+            fast = fast.next.next
+            slow = slow.next
+            if (slow === fast) return true
+        }
+        return false
+    }
+    // 删除倒数第k个节点
+    removeByIndexFromEnd(index) {
+        //务必先判断是否是 环链表
+        if(this.checkCircle()) return false
+        let pos = 1
+        this.reverseList()
+        let currentNode = this.head.next
+        while (currentNode !== null && pos < index) {
+            currentNode = currentNode.next
+            pos++
+        }
+        if (currentNode === null) {
+            console.log('无法删除最后一个节点或者该节点不存在')
+            return false
+        }
+        this.remove(currentNode.element)
+        this.reverseList()
+    }
+    // 求中间节点
+    findMiddleNode() {
+        let fast = this.head
+        let slow = this.head
+        while (fast.next !== null && fast.next.next !== null) {
+            fast = fast.next.next
+            slow = slow.next
+        }
+        console.log(slow)
+        return slow
+    }
+}
+
+
+const mergeSortedLists = (listA, listB) => {
+    if (!listA) {
+        return listB
+    }
+    if (!listB) {
+        return listA
+    }
+
+    let a = listA
+    let b = listB
+    let resultList = undefined
+    if (a.element < b.element) {
+        resultList = a
+        a = a.next
+    } else {
+        resultList = b
+        b = b.next
+    }
+    let currentNode = resultList
+    while (a !== null && b !== null) {
+        if (a.element < b.element) {
+            currentNode.next = a
+            a = a.next
+        } else {
+            currentNode.next = b
+            b = b.next
+        }
+        currentNode = currentNode.next
+    }
+
+    if (a != null) {
+        currentNode.next = a
+    } else {
+        currentNode.next = b
+    }
+    return resultList
+}
+
+// Test
+const LList = new LinkedList()
+LList.insert('chen', 'head')
+LList.insert('curry', 'chen')
+LList.insert('sang', 'head')
+LList.insert('zhao', 'head')
+console.log('-------------start reverse------------')
+LList.reverseList()
+LList.display()
+console.log('-------------check circle------------')
+console.log(LList.checkCircle())
+console.log('-------------remove the one before last ------------')
+LList.removeByIndexFromEnd(2)
+LList.display()
+
+const sortedList1 = new LinkedList()
+sortedList1.insert(9, 'head')
+sortedList1.insert(8, 'head')
+sortedList1.insert(7, 'head')
+sortedList1.insert(6, 'head')
+const sortedList2 = new LinkedList()
+sortedList2.insert(21, 'head')
+sortedList2.insert(20, 'head')
+sortedList2.insert(19, 'head')
+sortedList2.insert(18, 'head')
+console.log('-------------sort two list ------------')
+let sortedList = mergeSortedLists(sortedList1.head.next, sortedList2.head.next)
+while (sortedList !== null) {
+    console.log(sortedList.element)
+    sortedList = sortedList.next
+}
+```

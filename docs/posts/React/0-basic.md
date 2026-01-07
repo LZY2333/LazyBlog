@@ -99,9 +99,10 @@ React团队 希望保持算法简单 极端场景较少。
 >可中断: Fiber链  
 >优先级：Scheduler调度
 
-Render阶段/Reconciliation协调 由 reconciler渲染器(react-reconciler包)负责  
+Render阶段 reconciler协调器(react-reconciler包)负责  
 Commit阶段 render渲染器(react-dom包)负责  
 Scheduler包 调度workLoop
+
 ### Reconciliation协调
 与React15相同，也是旧Fiber树 与 新VDOM 对比, 构建 WorkInProgress Fiber 树  
 不同type不同key卸载,同type同key 复用并更新自己 再子节点Diff  
@@ -128,10 +129,6 @@ commitRoot()
 Diff 比较 新VDOM 和 旧Fiber 树 生成 新Fiber树(workInProgress)  
 VDOM 是 Fiber生命周期前期的形态
 
-<https://react.iamkasong.com/diff/multi.html#demo1>  
-<https://www.lumin.tech/blog/react-0-base/>  
-<https://zhuanlan.zhihu.com/p/570962640>  
-<https://qborfy.com/today/20230117.html>
 
 ### key的作用
 【提升diff速度】 key不同直接卸载，key相同，才进一步判断type，进一步updateElement、  
@@ -331,9 +328,6 @@ React capture阶段的合成事件提前到原生事件capture阶段执行
 4. 事件有优先级。
 连续事件 > 用户阻塞事件 > 离散事件，但仍然主要是Expiration Time
 
-## 组件通信
-[八股文](https://juejin.cn/post/7016593221815910408#heading-71)
-
 ## Lane优先级
 相比 expiration time 可以快速选出高优先级task
 
@@ -363,27 +357,6 @@ this 的模糊性
 业务逻辑散落在生命周期中，生命周期在继承时不可见  
 类组件可以通过继承实现逻辑复用，但是继承的灵活性差，细节屏蔽多，不推荐使用  
 类组件需要创建并保存实例，会占用一定内存
-
-## 性能优化
-React.PureComponent,React.memo,当属性不变时，不重新渲染，跳过更新逻辑  
-memo在渲染的时候和函数组件一样，拿到vdom然后渲染，  
-但是在更新的时候，会通过传入的compare函数执行，进行props对比，如果不同，才会更新，如果相同，则会复用旧虚拟dom
-
-最外层加上，内层也会相当于PureComponent，因为父组件不更新子组件也不会更新
-
-使用 React.memo 来缓存组件。  
-使用 React.useMemo 缓存大量的计算。  
-避免使用匿名函数。  
-利用 React.lazy 和 React.Suspense 延迟加载不是立即需要的组件。  
-尽量使用 CSS 而不是强制加载和卸载组件。  
-使用 React.Fragment 避免添加额外的 DOM。
-
-[React性能优化的8种方式了解一下？](https://juejin.cn/post/6844903924302888973)
-
-1. 在 React 中如何做好性能优化 ?
-代码分割 [在 React 中如何实现代码分割](https://zh-hans.reactjs.org/docs/code-splitting.html)
-
-在React16.6引入了Suspense和React.lazy，用来分割组件代码。
 
 ## 生命周期
 
@@ -474,19 +447,13 @@ __函数组件的生命周期？__
 __LRU算法__  
 在React16.6引入了Suspense和React.lazy，用来分割组件代码。
 
-## React-router
-[React/Vue 中的 router 实现原理如何](https://q.shanyue.tech/fe/react/463.html#history-api)
-
 ## React面试题
 
 ### 请说一下你对 React 的理解  
 用于构建UI的 声明式的 虚拟DOM优化的 组件化的 框架
 
-[珠峰](http://zhufengpeixun.com/strong/html/126.11.react-1.html)
-
 ### 请说一下React中的渲染流程
 JSX -> 可执行代码 -> VDOM -> Fiber -> 真实DOM  
-[珠峰](http://zhufengpeixun.com/strong/html/126.11.react-1.html#t485.%20%E8%AF%B7%E8%AF%B4%E4%B8%80%E4%B8%8B%20React%20%E4%B8%AD%E7%9A%84%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B)
 
 __受控组件和非受控组件__  
 React没有双向绑定
@@ -500,8 +467,6 @@ React没有双向绑定
 当然如果选择非受控组件的话，表单数据相当于由DOM自己处理。
 
 file类型的表单控件只能由用户设置值，作为非受控组件
-
-[受控组件与非受控组件](https://juejin.cn/post/6858276396968951822#heading-2)
 
 __React 组件是怎么渲染为 DOM 元素到页面上的__  
 __React 中 setState 调用以后会经历哪些流程__  

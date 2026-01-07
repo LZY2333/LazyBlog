@@ -1,0 +1,374 @@
+---
+title: 数据结构与算法之美笔记
+date: 2022-04-19 15:52:38
+tags: 
+    - 算法
+---
+
+## 时间复杂度与空间复杂度
+
+### 为什么需要 时间复杂度分析
+
+如果 将程序跑一遍,通过统计/监控 得到算法执行的时间和占用的内存(__事后统计法__)
+
+这样做得到得数据
+
+1.受测试环境影响 2.受数据规模的影响很大
+
+### 什么是 大O复杂度表示法
+
+__大O 时间复杂度__,也称为 __渐进式时间复杂度__,表示 代码执行时间 随数据规模增长
+
+T(n) = O(n²)
+
+T(n) 总执行时间, F(n) 每行代码总执行次数
+
+### 如何进行时间复杂度分析
+
+一段代码
+
+1.只关注循环执行次数最多的一段代码
+
+2.只关注量级最大的那段代码
+
+时间复杂度分析规则类别
+
+__最好/最坏时间复杂度__:在最理想/最糟糕 的情况下的时间复杂度(best/worst case time complexity)
+
+__平均情况时间复杂度__:在平均 的情况下的时间复杂度(average case time complexity)
+
+__加权平均时间复杂度__/__期望时间复杂度__:计算 平均情况时间复杂度 时,加入了概率权重
+
+__均摊时间复杂度__:摊还分析/平摊分析,针对存在规律的 __平均情况时间复杂度__  
+的一种分析思想
+
+> 例如 每一次O(n)的操作,会紧跟着n-1次O(1)的操作,将O(n)均摊在n-1次的O(1)上,最终 时间复杂度为O(1)
+
+### 什么是 空间复杂度
+
+空间复杂度,O(1),O(n),O(n²),表示 算法运行需要的储存空间 与 数据规模 之间 的增长关系
+
+## 数组与链表
+
+### 什么是数组
+
+__线性表结构__ 以及 __连续的内存空间__ __相同的数据类型__,使数组支持 高效的 下标 __随机访问__ 的能力
+
+缺点:  
+为了保持数据 在内存空间的连续性，插入 删除 操作都会伴随数据搬运。
+
+插入优化:若数组无序，第k位数据移动到末尾，要插入的数据移动到，k位
+
+删除优化:标记删除位置，当数组无储存空间时，统一清空重排。
+
+
+但是在 __Javascript中不一定是连续分配的__,而可能是 __哈希映射的方式__ 存在的。
+
+JS中的数组底层有两种表现形式 fast 和 slow
+
+fast: 就是正常的数组,具有固定的长度,并自带扩容功能,内存不够用时申请新地址并进行拷贝
+
+slow: 其实是个map,散列表 哈希表,键为0 1 2 3,值为数据.
+
+### 什么是链表
+
+__储存__: 由 __结点__ 组成,包含 数据 和 后继指针,数组需要连续的内存空间,链表的储存用的是 __零散的内存块__
+
+__储存__: __数组__ 的空间在 __栈__ 中分配,__链表__ 的空间在 __堆__ 中分配
+
+__插入删除__: 数组的 __插入删除__ 操作需要保持 内存的连续性 做数据搬移,链表的 __插入删除__ 不需要做数据搬移,时间复杂度为O(1)
+
+__查找__: 数组 __下标随机读取__ 时间复杂度为O(1),链表 查找 为O(n)
+
+__单链表__: 存在 __头结点__ 和 __尾结点__,尾结点的后继指针指向空地址 null.
+
+__循环链表__: 尾结点指向头结点,适合处理具有环形结构特点问题,约瑟夫问题.
+
+__双向链表__: 具有 __前驱指针__ (prev)指向前面的结点,支持O(1)找到前驱结点
+
+数组 可以利用CPU缓存机制,做到快速读取.CPU缓存机制就是CPU读数据是一段一段读的.
+
+CPU缓存机制是为了弥补读取内存速度过慢CPU计算速度过快之间的差距
+
+### 数组链表的优缺点
+
+__数组的优点__: 简单易用,随机访问效率高,查找速度快
+
+__数组的缺点__: 插删效率低,空间利用率低,空间大小固定,空间必须是连续的内存空间
+
+__链表的优点__: 插删效率高,内存利用率高,空间大小不固定
+
+__链表的缺点__: 内存消耗更多,随机访问效率低
+
+> 数组 一声明就要占用固定大小空间
+
+## 栈与队列
+
+### 什么是栈
+
+只允许在一端插入和删除数据,操作受限的 线性表数据结构
+
+特性:先进后出,后进先出
+
+分为 顺序栈,链式栈 两种
+
+应用: __函数调用栈__ __表达式求值__ __括号匹配__ __浏览器的前进后退__
+
+### 什么是队列
+
+只允许在一端插入 另一端删除,操作受限的 线性表数据结构
+
+特性: 先进先出,后进后出
+
+分为 顺序队列,链式队列 两种
+
+队列需要两个指针,标记队列头 和 尾
+
+## 排序基础
+
+冒泡排序: 右侧有序,外层记录左边界，内层从左往右,`0 length, hasChanged, 0 -i-1,全是j`  
+空间复杂度为 __O(1)__,是 __原地排序算法__,  
+相邻元素大小相等时不会进行交换 是 __稳定的排序算法__,  
+时间复杂度 为 __O(n²)__
+
+插入排序: 左侧有序,外层记录右边界，内层从右往左,`1 length, temp j, i-1 0`  
+空间复杂度为 __O(1)__,是 __原地排序算法__,  
+发现值相同的元素时插入 是 __稳定的排序算法__,  
+时间复杂度 为 __O(n²)__ (n轮,每轮移动n个数)
+
+选择排序: 左侧有序,外层记录左边界，内层从右往右,`0 length-1, minIndex, i+1 length`  
+空间复杂度为 __O(1)__,是 __原地排序算法__,  
+是 __不!稳定的排序算法__,  
+任何情况时间复杂度 为 __O(n²)__
+
+__插入排序 比 冒泡排序 性能更好__
+
+插入排序和冒泡排序的元素交换次数都是原始数据的逆序度
+
+但每次交换 冒泡排序需要 3个赋值操作，插入排序只需要1个
+
+## 排序
+
+### 冒泡排序
+```js
+// 冒泡排序
+const bubbleSort = (arr) => {
+    // length <= 1 直接return
+    if (arr.length <= 1) return
+    for (let i = 0; i < arr.length; i++) {
+        let hasChange = false
+        // 每次冒泡最末尾的数已经位于正确的位置,后续不需要参与比较所以-i-1
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            // 从小到大进行排序
+            if (arr[j] > arr[j + 1]) {
+                const temp = arr[j]
+                arr[j] = arr[j + 1]
+                arr[j + 1] = temp
+                hasChange = true
+            }
+        }
+        // 如果某次冒泡没进行任何交换 说明所有元素已经到位
+        if (!hasChange) break
+    }
+    console.log(arr)
+}
+const test = [4, 5, 6, 3, 2, 1]
+bubbleSort(test)
+```
+
+### 插入排序
+```js
+// 插入排序
+const insertionSort = (arr) => {
+    if (arr.length <= 1) return
+    for (let i = 1; i < arr.length; i++) {
+        const temp = arr[i]
+        let j = i - 1
+        // 这里是 >= 0
+        for (j; j >= 0; j--) {
+            // 这里是和temp比大小，不是arr[i]
+            if (arr[j] > temp) {
+                arr[j + 1] = arr[j]
+            } else {
+                // 找到比j小的数之后要break,j不需要减小了
+                break
+            }
+        }
+        // temp放这个数后面(j+1)
+        arr[j + 1] = temp
+    }
+    console.log(arr)
+}
+const testSort = [4, 1, 6, 3, 2, 1]
+insertionSort(testSort)
+```
+
+### 选择排序
+```js
+// 选择排序
+const selectionSort = (arr) => {
+    if (arr.length <= 1) return
+    // 需要注意这里的边界, 因为需要在内层进行 i+1后的循环，所以外层需要 数组长度-1
+    for (let i = 0; i < arr.length - 1; i++) {
+        let minIndex = i
+        for (let j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j
+            }
+        }
+        const temp = arr[i]
+        arr[i] = arr[minIndex]
+        arr[minIndex] = temp
+        
+    }
+    console.log(arr)
+}
+const testSelect = [4, 8, 6, 3, 2, 1, 0, 12]
+selectionSort(testSelect)
+```
+
+### 快速排序/归并排序
+
+快速排序: __时间复杂度O(nlogn)__,__空间复杂度O(1)__,__不稳定的排序算法__,__原地排序__
+
+归并排序: __时间复杂度:O(nlogn)__,__空间复杂度:O(n)__, __稳定的排序算法__,__非原地排序__
+
+
+快速排序 极端情况下时间复杂度退化成O(n²),例如选中有序数组的最后一位做为pivot
+
+防止极端情况:
+
+三数取中法(每次从要排序的区间中 首 尾 中 取数 中值作为pivot,可5数取中,等)
+
+随机法(每次从要排序的区间中随机选择pivot)
+
+归并排序 相等的元素,`left`数组内的数具有优先权,保证了其稳定排序
+
+> 归并 自下而上, 快排 自上而下
+
+### 快速排序
+
+```js
+const quickSort = (arr, left, right) => {
+    if (left < right) {
+        let pivot = right
+        let partitionIndex = partition(arr, pivot, left, right)
+        quickSort(arr, left, partitionIndex - 1)
+        quickSort(arr, partitionIndex + 1, right)
+    }
+}
+const partition = (arr, pivot, left, right) => {
+    const pivotVal = arr[pivot]
+    let startIndex = left
+    for (let i = left; i < right; i++) {
+        if (arr[i] < pivotVal) {
+            swap(arr, i, startIndex)
+            startIndex++
+        }
+    }
+    swap(arr, startIndex, pivot)
+    return startIndex
+}
+
+const swap = (arr, i, j) => {
+    const temp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = temp
+}
+
+const testArr = []
+let i = 0
+while (i < 10) {
+    testArr.push(Math.floor(Math.random() * 1000))
+    i++
+}
+console.log('排序前:', testArr)
+quickSort(testArr, 0, testArr.length - 1);
+console.log('排序后:', testArr)
+```
+
+### 归并排序
+
+```js
+const mergeSort = (arr) => {
+    if (arr.length <= 1) return arr
+    const middle = Math.floor(arr.length / 2)
+    const left = arr.slice(0, middle)
+    const right = arr.slice(middle)
+    return mergeArr(mergeSort(left), mergeSort(right))
+}
+const mergeArr = (left, right) => {
+    let temp = []
+    let leftIndex = 0
+    let rightIndex = 0
+    while (left.length > leftIndex && right.length > rightIndex) {
+        if (left[leftIndex] <= right[rightIndex]) {
+            temp.push(left[leftIndex])
+            leftIndex++
+        } else {
+            temp.push(right[rightIndex])
+            rightIndex++
+        }
+    }
+    return temp.concat(left.slice(leftIndex)).concat(right.slice(rightIndex))
+}
+
+let arr = []
+let count = 10
+while (count > 0) {
+    arr.push(Math.floor(Math.random() * 100))
+    count--
+}
+console.log('排序前:', arr)
+console.log('排序后:', mergeSort(arr));
+```
+
+### 桶排序(BucketSort)
+桶排序实际上是一种思想,主要用于排序 大批量数据(10GB),  
+进行外部排序(数据储存在外部磁盘中),  
+进行分批次排序
+
+先扫描一遍文件,__确定数据范围__,如1-100  
+首先,__划分每个'桶'内存放的数据区间__,如1-10,11-20...91-100  
+然后,扫描数据将数据存放在属于自己范围内的桶内  
+再次,依次对各个桶进行排序  
+最后,按顺序 直接拼接 各桶数据.
+
+数据量大可继续分桶,数据不均匀可桶内再分桶
+
+### 二分查找(BinarySearch)
+
+```js
+// 数组必须有序 不存在重复
+const BinarySearch = (sortedArr, target) => {
+    if (sortedArr.length === 0) return -1
+    let low = 0
+    let high = sortedArr.length - 1
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2)
+        if (target === sortedArr[mid]) {
+            return mid
+        } else if (target < sortedArr[mid]) {
+            high = mid - 1
+        } else {
+            low = mid + 1
+        }
+    }
+    return -1
+}
+const arr = [1, 4, 5, 6, 7, 8, 10, 11, 23, 42, 44, 54, 56, 77, 102]
+console.log(BinarySearch(arr, 44))
+console.log(BinarySearch(arr, 1))
+console.log(BinarySearch(arr, 102))
+console.log(BinarySearch(arr, 1111))
+```
+> 注意循环退出条件是 low <= high  
+> 注意 high = mid - 1,low = mid + 1,没这个 1 可能会死循环(high=low时)  
+> (low + high) / 2 可优化为 low + (high - low) / 2,防止high+low溢出  
+> 必须是顺序表结构(数组),必须是有序数据  
+> 理论上二分查找可以解决的问题,散列表 二叉树都能解决,但是需要更多额外空间  
+> 所以限制内存空间及 数据量较大时 使用 二分查找
+
+
+查找k次,2的k次方能覆盖n个元素  
+__时间复杂度O(logn)__

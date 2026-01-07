@@ -96,7 +96,7 @@ axios.get('https://api.example.com/data', {
 
 ### 非简单请求
 `POST` + `application/json`  
-携带自定义请求偷
+携带自定义请求头
 
 ### 预检请求(OPTIONS)
 ```http

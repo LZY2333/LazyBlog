@@ -7,5 +7,6 @@
     "5-union",
     "6-special",
     "7-function",
-    "ts-challenge"
+    "ts-challenge",
+    "covariance-contravariance"
 ]

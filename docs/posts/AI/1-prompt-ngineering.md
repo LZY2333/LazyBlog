@@ -1,13 +1,9 @@
 ---
-title: 提示词(一):提示词工程(待整理)
+title: 提示词(一):提示词工程
 date: 2025-07-16 15:17:05
 tags:
     - AI
 ---
-
-https://doc.iamkasong.com  
-https://kyscj.xetlk.com/s/3pm8Df  
-https://kyscj.xetslk.com/s/OFLZ0
 
 ## 1.明确需求
 
@@ -56,3 +52,5 @@ https://github.com/AI-FE/wuxia-comment
 ## 3.拆分提示词
 
 拆分流程，多次输入
+
+## 待填坑

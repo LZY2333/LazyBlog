@@ -1,3 +1,17 @@
 [
-    "1-time-complexity"
+    "1-time-complexity",
+    "0-data-constructures-algorithms",
+    "10-hash-table",
+    "11-hash",
+    "12-tree",
+    "14-heap",
+    "2-array",
+    "3-linked-list",
+    "38-divide-conquer",
+    "4-stack",
+    "5-queue",
+    "6-sort1",
+    "7-sort2",
+    "8-sort3",
+    "9-binary-search"
 ]

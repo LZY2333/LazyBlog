@@ -16,7 +16,7 @@ __不可变静态资源 强缓存__
 
 ## http缓存
 ### 涉及响应头字段
-#### Cache-Control
+__Cache-Control__  
 `max-age=315360000`  强缓存时间  
 `immutable`         永不协商缓存,针对 刷新页面 页面崩溃恢复页面  
 `public/private`    允许缓存(CDN+浏览器) / 允许缓存(仅浏览器,默认)  
@@ -28,22 +28,22 @@ __不可变静态资源 强缓存__
 > 不缓存一般设置`no-store`  
 > max-age=0 约等于 no-cache
 
-#### Expires
+__Expires__  
 绝对过期时间, 依赖客户端时间, 使用场景: 兼容旧浏览器  
 `Expires: Wed, 01 Jan 2026 00:00:00 GMT`
 
-#### Last-Modified
+__Last-Modified__  
 资源最后修改时间, 使用场景: 协商缓存, 不方便生成hash的内容  
 `Last-Modified: Tue, 10 Dec 2025 08:00:00 GMT`
 
-#### Etag
+__Etag__  
 资源唯一标识, 使用场景: 协商缓存, 精度更高  
 `ETag: "abc123"`
 
 > 涉及协商缓存请求, 请求头会增加 `If-None-Match: "abc123"`  
 > 大型项目中通常 ETag + Last-Modified, 但只依赖 ETag
 
-#### Vary
+__Vary__  
 配置缓存命中 依赖哪些请求头  
 `Vary: Accept-Encoding, Accept-Language`
 

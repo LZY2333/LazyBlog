@@ -1,0 +1,288 @@
+---
+title: 3.ng-指令
+date: 2021-03-22 23:10:30
+categories: 技术栈
+tags: 
+    - Angular
+---
+
+用于 修改DOM结构 ,或用于 修改DOM属性 或 组件实例数据模型属性 的类
+
+指令类几乎总与 HTML元素 或 属性(attribute) 相关,甚至把 同名属性当作指令名本身.
+
+当 Angular 执行时,在 HTML 模板中发现指令时,会创建当前指令类的实例,并传入DOM对象.
+
+指令类名 大驼峰 UpperCamelCase, 属性名小驼峰 lowerCamelCase
+
+指令分为三类:
+
+组件 拥有模板的指令.使用 @Component()（继承自 @Directive()）为某个类关联一个模板。
+
+属性型指令 修改元素 组件 或 其他指令 的行为和外观.`NgStyle`
+
+结构型指令 修改 DOM 的结构.`NgFor` `NgIf`
+
+
+## 内置指令
+
+内置指令只有两种 属性型指令 和 结构型指令
+
+属性指令 会监听并修改 其依附的 HTML元素 或 组件的行为、Attribute 和 Property.就像HTML属性一样.
+
+`NgClass`/`NgStyle`/`ngModel` 内置属性型指令
+
+```js
+currentClasses: {};
+/* . . . */
+  setCurrentClasses() {
+    this.currentClasses =  {
+      saveable: this.canSave,
+      modified: !this.isUnchanged,
+      special:  this.isSpecial
+    };
+  }
+```
+```html
+<div [ngClass]="currentClasses">This div is initially saveable, unchanged, and special.</div>
+```
+
+> 添加删除 单个类用类绑定，多个类用 NgClass,NgStyle同理,用法相同。  
+> 并且这种用法要在 初始化 和 它的依赖属性变化时 调用一遍 setCurrentClasses()。
+
+`ngModel`指令允许你显示数据属性并在用户进行更改时更新该属性,只见过在input中使用.
+```html
+<input ng-model="name">{{name}}
+```
+`[(ngModel)]`, `ngModel`加双向绑定,必须先导入 FormsModule,并在NgModule 的imports中导入.
+
+效果等同于 下面这个
+```html
+<input [value]="name" (input)="name=$event.target.value" id="without">
+<input [ngModel]="name" (ngModelChange)="name=$event.target.value" id="example-change">
+<!-- ngModel 输入属性会设置该元素的值，并通过 ngModelChange 的输出属性来监听元素值的变化。 -->
+```
+
+`NgIf`/`NgFor`/`NgSwitch` 内置属性型指令
+
+`<div [class.hidden]="isSpecial">Hide with class</div>` 隐藏元素
+
+`<div *ngIf="currentCustomer">Hello, {{currentCustomer.name}}</div>` 防范空指针错误
+
+
+*ngFor 使用 trackBy 防止列表中已经被渲染过的DOM被全部替换
+
+```js
+// ts文件中
+trackByItems(index: number, item: Item): number {
+  return item.id;
+}
+```
+```html
+<!-- // 这样就会通过id是否改变来判断是否需要替换 -->
+<div *ngFor="let item of items; trackBy: trackByItems">
+  ({{item.id}}) {{item.name}}
+</div>
+```
+
+`ngSwitch`
+```html
+<div [ngSwitch]="currentItem.feature">
+<app-worst-item *ngSwitchCase="'worst'" [item]="cItem">{{cItem}}</app-worst-item>
+<app-fast-item  *ngSwitchCase="'fast'"  [item]="cItem"></app-fast-item>
+<app-lost-item  *ngSwitchCase="'lost'"  [item]="cItem"></app-lost-item>
+<app-best-item  *ngSwitchCase="'best'"  [item]="cItem"></app-best-item>
+<app-know-item  *ngSwitchDefault        [item]="cItem"></app-know-item>
+```
+
+## 自定义一个属性型指令
+
+```html
+<!-- appHighlight 高亮一个元素,自定义指令 -->
+<p appHighlight>Highlight me!</p>
+```
+
+第一步,`ng generate directive highlight`
+
+第二步,在自动创建的文件中修改`constructor`
+```js
+import { Directive,ElementRef } from '@angular/core';
+@Directive({
+  selector: '[appHighlight]' // 这里会被自动加app(模块名)前缀,就像ng指令的ng前缀
+})
+export class HighlightDirective { // 这里会被自动 加一个 directive 后缀
+  constructor(el: ElementRef) { // 这里是自己加的
+    // 引入 ElementRef 并使用
+    // ElementRef 通过其 nativeElement 属性给你了直接访问宿主 DOM 元素的能力。
+    el.nativeElement.style.backgroundColor = 'yellow';
+    
+  }
+}
+```
+
+第三步,增加响应用户事件,增加`@Input`属性,指定颜色
+```js
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+    @Input() highlightColor: string;
+
+    // 修改后的构造函数只负责声明要注入的元素 el: ElementRef
+    constructor(el: ElementRef) { }
+
+    @HostListener('mouseenter') onMouseEnter() {
+      this.highlight(this.highlightColor || 'red');
+    }
+
+    @HostListener('mouseleave') onMouseLeave() {
+      this.highlight(null);
+    }
+
+    private highlight(color: string) {
+      this.el.nativeElement.style.backgroundColor = color;
+    }
+}
+```
+```html
+<!-- 绑定指令,再绑定属性 -->
+<p appHighlight highlightColor="yellow">Highlighted in yellow</p>
+<p appHighlight [highlightColor]="'orange'">Highlighted in orange</p>
+```
+
+再次修改
+```html
+<!-- 设定指令并绑定属性,属性和指令同名,更方便,但是属性名这样命名就不好,所以指定别名 -->
+<p [appHighlight]="color">Highlight me!</p>
+```
+```js
+// 在指令内部，叫 highlightColor，在外部，绑定的地方叫 appHighlight。
+@Input('appHighlight') highlightColor: string;
+```
+
+绑定第二个属性
+```js
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+  constructor(private el: ElementRef) { }
+
+  @Input('appHighlight') highlightColor: string;
+  @Input() defaultColor: string;
+  // 通过 @Input 装饰器把defaultColor设置成公共属性,
+  // Angular就知道defaultColor 绑定属于 HighlightDirective
+  @HostListener('mouseenter') onMouseEnter() {
+    this.highlight(this.highlightColor || this.defaultColor || 'red');
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.highlight(null);
+  }
+
+  private highlight(color: string) {
+    this.el.nativeElement.style.backgroundColor = color;
+  }
+}
+```
+
+> @Input 装饰器会告诉 Angular，该属性是公共的，并且能被父组件绑定。如果没有 @Input，Angular 就会拒绝绑定到该属性。  
+> 等号右边的 模板表达式 属于模板所在的组件, 等号左边的 [] 属于其他组件或指令, 其组件或指令内部必须必须带有 @Input 装饰器
+
+__ngNonBindable__ 让 元素内部的 模板原样输出,但指令依然生效
+
+```html
+<div ngNonBindable [appHighlight]="'yellow'">
+  This should not evaluate: {{ 1 +1 }}, but will highlight yellow.
+</div>
+```
+
+## 自定义一个结构型指令
+
+结构型指令 都会使用(*)语法,可以操作宿主元素及其子元素
+
+一个宿主元素可以有多个 属性型指令, 但只能有一个 结构型指令
+
+```html
+<div *ngIf="hero" class="name">{{hero.name}}</div>
+<!-- // 上面等同于下面 ,只有*ngIf 指令会被移到 <ng-template> 元素上 -->
+<ng-template [ngIf]="hero">
+  <div class="name">{{hero.name}}</div>
+</ng-template>
+
+<!-- Angular 会在真正渲染的时候填充 <ng-template> 的内容，并且把 <ng-template> 替换为一个供诊断用的注释。 -->
+
+<!-- NgFor和NgSwitch...指令也都遵循同样的模式。 -->
+```
+
+```html
+<div *ngFor="let hero of heroes; 
+  let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd">
+  ({{i}}) {{hero.name}}
+</div>
+
+<ng-template ngFor let-hero [ngForOf]="heroes" 
+  let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
+  <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
+</ng-template>
+```
+
+微语法:  通过简短的、友好的字符串来配置一个指令。 微语法解析器把这个字符串翻译成 `<ng-template>` 上的属性.
+
+`let` 关键字声明一个模板输入变量,让你在模板中能用到这个变量。
+
+本例子中，这个输入变量就是 hero、i 和 odd。 解析器会把 `let hero`、`let i`和`let odd`翻译成命名变量 `let-hero`、`let-i` 和 `let-odd`。
+
+微语法接收 of 和 tracky,再首字母大写,再加上(ngFor),最终生成`ngForOf`/`ngForTrackBy`,指令`ngFor`由此知列表为 heros, tracky-by函数是 trackById
+
+指令`ngFor`,每个循环中会 设置和重置 自己的上下文对象上的属性, 包括 index和odd 以及一个特殊的属性名 $implicit(隐式变量)等
+
+并将 let-hero 设置为此上下文中 $implicit 属性的值,由被循环的 变量进行赋值
+
+__编写一个结构型指令__
+
+可以利用微语法,例如: `<div *ngFor="let item of items">{{item}}</div>`,  
+代替`<ng-template ngFor let-item [ngForOf]="items"><div>{{item}}</div></ng-template>`
+
+微语法处略过....(以后再看)
+
+```html
+<!-- 写一个NgIf的反义词结构指令 -->
+<p *appUnless="condition">Show this sentence unless the condition is true.</p>
+```
+
+1. 导入 Directive 装饰器
+2. 导入符号 Input、TemplateRef 和 ViewContainerRef,任何结构型指令都会用到.
+3. 给指令类添加装饰器.
+4. 设置选择器(CSS 属性选择器),指令的选择器通常是把指令的属性名括在方括号中,如 [appUnless]。
+
+属性名 小驼峰 + 前缀(不能是ng), 类名 大驼峰
+
+使用`TemplateRef`取得 `<ng-template>` 的内容，并通过`ViewContainerRef`来访问这个视图容器.
+
+```js
+import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+@Directive({ selector: '[appUnless]'})
+export class UnlessDirective {
+  private hasView = false;
+
+  constructor(
+    private templateRef: TemplateRef<any>,
+    private viewContainer: ViewContainerRef) { }
+
+  @Input() set appUnless(condition: boolean) {
+    if (!condition && !this.hasView) {
+      this.viewContainer.createEmbeddedView(this.templateRef);
+      this.hasView = true;
+    } else if (condition && this.hasView) {
+      this.viewContainer.clear();
+      this.hasView = false;
+    }
+  }
+}
+```

@@ -5,10 +5,8 @@ categories: 技术栈
 tags:
   - 微前端
 ---
+
 ## 微前端
-
-<https://www.lumin.tech/blog/micro-frontends-1-concept/>
-
 ### 第一步，解决了什么痛点
 
 **大应用拆分**  
@@ -189,6 +187,18 @@ start();
 
 解决方案去哪找: 谷歌，qiankun github的issue，qiankun的微信支持群。
 
+**配置问题**  
+【子应用nginx要配置跨域】  
+【子应用entry结尾必须加/】, 且上线要用CDN域名。  
+【子应用入口 生命周期函数 以及 **webpack_public_path** 注入】  
+【资源引入方式一定要写相对路径】否则只会走主站地址，不会走 **webpack_public_path**  
+publicPath配错
+```js
+if (window.__POWERED_BY_QIANKUN__) {
+    __webpack_public_path__ = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
+}
+```
+
 **微应用通信**
 
 **路由跳转问题**  
@@ -201,7 +211,6 @@ qiankun会把静态资源的加载拦截，改用fetch方式获取资源，所�
 解决: 使用qiankun提供的 start 接收的对象内的 excludeAssetFilter 判断url放行。
 
 **对微应用实现 keep-alive 需求**  
-直接display:none
 
 **样式相互影响**  
 css module，每个模块配置自己的模块前缀
@@ -351,7 +360,7 @@ use: [
 > Webpack 会遍历 module.rules 数组，从上到下匹配 test 条件  
 > 对于每个模块文件，只会应用第一个匹配到的规则
 
-### 静态资源必须支持跨域
+## 静态资源必须支持跨域
 [配置nginx解决](https://segmentfault.com/a/1190000012550346)
 
 ```nginx

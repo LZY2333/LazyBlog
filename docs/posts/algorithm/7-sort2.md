@@ -1,0 +1,259 @@
+---
+title: 排序(归并,快排)
+date: 2021-08-18 12:28:17
+categories: 技术栈
+tags: 
+    - 算法
+---
+
+归并排序 和 快速排序 都用到了 分治思想,
+
+时间复杂度都为 O(nlogn)
+
+## 归并排序(mergeSort)
+
+就一直拆分到底，只剩1个元素或0个元素，再合并后往上返回。  
+合并时两个数组都从最左边元素开始比较，谁小谁进temp，再对应index++
+
+分析出递推公式，找到终止条件
+```js
+
+// 这里将mergeArr函数执行成多层嵌套,
+// 直到数组被拆分为只有0或1个元素的多个数组,类似金字塔的结构
+// 然后 自下而上 开始层层执行mergeArr进行排序合并,直到金字塔顶端合二为一
+// 最底层 排序合并 为 具有1或2个(0+1或1+1)元素的数组,
+// 之后作为参数推送给倒数第二层的mergeArr,执行
+// 合并为具有3或4个(1+2或2+2)元素的数组,
+// 继续作为参数推送给倒数第三层的mergeArr
+const mergeSort = (arr) => { // 递归分解函数
+    // 终止条件:当任意数组分解到只有一个时返回。
+    if (arr.length <= 1) return arr
+    const middle = Math.floor(arr.length / 2) // 找到中间值
+    const left = arr.slice(0, middle) // 分割数组
+    const right = arr.slice(middle)
+    // mergeSort进行递归分解,嵌套调用mergeArr,
+    // mergeArr 多层执行,排序合并
+    // 每一层mergeArr执行结束代表一半的数组合并完成,传递给上一层
+    // 直到只剩一个数组
+    return mergeArr(mergeSort(left), mergeSort(right))
+}
+
+// 对传入的 l数组 r数组 从左往右进行比较
+// 由于是多次二等份 最底层的的l数组和r数组
+// 必然是仅含1个元素或0个元素(传入数组为奇数时等分后会存在一个0元素数组)
+// 创建一个新数组temp,第一次比较, 对比l与r 最左端的元素
+// (由于l和r都是从底层1元素数组排序合并而来,所以都是左小右大的有序数组)
+// 比较内的小的数据(l和r最左侧是各自最小的元素,比较内小者就是当前最小数据)
+// push进新数组,并 当前侧index+1(相当于删除当前侧元素,剩下的继续比较)
+// 第二次比较 继续取l和r最左端元素进行比较,小的那个push进temp(第二小元素)
+// 第三次比较 继续取l和r最左端元素进行比较,小的那个push进temp(第三小元素)
+// 直到,l或r其中一个数组的元素被取完,剩下另一个数组的元素必然是
+// 有序(l和r本就有序且左小右大),且大于temp数组的,
+// 直接拼接到temp数组最后,排序合并结束
+const mergeArr = (left, right) => {// 合并子序列函数
+    // 递推公式
+    let temp = []
+    let leftIndex = 0
+    let rightIndex = 0
+    // 判断2个数组中元素大小，依次插入数组 11 9
+    while (left.length > leftIndex && right.length > rightIndex) {
+        if (left[leftIndex] <= right[rightIndex]) {
+            temp.push(left[leftIndex])
+            leftIndex++
+        } else {
+            temp.push(right[rightIndex])
+            rightIndex++
+        }
+    }
+    // 合并 多余数组
+    return temp.concat(left.slice(leftIndex)).concat(right.slice(rightIndex))
+}
+
+const testArr = []
+let i = 0
+while (i < 100) {
+    testArr.push(Math.floor(Math.random() * 1000))
+    i++
+}
+console.log('排序前:',testArr)
+const res = mergeSort(testArr)
+console.log('排序后:',res)
+```
+
+__稳定的排序算法__
+
+相等的元素,`left`数组内的数具有优先权,保证了其稳定排序
+
+`mergeArr()`递归分解函数中:  
+`left[leftIndex] <= right[rightIndex]`中的等号  
+`temp.concat(left.slice(leftIndex)).concat(right.slice(rightIndex))`  
+中的temp与concat顺序,left.concat与right的顺序  
+保证了 归并排序 是 稳定的排序
+
+__时间复杂度:O(nlogn)__  
+公式推演太复杂,高中和大学的基本忘了.  
+自己想了一个思路,每一层遍历都是n,共log2n层,所以是nlogn
+
+__空间复杂度:O(n)__
+
+归并排序 没有 快排 应用广泛,因为 __归并排序不是原地排序算法__
+
+合并两个 有序数组 为一个 有序数组 时,需要借助额外的储存空间(temp数组)
+
+但又由于合并完后,临时开辟的内存空间就会被释放,且CPU任意时刻只执行一个函数
+
+所以,临时内存空间最大的时候也就是 n个数据的大小(最后一次合并时temp.length),
+
+所以,O(n)
+
+## 快速排序(quickSort)
+
+### 正经原地排序版
+```js
+
+// 负责拆分数组
+const quickSort = (arr, left, right) => {
+    if (left < right) { // 表示还可继续拆分,否则表示已拆分到最小单位
+        let pivot = right
+        let partitionIndex = partition(arr, pivot, left, right)
+        // 对pivot左侧数组(不包括当前pivot)进行快排
+        quickSort(arr, left, partitionIndex - 1)
+        // 对pivot右侧数组(不包括当前pivot)进行快排
+        quickSort(arr, partitionIndex + 1, right)
+
+    }
+}
+
+// 负责根据pivot分左右区
+const partition = (arr, pivot, left, right) => {
+    const pivotVal = arr[pivot]
+    let startIndex = left // 指针指向分界点
+    for (let i = left; i < right; i++) { // 找到比pivotVal小的数放指针左边
+        if (arr[i] < pivotVal) {
+            swap(arr, i, startIndex)
+            // startIndex走过的区域是已处理区间(小于pivot的数)
+            // startIndex更新为指向 下一个数,等待被交换(已处理区间不包含startIndex点)
+            startIndex++
+        }
+    }
+    // 最后将pivot(中间数)数据放在startIndex上,
+    swap(arr, startIndex, pivot)
+    // 此时left-startIndex之间均为 小于等于arr[startIndex]的数
+    return startIndex
+}
+
+// 负责交换元素位置
+const swap = (arr, i, j) => {
+// 这里节省时间使用 交换 导致成为了不稳定算法,
+// 如果使用插入排序的思路可转换为稳定排序,但也需要更多时间加一层循环
+    const temp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = temp
+}
+
+const testArr = []
+let i = 0
+while (i < 10) {
+    testArr.push(Math.floor(Math.random() * 1000))
+    i++
+}
+console.log('排序前:', testArr)
+quickSort(testArr, 0, testArr.length - 1);
+console.log('排序后:', testArr)
+```
+
+__不稳定的排序算法__
+
+__原地排序__
+
+__时间复杂度O(nlogn)__  
+极端情况下时间复杂度退化成O(n²),例如选中有序数组的最后一位做为pivot  
+防止极端情况:  
+三数取中法(每次从要排序的区间中 首 尾 中 取数 中值作为pivot,可5数取中,等)  
+随机法(每次从要排序的区间中随机选择pivot)
+
+__空间复杂度O(1)__
+
+> 归并 自下而上, 快排 自上而下
+
+
+### 5行代码版(非原地排序,分归排序)
+
+这个版本便于理解快排原理，但存在导致空间复杂度提升的缺点，不建议实际使用。
+
+确实不该算快排，应该就叫分归排序，非常贴切
+
+[老姚--掘金](https://juejin.cn/post/6844903938290876430)
+
+作者称为，分归排序
+```js
+function quickSort(array) {
+  if (array.length < 2) return array
+  let pivot = array[array.length - 1]
+  let left = array.filter((v, i) => v <= pivot && i != array.length -1)
+  let right = array.filter(v => v > pivot)
+  return [...quickSort(left), pivot, ...quickSort(right)]
+}
+```
+
+__稳定排序__
+
+__非原地排序__
+
+__空间复杂度O(nlogn)__
+
+每层递归 占用O(n)空间，
+
+且由于 使用了return(确实该叫分归)，导致了 最后一层结果返回前 会产生O(lgn)层 函数调用栈
+
+因此总体空间复杂度是O(nlogn)
+
+__时间复杂度O(nlogn)__
+
+## 找到第K大的数
+
+```js
+/**
+ * 第k大的数
+ * 思路,类似快速排序,每次排完pivot点所在的位置就是其最终的排序位置
+ * 因为pivot左边必然都是比自己小的数,当找到某个pivot+1 = k,便是答案
+ * k > 某个pivot+1 则k在pivot右边,k < 某个pivot+1 则k在pivot左边
+ * @param {array} arr 
+ * @param {number} k  
+ */
+function kthNum(arr, k) {
+  const len = arr.length;
+  if (k > len) {
+    return -1;
+  }
+  let p = partition(arr, 0, len - 1);
+  while (p + 1 !== k) {
+    if (p + 1 > k) {
+      p = partition(arr, 0, p - 1);
+    } else {
+      p = partition(arr, p + 1, len - 1);
+    }
+  }
+  return arr[p];
+}
+
+function partition(arr, start, end) {
+  let i = start;
+  let pivot = arr[end];
+  for (let j = start; j < end; j++) {
+    if (arr[j] < pivot) {
+      swap(arr, i, j);
+      i += 1;
+    }
+  }
+  swap(arr, i, end);
+  return i;
+}
+
+function swap(arr, i, j) {
+  if (i === j) return;
+  let tmp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = tmp;
+}
+```

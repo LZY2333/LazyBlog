@@ -1,0 +1,368 @@
+---
+title: 2.ng-模板
+date: 2021-03-17 20:55:38
+categories: 技术栈
+tags: 
+    - Angular
+---
+
+## 简介
+
+通过在模板中使用 Angular 的特有语法,增强HTML的功能.
+
+Angular不支持模板中使用 script 标签。  
+Angular 会忽略 script标签，并向浏览器控制台输出一条警告
+
+## 插值
+
+__`{{...}}` 插值及内部的模板表达式__
+
+Component 元数据中的 interpolation 属性可配置分隔符代替 `{{...}}`
+
+里面 可写 表达式 ，可直接调用宿主组件的函数
+
+表达式最终都会被转换为 字符串`(.toString())`
+
+看上去是将结果插入元素标签之间， 其实插值只是特殊语法，Angular会将其转换为 赋值 的方式
+
+__模板表达式的特点__
+
+模板表达式中 不能使用 会引发副作用的JS表达式，如下:  
+赋值`(=,+=,-=...)`  
+new、typeof、instanceof等运算符  
+使用;或者,串联起来的表达式  
+`++` 和 `--` 自增自减  
+一些ES6 的运算符
+
+不支持位运算,如 `|` 和 `&`  
+angular新出了一些模板表达式运算符,如 `|`,`?`和`!`
+
+> 模板表达式不能引用全局命名空间中的任何东西，比如 window 或 document。  
+> 它们也不能调用 console.log 或 Math.max。 它们只能引用表达式上下文中的成员。
+
+__模板表达式的上下文__
+
+1. 模板引用变量,如 #customerInput
+2. 指令, 模板中的上下文属性,或者是 模板中创建的变量
+3. 组件实例中的属性或方法
+
+```html
+<!-- 1 -->
+<label>Type something:
+  <input #customerInput>{{customerInput.value}}
+</label>
+<!-- 2 -->
+<ul>
+  <li *ngFor="let customer of customers">{{customer.name}}</li>
+</ul>
+```
+
+其中优先级 模板变量 > 指令的上下文属性 > 组件实例的成员变量
+
+表达式的使用须遵循, 简单, 执行快速, 无可见副作用 的原则
+
+## 模板语句
+
+在 HTML 中用于响应用户事件的方法或属性
+
+`<button (click)="deleteHero()">Delete hero</button>`
+
+与模板表达式差不多,但 模板语句 的解析器 与 模板表达式不同 , 并且支持 基本赋值= 和 带;的串联表达式
+
+不能使用: new 自增自减 赋值运算符`+=/-=` 按位运算符`|`和`&` 管道操作符`|`
+
+__模板语句的上下文__
+
+与模板表达式的上下文一致,模板变量,指定的上下文属性,组件实例的变量成员,还能接收事件$event
+
+## 模板变量
+
+用于帮助 在模板的另一部分 使用这部分的数据,使用井号 # 来声明.
+```html
+<input #phone placeholder="phone number" />
+
+<button (click)="callPhone(phone.value)">Call</button>
+```
+1.在 组件 上声明,该变量会应用该 组件实例.  
+2.在 HTML标签 上声明,该变量会引用该 元素.  
+3.在 `<ng-template>` 上声明,该变量会引用一个 TemplateRef实例 来代表该模板.  
+4.在 该变量右侧指定了名字,如`#var="ngModel"`, 那么该变量会 引用 所在元素上 导出的 同名的组件或指令.
+
+```html
+<span *ngIf="true">Value: {{ ref1.value }}</span>
+<!-- 等同于 -->
+<ng-template [ngIf]="true">
+  <span>Value: {{ ref1.value }}</span>
+</ng-template>
+```
+
+## 管道
+
+使用 管道 格式化数据, 如格式化 金额日期.
+
+管道可配置参数 `{{ amount | currency:'EUR':'Euros '}}` ,参数也可为变量
+
+可串联配置多个管道 `{{  birthday | date:'fullDate' | uppercase}}`
+
+每个绑定都有自己的管道实例
+
+管道操作符要比三目运算符(?:)的优先级高，这意味着 `a ? b : c | x` 会被解析成 `a ? b : (c | x)`  
+所以想用三目运算符,要用括号包裹表达式.
+### 常见管道
+
+DatePipe：根据本地环境中的规则格式化日期值。
+
+UpperCasePipe：把文本全部转换成大写。
+
+LowerCasePipe ：把文本全部转换成小写。
+
+CurrencyPipe ：把数字转换成货币字符串，根据本地环境中的规则进行格式化。
+
+DecimalPipe：把数字转换成带小数点的字符串，根据本地环境中的规则进行格式化。
+
+PercentPipe ：把数字转换成百分比字符串，根据本地环境中的规则进行格式化。
+
+
+### 自定义一个管道
+
+管道类名 大驼峰, name 小驼峰,不能使用连字符,  
+使用前记得加入到NgModule元数据的 declarations 属性中声明  
+Angular CLI 的 ng generate pipe 命令会自动注册该管道
+
+自定义管道,管道前 被绑定的值会作为第一个参数, 管道的参数 会从作为第二个参数开始
+```js
+//实现一种指数级转换，以指数级增加英雄的力量,基本值2,通过管道设定指数级为10,最终展示1024
+import { Pipe, PipeTransform } from '@angular/core';
+@Pipe({name: 'exponentialStrength'})
+export class ExponentialStrengthPipe implements PipeTransform {
+  transform(value: number, exponent?: number): number {
+    return Math.pow(value, isNaN(exponent) ? 1 : exponent);
+  }
+}
+```
+```js
+import { Component } from '@angular/core';
+@Component({
+  selector: 'app-power-booster',
+  template: `
+    <h2>Power Booster</h2>
+    <p>Super power boost: {{2 | exponentialStrength: 10}}</p>
+  `
+})// 1024
+export class PowerBoosterComponent { }
+```
+
+__通过管道的数据绑定特性来响应用户操作__
+
+Angular 会检测每次变更，并立即运行管道
+
+```js
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-power-boost-calculator',
+  template: `
+    <h2>Power Boost Calculator</h2>
+    <div>Normal power: <input [(ngModel)]="power"></div>
+    <div>Boost factor: <input [(ngModel)]="factor"></div>
+    <p>
+      Super Hero Power: {{power | exponentialStrength: factor}}
+    </p>
+  `
+})
+export class PowerBoostCalculatorComponent {
+  power = 5;
+  factor = 1;
+} // input框修改,都会影响变量power或factor,展示的值都会重新计算
+```
+
+### 管道执行时机
+
+Angular 会在每次 DOM 事件（每次按键、鼠标移动、计时器滴答和服务器响应）之后运行的变更检测过程中查找对数据绑定值的更改。检查到有更改 则执行管道
+
+但是对于每次变更， 走执行一次管道， 性能过低. 所以 真正的变更检测有一些情况没有进行检测
+
+__纯管道__: 没有副作用 或者说没做额外的事情 或者说只要输入同输入值其输出值永远一致的管道
+
+__纯变更__:纯变更指 七大原始类型的变更, 或 对象引用 的变更.
+
+__如果是 纯管道 ,则只有发生了 纯变更 时,才会执行管道.__
+
+比如调用 数组元素的push 方法,并不能触发 管道的更新,因为 数组的引用地址并没发生改变.
+
+此情况可以采用替换数组的额方式解决, 或者 使用 __非纯管道__
+
+```js
+@Pipe({
+  name: 'flyingHeroesImpure',
+  pure: false
+})
+```
+每当按键或鼠标移动时，Angular 都会检测到一次变更，从而执行一个非纯管道。
+
+只需加一个属性 `pure: false` , 但要小心使用。长时间运行非纯管道可能会大大降低你的应用速度。
+
+
+## DOM属性的绑定语法
+
+所有绑定语法(除插值) 都在等号左侧有一个"目标名称",用`[]`或`()`包裹,或带有前缀`bind-`,`on-`,`bindon-`
+
+绑定语法分 数据源到视图, 从视图到数据源, 双向绑定 三类
+
+插值 属性 Attribute CSS 类 样式, 属于 数据源到视图  
+`{{expression}} [target]="expression" bind-target="expression"`
+
+事件, 属于  从视图到数据源  
+`(target)="statement" on-target="statement"`
+
+双向绑定  
+`[(target)]="expression" bindon-target="expression"`
+
+
+__绑定的 是 DOM的property 而不是 HTML的attribute__
+
+Attribute 是由 HTML 定义的。Property 是从 DOM（文档对象模型）节点访问的
+
+模板绑定使用 Property 和 事件,编写数据绑定时, 只是在和  DOM Property 和事件打交道
+
+在 Angular 中，HTML Attribute 的唯一作用是 __初始化__ 元素和指令的状态.  
+属性只负责 初始化 DOM属性,然后便完工,后续操作的都是property
+
+例如:
+```js
+<input type="text" value="Sarah">
+```
+当用户在 `<input>` 中输入 Sally 时,DOM 元素的 value Property 将变为 Sally.  
+但是,如果使用 input.getAttribute('value') 查看 HTML 的 Attribute value,  
+则可以看到该 attribute 保持不变 —— 它返回了 Sarah.
+
+另一个例子:
+```js
+<button disabled="false">仍被禁用</button>
+```
+在angular中, 这个按钮 的状态 将会是被禁用的.  
+因为 disabled Attribute 被设置为了false, 但是该属性的出现会使得 disabled Property 被初始化为true  
+导致 按钮最终会是禁用状态, 所以如果要控制按钮的状态 应该通过控制 disabled Property,如下:
+
+```html
+<!-- 控制disabled Property -->
+<input [disabled]="condition ? true : false">
+<!-- 技术上说也可以这样控制 disabled Attribute 达到效果(注意Attribute绑定取决于该值是否为null)-->
+<input [attr.disabled]="condition ? 'disabled' : null">
+<!-- 但是不推荐,因为前者更直观(boolean值数据),语法更短,性能更高 -->
+```
+
+__可使用该语法的目标__
+
+属性 (元素属性 组件属性 指令属性)  
+事件 (元素事件 组件事件 指令事件)  
+双向 (事件与属性)  `<input [(ngModel)]="name">`  
+Attribute (少数)  `<button [attr.aria-label]="help">help</button>`  
+类   (class 属性) `<div [class.special]="isSpecial">Special</div>`  
+样式 (style 属性) `<button [style.color]="isSpecial ? 'red' : 'green'">`
+
+> 注意: colspan Attribute 和 colSpan Property,容易混淆.后者可被绑定
+
+__绑定语法的作用__
+
+将 模板中的属性等 设置 为 组件实例data的值,设置指令的属性,设置指令的属性 等.
+
+安全,属性绑定可以帮助确保内容的安全--不处理HTML而是原样显示,不允许带有`<script>`标记的 HTML等.
+
+通常，插值和属性绑定可以达到相同的结果。
+```html
+<p><img src="{{itemImageUrl}}"> is the <i>interpolated</i> image.</p>
+<p><img [src]="itemImageUrl"> is the <i>property bound</i> image.</p>
+
+<p><span>"{{interpolationTitle}}" is the <i>interpolated</i> title.</span></p>
+<p>"<span [innerHTML]="propertyTitle"></span>" is the <i>property bound</i> title.</p>
+```
+
+将数据值渲染为字符串时,都能用,`{{...}}`更易读,  
+但是将元素属性设置为 非字符串 属性时, 必须使用 属性绑定.
+
+__绑定到 Attribute__
+
+单个 class 绑定语法:  
+`[class.sale]="true"`  
+多重 class 绑定语法:  
+`[class]="class-1 class-2"`,  
+`[class]="{foo: true, bar: false}"`,  
+`[class]="['foo', 'bar']"`
+
+Attribute 绑定语法:  
+`[attr.attribute-name]="expression"`  
+`[style.width]="100px"`  
+`[style.width.px]="100"`  
+多重 样式 绑定语法:  
+`[class]="width: 100px; height: 100px"`,  
+`[class]="{width: '100px', height: '100px'}"`,  
+`[class]="['width', '100px']"`
+
+> 同时绑定 多个style 或 class 考虑用 `[ngClass]="currentClasses"` 和 `[ngStyle]="currentStyles"` 两个内置指令.
+
+__双向绑定__
+
+双向绑定就是 `[()]`
+
+子组件中指定属性名`@Input()`属性为`size`,则`@Output()`属性必须为`sizeChange`
+
+
+
+```html
+<!-- 父组件调用 -->
+<app-sizer [(size)]="fontSizePx"></app-sizer>
+```
+```js
+// 子组件写法
+export class SizerComponent {
+  @Input()  size: number | string;
+  @Output() sizeChange = new EventEmitter<number>();
+}
+```
+
+## NgModule 模块
+
+@NgModule修饰的class 就是一个NgModule
+
+@NgModule 使用一个元数据对象来告诉Angular如何去编译和运行代码。
+
+一个模块内部可以包含组件、指令、管道，并且可以将它们的访问权限声明为公有，以使外部模块的组件可以访问和使用到它们。
+
+1. declarations 声明模块 内部 的 Components/Directives/Pipes
+
+2. imports 声明导入 外部 模块暴露的 Components/Directives/Pipes
+
+3. providers 声明指定应用程序的根级别需要使用的service
+
+4. exports 声明可暴露给外部使用的内部成员
+
+5. bootstrap 声明app启动的根组件,该组件会被自动放入entryComponents中
+
+6. entryCompoenents 声明不会再模板中被引用的组件.一般是ng自己使用,ng会自动把bootstrap、路由组件放入其中。
+
+> 2.imports, 如导入CommonModule后就可以使用NgIf、NgFor等指令。  
+> 3.providers,模块中providers的service会是单例模式,每种service,项目中所有组件公用一个service实例  
+> 从angular6开始,只要使用angular-cli的命令创建service,会默认单例,service中默认增加语句`@Injectable({ providedIn: 'root', })`.  
+> 4.exports,导入另一个模块时,只会导入被导入模块的 exports 内声明的成员.
+
+__功能模块 与 根模块__
+
+根模块的目的在于启动app，功能模块的目的在于扩展app
+
+功能模块可以根据需要暴露或隐藏具体的实现,或是延迟加载
+
+```js
+
+import { ModuleWithProviders }  from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+ 
+export const routes: Routes = [
+  { path: '', redirectTo: 'contact', pathMatch: 'full'},
+  { path: 'crisis', loadChildren: 'app/crisis/crisis.module#CrisisModule' },
+  { path: 'heroes', loadChildren: 'app/hero/hero.module#HeroModule' }
+];
+
+export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+```
+path指明路径，loadChildren指明使用延迟加载，'app/crisis/crisis.module#CrisisModule'指明了模块的路径，和模块的名称。

@@ -68,5 +68,15 @@
         "type": "dir",
         "name": "practices",
         "label": "Practices"
+    },
+    {
+        "type": "dir",
+        "name": "angular",
+        "label": "Angular"
+    },
+    {
+        "type": "dir",
+        "name": "vue",
+        "label": "Vue"
     }
 ]

@@ -1,0 +1,287 @@
+---
+title: 1.ng-组件
+date: 2021-02-24 23:42:02
+categories: 技术栈
+tags: 
+    - Angular
+---
+
+这之前写了 RxJS 基础知识，看完官网RxJS 之后想应用起来却无从下手。  
+Angular + TypeScript ，再学习组件库 将会是接下来要做的事..
+
+好好看看 Angular 官方文档，再 通读TypeScript 官方文档 ，再 ng-zorro-antd 文档
+
+分别写一篇 基础知识总结文章，照例只记录自己认为重要，让人豁然开朗的的知识点，
+
+力求以自己的话 精炼概括，尽量保证容易记忆。
+
+## 概览
+
+__命令创建组件__
+
+1. `npm install -g @angular/cli`
+2. `ng new <project-name>`
+3. `ng g component <module-or-file-route-name>/<component-name>`
+
+__手动创建组件__
+
+1. `<component-name>.component.ts` app文件夹下新建文件
+2. `import { Component } from '@angular/core';`
+3. `@Component({ })` 添加装饰器
+4. `@Component({ selector: 'app-component-overview', })` 添加CSS选择器
+5. `templateUrl: './component-overview.component.html',` 接上面装饰器内添加 HTML模板选择器
+6. `styleUrls: ['./component-overview.component.css']` 接上面装饰器内添加 模板的样式选择器
+7. `export class ComponentOverviewComponent { }` 添加包含该组件代码的 class语句
+
+理论上还要修改 `xxx.module.ts` 文件将组件导入.
+
+## 生命周期钩子
+
+Angular Core库中定义了声明周期钩子接口 来响应 生命周期的事件.  
+让你在适当的时机对组件或者指令进行操作.  
+每个接口都有唯一钩子方法, 由 `ng` + 接口名 构成,如`ngOnInit()`.
+
+__ngOnChanges()__  
+@input输入属性变化时会被调用.(非常频繁)  
+(被传入SimpleChange对象，属性为所有input属性,input属性又具有currentValue,previousValue两个属性)
+
+__ngOnInit()__  
+@input及变量初始化完成后调用,这里可以拿到this.data(一次)  
+(如果要根据属性对指令进行初始化，请在运行 ngOnInit() 时设置它们。)
+
+__ngDoCheck()__  
+可以检测数据变化,捕获并把它们当前的状态和之前的进行比较。(感觉每次渲染都会调用,暂不深究)  
+(不关注的数据渲染时也会调用,甚至光标在input框中切换也会调用,所以非常频繁)
+
+__ngAfterContentInit()__  
+当 外部通过插槽传入模板 在本组件 初始化视图完成 后调用(针对插槽的,一次)
+
+__ngAfterContentChecked()__  
+在 每次 插槽模板视图渲染 和 数据渲染 完毕后调用,此时可修改视图(非常频繁)  
+` <ng-content> ` 插槽位置.  
+`@ContentChild(ChildComponent) contentChild: ChildComponent;` ContentChild为固定写法
+
+__ngAfterViewInit()__  
+子组件及当前组件 等视图初始化完成后 被调用 (一次)
+
+__ngAfterViewChecked()__  
+每次 组件视图或子组件视图变更完 后调用(非常频繁)  
+(这里不能直接修改绑定属性,可以异步修改,否则会报错,因为刚刚初始化完视图)
+
+__ngOnDestroy()__  
+销毁前调用  
+(取消订阅.DOM事件,计时器,取消注册的回调)
+
+## 视图封装
+
+为防止组件样式污染组件的css样式封装有三种模式:
+
+1. `ShadowDom` 不进不出,使用浏览器原生的 Shadow DOM 实现.
+2. `Emulated` 默认模式,只进不出,.
+3. `None` 能进能出,表示不使用视图封装,会导致所有组件样式相互污染.
+
+> ShadowDom的概念指, 不构成DOM全局​​范围的一部分,而是自己有额外一份的DOM树,从而防止了样式污染  
+> ShadowDom 模式只适用于提供了原生 Shadow DOM 支持的浏览器,Emulated仿真模式适用于绝大多数情况
+```js
+// ViewEncapsulation需要引入, 属于 @angular/core包.
+@Component({
+    encapsulation: ViewEncapsulation.Native
+})
+```
+
+`Emulated`模式效果:  
+Angular 运行代码中,节点被增加了_nghost 或_ngcontent 属性选择器,  
+这些额外的选择器,目的是保证组件间的css不相互影响.
+
+渲染后的,  
+DOM节点 带`_nghost-组件名`属性,表示是 组件宿主元素  
+DOM节点 带`_ngcontent-组件名`属性,表示是 组件内的子节点元素,或者说哪个宿主的模拟ShadowDOM  
+CSS选择器 都被增加了 _nghost 或_ngcontent 属性选择器
+
+```html
+<hero-details _nghost-pmm-5>
+  <h2 _ngcontent-pmm-5>Mister Fantastic</h2>
+  <hero-team _ngcontent-pmm-5 _nghost-pmm-6>
+    <h3 _ngcontent-pmm-6>Team</h3>
+  </hero-team>
+</hero-detail>
+```
+```css
+/* 这些额外的选择器实现了本文所描述的这些作用域规则。 */
+[_nghost-pmm-5] {
+  display: block;
+  border: 1px solid black;
+}
+
+h3[_ngcontent-pmm-6] {
+  background-color: white;
+  border: 1px solid #777;
+}
+```
+## 组件交互
+
+
+__@Input 装饰器__
+
+父传子  
+`[master]="master"` 父  
+`@Input('别名') masterName: string` 子
+
+> setter getter 截听输入属性
+```js
+export class NameChildComponent {
+  @Input()
+  get name(): string { return this._name; }
+  set name(name: string) {
+    this._name = (name && name.trim()) || '<no name set>';
+  }
+  private _name = '';
+}
+```
+> ngOnChanges() 截听输入属性值的变化  
+> 当需要监视多个、交互式输入属性的时候，本方法比用属性的 setter 更合适。
+```js
+ngOnChanges(changes: SimpleChanges) {
+    const log: string[] = [];
+    for (const propName in changes) {
+      const changedProp = changes[propName];
+      const from = JSON.stringify(changedProp.previousValue);
+      const to = JSON.stringify(changedProp.currentValue);
+    }
+  }
+```
+
+__@Output 装饰器__
+
+子传父
+
+```js
+// 父
+template: (voted)="onVoted($event)"
+
+onVoted(agreed: boolean) {
+    agreed ? this.agreed : this.disagreed;
+}
+
+// 子
+export class VoterComponent {
+  @Output() voted = new EventEmitter<boolean>();
+
+  vote() {
+    this.voted.emit(true);
+  }
+}
+```
+
+__模板通过#ngID直接获取子组件数据__  
+父获取子
+
+```js
+@Component({
+  selector: 'app-countdown-parent-lv',
+  template: `
+  <h3>Countdown to Liftoff (via local variable)</h3>
+  <button (click)="timer.start()">Start</button>
+  <button (click)="timer.stop()">Stop</button>
+  <div class="seconds">{{timer.seconds}}</div>
+  <app-countdown-timer #timer></app-countdown-timer>
+  `,
+  styleUrls: ['../assets/demo.css']
+})
+```
+
+__@ViewChild()__  
+父获取子
+```js
+import { ViewChild } from '@angular/core';
+import { ChildComponent } from './Child.component';
+template:`<app-child #ChildComponentID></app-child>`
+@ViewChild('ChildComponentID') ChildComponent123 : ChildComponent
+
+```
+ngAfterViewInit() 之后才能拿到 ChildComponent123 属性
+
+__通过服务来通讯__
+
+## 组件样式
+
+范围化的样式: 所有样式只对该组件模板生效,并且不进不出,插槽进来的元素也不会对其生效(如ng-content).
+
+__:host()__、__:host-context()__、__/deep/__
+
+`:host()` 在父组件中修改本父组件下的某子组件的渲染后的真实DOM元素
+
+`:host-context()` 它在当前组件宿主元素的祖先节点中查找 CSS 类， 直到文档的根节点为止
+
+意味深长的一句话，宿主元素不是组件自身模板的一部分，而是父组件模板的一部分。
+```css
+/* 查找当前父组件 的组件子元素中含有.active */
+:host(.active) {
+  border-width: 3px;
+}
+/* 当该子组件渲染完成DOM之后某个祖先元素有 theme-light 属性时，
+才会把 background-color 样式应用到组件内部的所有 <h2> 元素中 */
+:host-context(.theme-light) h2 {
+  background-color: #eef;
+}
+```
+ /deep/ === >>> 均已被废弃， 建议改为 ::ng-deep
+
+> 任何带有 ::ng-deep 的样式都会变成全局样式。为了把指定的样式限定在当前组件及其下级组件中，  
+> 请确保在 ::ng-deep 之前带上 :host 选择器。  
+> 如果 ::ng-deep 组合器在 :host 伪类之外使用，该样式就会污染其它组件。
+
+__元数据中的样式__
+
+```js
+@Component({ // styles 属性里直接写
+  selector: 'app-root',
+  template: ` <h1>Tour of Heroes</h1>`,
+  styles: ['h1 { font-weight: normal; }']
+})
+export class HeroAppComponent { /* . . . */ }
+
+@Component({ // styleUrls 引用外部文件,数组,可引用多个css文件
+  selector: 'app-root',
+  template: ` <h1>Tour of Heroes</h1>`,
+  styleUrls: ['./hero-app.component.css']
+})
+
+@Component({// 模板 里直接写style标签
+  selector: 'app-hero-controls',
+  template: `
+    <style> button { background-color: white; border: 1px solid #777; } </style>
+    <button (click)="activate()">Activate</button>
+  `
+})
+
+@Component({ // 模板 里直接写link标签,路径是相对于本应用的根路径的
+  selector: 'app-hero-team',
+  template: `
+    <link rel="stylesheet" href="../assets/hero-team.component.css">
+    <h3>Team</h3>
+  `
+})
+export class HeroAppComponent { /* . . . */ }
+```
+
+css 中可使用 @import, URL为相对当前正在导入的CSS文件
+
+.scss、.less、.styl 文件引用时使用相应扩展名指定到 @Component.styleUrls 元数据中。  
+CLI 的构建过程会运行相关的预处理器。
+
+## 在父子指令及组件之间共享数据
+
+同时使用 @Input() 和 @Output()
+
+## 动态组件
+
+没看懂...以后再写
+
+## 自定义元素
+
+通过createCustomElement()函数，将 Angular组件 转换为自定义元素，外观和行为就和其它的 HTML 元素一样了。
+
+需要浏览器支持
+
+## 组件完结
