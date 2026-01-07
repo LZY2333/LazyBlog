@@ -31,6 +31,11 @@
     },
     {
         "type": "dir",
+        "name": "angular",
+        "label": "Angular"
+    },
+    {
+        "type": "dir",
         "name": "chrome",
         "label": "Chrome"
     },
@@ -41,11 +46,6 @@
     },
     {
         "type": "dir",
-        "name": "ai",
-        "label": "AI"
-    },
-    {
-        "type": "dir",
         "name": "leetcode",
         "label": "Leetcode"
     },
@@ -53,6 +53,11 @@
         "type": "dir",
         "name": "qiankun",
         "label": "qiankun"
+    },
+    {
+        "type": "dir",
+        "name": "ai",
+        "label": "AI"
     },
     {
         "type": "dir",
@@ -68,11 +73,6 @@
         "type": "dir",
         "name": "practices",
         "label": "Practices"
-    },
-    {
-        "type": "dir",
-        "name": "angular",
-        "label": "Angular"
     },
     {
         "type": "dir",
