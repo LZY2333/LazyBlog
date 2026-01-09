@@ -155,13 +155,15 @@ function throttle(fn, wait) {
 function debounce(fn, wait, immediate = false) {
     let timer;
     return function (...args) {
-        const callNow = immediate && !timer; // 首次立即执行
+        if(immediate) {
+            fn.apply(this, args);
+            immediate = false;
+            return;
+        }
         clearTimeout(timer);
         timer = setTimeout(() => {
-            timer = null; // 允许下次立即执行
-            if (!immediate) fn.apply(this, args); // 非立即模式执行
+            fn.apply(this, args);
         }, wait);
-        if (callNow) fn.apply(this, args);
     };
 }
 ```

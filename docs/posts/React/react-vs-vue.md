@@ -8,6 +8,29 @@ tags:
     - Vue
 ---
 
+
+React缺点
+【灵活度高,下线低】使得项目需要大量规范和约定
+【对开发者要求高】 TS/性能
+
+React优点
+【支持TS】
+【大厂背书】
+【生态更好】且组件库antd也有大厂背书
+【AI友好】语法 TS 以及github react项目多
+
+Vue缺点
+【TS支持略差】
+【转vue3会有技术债务】
+
+Vue优点
+【上手更快】
+【性能更好】MVVM，模板语法静态优化
+【官方生态一套】技术选型成本低
+
+> TS 的优势, 最典型的就是 npm包 有了TS之后 智能提示用的非常舒服
+> React本质是状态机 任何组件State变化，整个树都需要重新render，
+
 ## React的定位
 
 React团队对React的定位 仅仅是 用于构建UI的前端库，而非MVVM框架
@@ -25,10 +48,6 @@ Vue的本质是响应式, 由数据变化触发 依赖更新, 数据驱动
 React 使用JSX, 核心是嵌套的 render 的执行调用, 然后比对新旧Fiber树找出修改点
 
 Vue 使用模板语法, 数据与模板绑定直接定位修改点, 且模板可以预编译优化
-
-
-
-
 
 Vue 是静态分析 template 文件，采用预编译优化，在解析模板的同时构建 AST 依赖树，同时标记出可能会变化的动态节点。  
 利用数据双向绑定，进行数据拦截或代理，进行响应式处理。从而能够比较精准的计算出有改变的 DOM，减少计算量。
@@ -79,5 +98,3 @@ react框架自己迭代能做的优化不及用户一行代码造成的性能损
 [React和Vue全方位对比](https://juejin.cn/post/7250834664260829243?searchId=2024050611250976DA66D7732C54253995)
 
 [个人理解Vue和React区别](https://juejin.cn/post/6844904158093377549?from=search-suggest)
-
-[珠峰](http://zhufengpeixun.com/strong/html/126.11.react-1.html#t112.%E4%B8%BA%E4%BB%80%E4%B9%88%20React%20%E4%BC%9A%E5%BC%95%E5%85%A5%20JSX?)

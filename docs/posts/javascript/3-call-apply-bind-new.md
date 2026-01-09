@@ -153,6 +153,7 @@ console.log(obj.friend);
 ### 简单实现new优先效果
 
 ES6
+
 ```js
 Function.prototype.bind2 = function (context) {
     if (typeof this !== 'function') {
@@ -170,6 +171,7 @@ Function.prototype.bind2 = function (context) {
     };
 };
 ```
+
 new 操作中, 会执行当前函数 以获取其返回值(new特性:构造函数执行返回值就是实例)
 
 执行当前函数时，会将 当前函数 的this 绑定在 由其自身原型创建的新对象上，再执行
@@ -242,6 +244,7 @@ Function.prototype.bind2 = function bind(thisArg){
 
 ## 手写new解析
 ES5
+
 ```js
 function myNew(constructor, ...args) {
     if (typeof constructor !== 'function') {
@@ -266,13 +269,11 @@ function myNew(constructor, ...args) {
 
 3. 如果 构造函数 有返回值且是 对象或函数(也是对象)，则前面白干，以返回值为最终结果
 
-
 前两条 保证了 new 新对象,
 
 既可以访问 构造函数.prototype(原型对象)中的属性，
 
 又可以访问 构造函数调用时通过 this给 新对象 赋值的属性。
-
 
 > __proto__ ，绝大部分浏览器都支持这个非标准的方法访问原型，  
 > 然而它并不存在于 Person.prototype 中，实际上，它是来自于 Object.prototype ，  
