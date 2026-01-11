@@ -110,21 +110,7 @@ __update时,__
 
 [React技术揭秘--Fiber的工作原理](https://react.iamkasong.com/process/doubleBuffer.html#%E4%BB%80%E4%B9%88%E6%98%AF-%E5%8F%8C%E7%BC%93%E5%AD%98)
 
-
 ## Fiber的工作原理(Fiber节点篇)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 `didReceiveUpdate = false` 代表无法复用之前的Fiber，直接创建新Fiber替换
 
@@ -133,7 +119,6 @@ __update时,__
 换句话说，父节点无法复用，则所有子节点都会重新创建，不考虑复用。
 
 [React技术揭秘--架构篇Render阶段](https://react.iamkasong.com/process/reconciler.html)
-
 
 ## JSX是什么
 
@@ -149,17 +134,12 @@ JSX => `React.createElement()` => 虚拟DOM => Fiber
 
 > React17开始将JSX库单独提出，以便其他库使用JSX语法，而可以不引入React, `React.createElement()` 变成了 `jsx()`
 
-
-
-
-
 ## 其他
 
 回头再补:React18以前会EffectList(副作用链)收集副作用，React18.2没有effect了。现在从根节点递归收集副作用
 
 18.2用 subTreeFlags，表示子节点是否有修改，冒泡
 ## 为什么Vue不需要Fiber
-
 
 ## Diff算法
 
