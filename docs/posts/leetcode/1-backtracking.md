@@ -71,6 +71,7 @@ var solveNQueens = function (n) {
     const map = new Array(n).fill(-1); // key表示row，value表示column
     const result = [];
     const solveRow = (row) => {
+        // row是从0开始的,row === n棋盘已经是n+1行
         if (row === n) {
             printMap();
             return;
@@ -87,6 +88,7 @@ var solveNQueens = function (n) {
 
     const check = (row, column) => {
         let left = (right = column);
+        // row 是从0开始的,row - 1是上一行,所以是--left
         for (let i = row - 1; i >= 0; i--) {
             if (
                 map[i] === --left ||
@@ -228,6 +230,8 @@ console.log(combinationSum3(3, 9));
 
 <https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/>
 
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+
 ```js
 var letterCombinations = function (digits) {
     if (!digits) return []
@@ -254,6 +258,10 @@ console.log(letterCombinations('23'));
 ## 39. 组合总和
 
 <https://leetcode.cn/problems/combination-sum/description/>
+
+给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+
+candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。
 
 ```js
 var combinationSum = function (candidates, target) {
@@ -373,6 +381,8 @@ var combinationSum2 = function (candidates, target) {
 
 <https://leetcode.cn/problems/palindrome-partitioning/description/>
 
+给你一个字符串 s，请你将 s 分割成一些 子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+
 ```js
 var partition = function (s) {
     const path = [], result = [];
@@ -382,10 +392,10 @@ var partition = function (s) {
             result.push([...path]);
             return;
         }
-        for (let i = start; i < s.length; i++) {
-            if (!isOK(start, i)) continue;
-            path.push(s.slice(start, i + 1));
-            backTracking(i + 1);
+        for (let end = start; end < s.length; end++) {
+            if (!isOK(start, end)) continue;
+            path.push(s.slice(start, end + 1));
+            backTracking(end + 1);
             path.pop();
         }
     };
@@ -608,7 +618,7 @@ var permuteUnique = function(nums) {
             // 遍历到 当前数 时，同层前一个数的递归一定是结束了，此时它的标记一定是false
             // 所以借 used[i - 1] === false 判断 上一个数同层
             // 同层 且 当前数 与 上一个数 相等(同层重复)，则跳过
-            if (i > 0 && nums[i] === nums[i - 1] && used[i - 1] === false) continue
+            if (i > 0 && nums[i] === nums[i - 1] && used[i - 1] === false) continue;
             // 如果当前数 用过(同枝重复)，或称 正在当前递归(path)中，跳过
             if(used[i]) continue;
             used[i] = true

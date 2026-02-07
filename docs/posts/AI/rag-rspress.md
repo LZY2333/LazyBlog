@@ -22,14 +22,14 @@ tags:
 
 LlamaIndex.js 本身就能替代 LangChain 的 80% 核心功能，且JS-only
 
-| 模块        | 对应 LangChain 的功能       | LlamaIndex.js 的实现方式     |
-| --------- | ---------------------- | ----------------------- |
-| Prompt 处理 | `PromptTemplate`       | `PromptHelper`          |
-| 向量索引      | `VectorStoreRetriever` | `VectorIndexRetriever`  |
-| RAG 管线    | `RetrievalQAChain`     | `RetrieverQueryEngine`  |
-| 数据加载      | `DocumentLoader`       | `SimpleDirectoryReader` |
-| 嵌入模型      | `OpenAIEmbeddings`     | `OpenAIEmbedding`       |
-| 输出接口      | LangChain OutputParser | LlamaIndex Response对象   |
+| 模块        | 对应 LangChain 的功能  | LlamaIndex.js 的实现方式 |
+|-------------|------------------------|--------------------------|
+| Prompt 处理 | `PromptTemplate`       | `PromptHelper`           |
+| 向量索引    | `VectorStoreRetriever` | `VectorIndexRetriever`   |
+| RAG 管线    | `RetrievalQAChain`     | `RetrieverQueryEngine`   |
+| 数据加载    | `DocumentLoader`       | `SimpleDirectoryReader`  |
+| 嵌入模型    | `OpenAIEmbeddings`     | `OpenAIEmbedding`        |
+| 输出接口    | LangChain OutputParser | LlamaIndex Response 对象 |
 
 ## Jupyter + Deno
 

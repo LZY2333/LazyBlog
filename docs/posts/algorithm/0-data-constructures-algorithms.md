@@ -61,7 +61,6 @@ __线性表结构__ 以及 __连续的内存空间__ __相同的数据类型__,�
 
 删除优化:标记删除位置，当数组无储存空间时，统一清空重排。
 
-
 但是在 __Javascript中不一定是连续分配的__,而可能是 __哈希映射的方式__ 存在的。
 
 JS中的数组底层有两种表现形式 fast 和 slow
@@ -150,6 +149,7 @@ __插入排序 比 冒泡排序 性能更好__
 ## 排序
 
 ### 冒泡排序
+
 ```js
 // 冒泡排序
 const bubbleSort = (arr) => {
@@ -177,6 +177,7 @@ bubbleSort(test)
 ```
 
 ### 插入排序
+
 ```js
 // 插入排序
 const insertionSort = (arr) => {
@@ -204,6 +205,7 @@ insertionSort(testSort)
 ```
 
 ### 选择排序
+
 ```js
 // 选择排序
 const selectionSort = (arr) => {
@@ -232,7 +234,6 @@ selectionSort(testSelect)
 快速排序: __时间复杂度O(nlogn)__,__空间复杂度O(1)__,__不稳定的排序算法__,__原地排序__
 
 归并排序: __时间复杂度:O(nlogn)__,__空间复杂度:O(n)__, __稳定的排序算法__,__非原地排序__
-
 
 快速排序 极端情况下时间复杂度退化成O(n²),例如选中有序数组的最后一位做为pivot
 
@@ -362,13 +363,13 @@ console.log(BinarySearch(arr, 1))
 console.log(BinarySearch(arr, 102))
 console.log(BinarySearch(arr, 1111))
 ```
+
 > 注意循环退出条件是 low <= high  
 > 注意 high = mid - 1,low = mid + 1,没这个 1 可能会死循环(high=low时)  
 > (low + high) / 2 可优化为 low + (high - low) / 2,防止high+low溢出  
 > 必须是顺序表结构(数组),必须是有序数据  
 > 理论上二分查找可以解决的问题,散列表 二叉树都能解决,但是需要更多额外空间  
 > 所以限制内存空间及 数据量较大时 使用 二分查找
-
 
 查找k次,2的k次方能覆盖n个元素  
 __时间复杂度O(logn)__

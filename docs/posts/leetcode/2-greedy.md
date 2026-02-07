@@ -43,12 +43,16 @@ var findContentChildren = function(g, s) {
 
 [leetcode](https://leetcode.cn/problems/wiggle-subsequence/description/)
 
+给你一个整数数组 nums ，返回 nums 中作为 摆动序列 的 最长子序列的长度
+
+例如， [1, 7, 4, 9, 2, 5] 是一个 摆动序列，差值 (6, -3, 5, -7, 3) 是正负交替出现的。
+
 ```js
 var wiggleMaxLength = function(nums) {
     let up = 1,down = 1
-    for(let i = 1;i < nums.length; i++) {
+    for(let i = 1; i < nums.length; i++) {
         if(nums[i] > nums[i-1]) { 
-            // 注意这里是 up = down+1, 假设一直是上升，则实际up不会增加
+            // 注意这里是 up = down+1, 假设一直是上升,则实际up不会增加,相当于删除了中间值
             up = down + 1
         } else if(nums[i] < nums[i-1]) {
             down = up + 1
@@ -62,20 +66,24 @@ var wiggleMaxLength = function(nums) {
 
 只记录峰顶，上升和下降过程中间的值，就是可以不计入的值
 
-## 53. 最大子序和
+## 53. 最大子数组和
 
-[leetcode](https://leetcode.cn/problems/maximum-subarray/description/)  
-子数组是连续的，子序列 同序不连续的  
-当连续区间和为负，则立刻放弃该区间，也即为该区间的右边界
+[leetcode](https://leetcode.cn/problems/maximum-subarray/description/)
+
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+子数组是连续的，子序列 同序不连续的
 
 ```js
 // 1维动态规划
 var maxSubArray = function (nums) {
     // dp[i] 以nums[i]结尾的最大连续子数组和
-    const dp = Array(nums.length + 1).fill(0);
-    let result = -Infinity;
-    for (let i = 1; i <= nums.length; i++) {
-        dp[i] = Math.max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+    const n = nums.length;
+    const dp = new Array(n);
+    dp[0] = nums[0];
+    let result = nums[0];
+    for (let i = 1; i < n; i++) {
+        dp[i] = Math.max(dp[i - 1] + nums[i], nums[i]);
         result = Math.max(result, dp[i]);
     }
     return result;
@@ -100,10 +108,13 @@ var maxSubArray = function(nums) {
     return result
 };
 ```
+当连续区间和为负，则立刻放弃该区间，也即为该区间的右边界
 
 ## 122. 买卖股票的最佳时机 II
 
 [leetcode](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/)
+
+同一时间只能持有一个股票，不限次数可当天同时买卖
 
 ```js
 var maxProfit = function(prices) {
@@ -120,6 +131,8 @@ var maxProfit = function(prices) {
 ## 55. 跳跃游戏
 
 [leetcode](https://leetcode-cn.com/problems/jump-game/)
+
+nums[i] 表示从索引i 向后跳转的最大长度, 判断能否到达最后一个下标
 
 ```js
 var canJump = function(nums) {
@@ -143,6 +156,8 @@ var canJump = function(nums) {
 
 [leetcode](https://leetcode.cn/problems/jump-game-ii/description/)
 
+nums[i] 表示从索引i 向后跳转的最大长度, 返回到达最后一个下标的最小跳跃次数
+
 ```js
 var jump = function(nums) {
     let result = 0;
@@ -164,7 +179,7 @@ console.log(jump([2,3,1,1,4]));
 
 i从前往后，记录 当前最远下标 curDistance
 
-[i, curDistance] 内寻找 下一步远下标  nextDistance
+[i, curDistance] 内寻找 能够到的最远 下一步下标  nextDistance
 
 遍历完时模拟跳跃，nextDistance 赋值给 curDistance, result步数+1
 
@@ -176,6 +191,8 @@ i从前往后，记录 当前最远下标 curDistance
 ## 1005. K次取反后最大化的数组和
 
 [leetcode](<https://leetcode.cn/problems/maximize-sum-of-array-after-k-negations/>
+
+nums含负数整数数组 k可取反次数 可多次取反i, k次后, 返回数组最大和
 
 ```js
 var largestSumAfterKNegations = function (nums, k) {
@@ -199,6 +216,10 @@ console.log(largestSumAfterKNegations([-2, 5, 0, 2, -2], 3));
 ## 134. 加油站
 
 [leetcode](https://leetcode.cn/problems/gas-station/description/)
+
+i下标可加 gas[i] 汽油 从i到i+1要减少 cost[i] 汽油,
+
+返回 从哪个下标起步能走完一圈, 无解返回-1, 如果有解, 题目保证结果唯一。
 
 ```js
 var canCompleteCircuit = function (gas, cost) {

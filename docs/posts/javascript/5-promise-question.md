@@ -82,6 +82,7 @@ function mergePromise(promises) {
 ```
 
 测试代码
+
 ```js
 const time = (timer) => {
     return new Promise(resolve => {
@@ -181,7 +182,6 @@ addTask(timer,text) {
 }
 ```
 
-
 ## 封装一个异步加载图片的方法
 
 这个相对简单一些，只需要在图片的onload函数中，使用resolve返回一下就可以了。
@@ -224,7 +224,6 @@ arr.reduce((pre, item) => {
 
 `Promise().resolve().then(setTimeout).then(setTimeout).then(setTimeout)`
 
-
 ## 使用Promise实现红绿灯交替重复亮
 
 红灯3秒亮一次，黄灯2秒亮一次，绿灯1秒亮一次；如何让三个灯不断交替重复亮灯？
@@ -256,6 +255,7 @@ const p = () => light(3000, red)
 
 p()
 ```
+
 自己写是写出来了，但是没有想到light函数，三个灯一个个写的promise，没想到通用函数
 
 ## ajax请求相同资源时，实际只发出一次请求
@@ -414,6 +414,7 @@ return结果值：thenable（等待 1个then的时间）
 return结果值：promise（等待 2个then的时间）
 
 ### 第一题
+
 ```js
 const fn = () => (new Promise((resolve, reject) => {
   console.log(1);
@@ -518,7 +519,6 @@ async 视为 new promise，await(包括await这行)之前都是立即执行的 e
 
 await下一行开始都是promise.then
 
-
 ### 第六题
 
 ```js
@@ -574,6 +574,5 @@ await 就算跟个常量也会 将其包装为一个promise，因此多一层微
 ## 感谢
 
 [LinDaiDai_霖呆呆：【建议星星】要就来45道Promise面试题一次爽到底(1.1w字用心整理)](https://juejin.cn/post/6844904077537574919)
-
 
 [你不知道的async/await魔鬼细节](https://mp.weixin.qq.com/s/Gr7ajRYYazdm5YQvZS6gXg)

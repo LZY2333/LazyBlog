@@ -138,13 +138,13 @@ function debounce(fn, wait) {
 
 ```js
 function throttle(fn, wait) {
-    let timer;
+    let lastTime = 0;
     return function () {
-        if (timer) return
-        timer = setTimeout(() => {
-            fn.apply(this, arguments);
-            timer = null;
-        }, wait);
+        const now = Date.now();  // 获取当前时间戳
+        if (now - lastTime >= wait) {  // 判断当前时间与上次执行时间的差距是否大于等于 wait
+            fn.apply(this, arguments);  // 执行函数
+            lastTime = now;  // 更新最后执行时间
+        }
     };
 }
 ```
@@ -168,16 +168,160 @@ function debounce(fn, wait, immediate = false) {
 }
 ```
 
-实现一个节流函数? 如果想要最后一次必须执行的话怎么实现?
+## 合并含相同项的数组
 
-## 加上对上下文的处理
+```js
+const arr = [['a0', 'a1'], ['a1', 'a2'], ['a3']];
+// 将含有相同元素的数组合在一起，且去除重复项，输出新arr2
+// [ [ 'a0', 'a1', 'a2' ], [ 'a3' ] ]
+const mergeArr = (arr) => {
+    const map = {}; // 用来记录每个元素属于哪个数组
+    const result = []; // 用来保存合并后的结果
+    for (const innerArr of arr) {
+        // 是否有 已存在的arr 含当前arr的重复元素
+        let existArr = null;
+        for (const item of innerArr) {
+            if (map[item]) {
+                existArr = map[item];
+                break;
+            }
+        }
+        if (existArr) {
+            for (const item of innerArr) {
+                if (map[item]) continue;
+                existArr.push(item);
+                map[item] = existArr;
+            }
+        } else {
+            result.push(innerArr);
+            for (const item of innerArr) {
+                map[item] = innerArr;
+            }
+        }
+    }
+    return result;
+};
+console.log(mergeArr(arr)); 
+```
 
-## 手写排序
+## 对象数据构造Html标签树含缩进
 
-冒泡排序 插入排序 选择排序
+```js
+const root = { a: 1, b: { c: 2, d: { e: 3, }, }, };
+// 生成HTML标签Tree
+const generateTree = (value) => {
+    return getTag('root', deepTravelData(value, 0), 0);
+};
+const deepTravelData = (value, deep) => {
+    if (!isObject(value)) return getText(value, deep + 1);
+    const tagArr = [];
+    for (const key in value) {
+        if (!Object.hasOwn(value, key)) continue;
+        tagArr.push(
+            getTag(
+                key,
+                deepTravelData(value[key], deep + 1),
+                deep + 1
+            )
+        );
+    }
+    return tagArr.join('\n');
+};
+const getTag = (tagName, content, deep) => {
+    const space = ' '.repeat(deep * 4);
+    return `${space}<${tagName}>\n${content}\n${space}<${tagName}/>`;
+};
+const getText = (text, deep) => `${' '.repeat(deep * 4)}${text}`;
+const isObject = (value) => typeof value === 'object' && value !== null;
+console.log(generateTree(root));
+```
 
-快速排序 归并排序
+## LRU算法
 
-## 类的继承
+```js
+class LRUCache {
+    constructor(max) {
+        this.max = max;
+        this.store = new Map();
+    }
 
-## 手写扁平数组转tree
+    put(key, value) {
+        // 如果已存在，先删除（为了更新顺序）
+        if (this.store.has(key)) {
+            this.store.delete(key);
+        }
+        this.store.set(key, value);
+
+        // 超出容量，删除最久未使用的（Map 的第一个）
+        if (this.store.size > this.max) {
+            const oldestKey = this.store.keys().next();
+            this.store.delete(oldestKey);
+        }
+    }
+
+    get(key) {
+        if (!this.store.has(key)) return -1;
+        const value = this.store.get(key);
+        // 访问即更新使用顺序
+        this.store.delete(key);
+        this.store.set(key, value);
+        return value;
+    }
+}
+
+const cache = new LRUCache(2); // 容量为 2
+
+cache.put(1, 1); // 缓存是 {1=1}
+cache.put(2, 2); // 缓存是 {1=1, 2=2}
+
+console.log(cache.get(1));    // 返回 1，缓存是 {2=2, 1=1}
+cache.put(3, 3); // 删除键 2（因为最久未使用），缓存是 {1=1, 3=3}
+console.log(cache.get(2));    // 返回 -1（未找到）
+cache.put(4, 4); // 删除键 1，缓存是 {3=3, 4=4}
+console.log(cache.get(1));    // 返回 -1（未找到）
+console.log(cache.get(3));    // 返回 3
+console.log(cache.get(4));    // 返回 4
+```
+
+## 待实现
+### 类的继承
+
+
+### 数组全排列
+
+```js
+var arr = [["1","2"],["3","4","5"]];
+// 预期结果
+// [["1","3"],["1","4"],["1","5"],["2","3"],["2","4"],["2","5"]]
+
+const combile = (arr) => {
+    for(let i = 0; i < arr.length; i++) {
+        
+    }
+}
+```
+
+### 手写扁平数组转tree
+
+```js
+var obj = [
+    { id:3, parent:2 },
+    { id:1, parent:null },
+    { id:2, parent:1 }
+]
+
+// o = {
+//   id: 1,
+//   parent: null,
+//   children: [{
+//     id: 2,
+//     parent: 1,
+//     children: [{
+//       id: 3,
+//       parent: 2
+//     }]
+//   }]
+// };
+```
+
+实现一个 EventBus，支持订阅、取消订阅、发布事件，以及一次性订阅（once）

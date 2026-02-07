@@ -128,7 +128,6 @@ JS 原始数据类型 BigInt Number,ts 里的类型 bigint number
 `void` > `undefined` > `null` > `never`
 
 > 是所有类型父类型意味着,不可赋值给任何类型(协变)  
->  
 > 是所有类型子类型意味着,可赋值给任何类型(协变)
 
 ### undefined null void never 最小的类型
