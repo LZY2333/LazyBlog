@@ -8,5 +8,6 @@
     "6-zustand",
     "history-vs-hash",
     "redux-recoil-zustand",
-    "jasmine"
+    "jasmine",
+    "lazy-suspense"
 ]

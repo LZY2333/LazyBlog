@@ -11,6 +11,11 @@
     },
     {
         "type": "dir",
+        "name": "nextjs",
+        "label": "Nextjs"
+    },
+    {
+        "type": "dir",
         "name": "workflow",
         "label": "Workflow"
     },

@@ -8,5 +8,6 @@
     "6-special",
     "7-function",
     "ts-challenge",
-    "covariance-contravariance"
+    "covariance-contravariance",
+    "0-tsconfig"
 ]

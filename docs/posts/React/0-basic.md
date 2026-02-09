@@ -24,7 +24,7 @@ __React 16__
 【Hooks】生命周期、状态管理、逻辑复用, 让函数组件得以独立于类组件  
 【评价】性能更好 可以中断让出线程给渲染, 为 并发渲染 奠定基础, 但是同步模式
 
-__React 17__
+__React 17__  
 【事件委托变更】不再挂在document上，挂载在根DOM容器中，使React可多版本并存  
 【新jsx-runtime】无需引入React，减小包装尺寸，考虑多版本React共存的情况  
 【移除事件池复用机制】简化事件系统  
@@ -34,7 +34,7 @@ __React 18__
 【并发渲染】  Lane+Scheduler 优先级调度, 可以切换任务  
 【自动批处理】所有上下文 自动合并只更新一次, 无论同步异步  
 【createRoot】ReactDOM.render 改变为 ReactDOM.createRoot  
-【Lanes模型】 作为调度模型, 取代expirationTime, 同时有 StarvedLanes
+【Lanes模型】 作为调度模型, 取代expirationTime, 同时有 StarvedLanes  
 【subtreeFlags】 收集副作用, 取代 17的Effect List  
 【useSyncExternalStore】 大小1Kb 的Zustand 核心原理
 

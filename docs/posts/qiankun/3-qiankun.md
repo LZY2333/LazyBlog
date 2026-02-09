@@ -139,8 +139,8 @@ addedPropsMapInSandbox、modifiedPropsOriginalValueMapInSandbox
 支持多个子应用同时运行，不污染全局 window
 
 ## 为什么JS沙箱只需要隔离window
-__【JS内存天然隔离】__
-多个项目同时运行，有模块作用域，函数作用域隔离
+__【JS内存天然隔离】__  
+多个项目同时运行，有模块作用域，函数作用域隔离  
 没有引用，JS 不可能“不能凭空访问别人的内存”
 
 __【window全局副作用唯一入口】__
@@ -217,7 +217,7 @@ if (window.__POWERED_BY_QIANKUN__) {
 
 **路由跳转问题**  
 子应用的路由跳转会基于子应用的base，无法使用`<router-link>` `router.push/router.replace`  
-`<a>`标签可以跳，但会刷新页面
+`<a>`标签可以跳，但会刷新页面  
 解决：将主应用路由实例传给子应用，子应用进行封装
 
 **qiankun在子应用中引入资源时报错解决**  

@@ -5,7 +5,7 @@ categories: 经验帖
 tags: 
     - Git
 ---
-A — B — C —— D —— E  当前指向B，git reset能指向D吗，git reset能快捷直接指向最后一个吗，也就是不需要知道E的hash。
+A — B — C —— D —— E  当前指向B，git reset能指向D吗，git reset能快捷直接指向最后一个吗，也就是不需要知道E的hash。  
 git fetch 只拉当前代码和其他分支信息, 并不修改工作区代码, git merge origin/feature 才修改工作区代码?
 
 ## 本地相关----------------------------
@@ -64,8 +64,8 @@ git merge --abort            # 合并冲突时，放弃本次 merge
 git merge --squash dev       # 将 dev 的提交压缩成一次提交再合并
 ```
 
-> --no-ff 快进合并 fast-forward: 当main分支在拉出dev分支后没有新commit
-> 此时 main中 merge dev, 不会产生merge commit, 且 main 分支中看不到 dev分支
+> --no-ff 快进合并 fast-forward: 当main分支在拉出dev分支后没有新commit  
+> 此时 main中 merge dev, 不会产生merge commit, 且 main 分支中看不到 dev分支  
 > --squash 杂乱的个人开发分支合并主分支时使用, 产生类似rebase一样的线性效果
 
 `git rebase` 整理历史，线性提交，适合个人分支
@@ -78,15 +78,15 @@ git rebase --abort           # 放弃本次 rebase
 git rebase --skip            # 跳过当前冲突提交
 ```
 
-> 使用merge: commit已经提交到远程仓库
+> 使用merge: commit已经提交到远程仓库  
 > 使用rebase: commit未提交到远程仓库
 
 
 ## git switch
 
-`git switch dev` 切换分支
-本地有 dev:                     切换到dev
-本地没有 dev, 但有 origin/dev:   创建本地分支dev 并映射远程分支origin/dev
+`git switch dev` 切换分支  
+本地有 dev:                     切换到dev  
+本地没有 dev, 但有 origin/dev:   创建本地分支dev 并映射远程分支origin/dev  
 本地没有 dev, 也没有 origin/dev: 报错
 
 ```sh
@@ -119,8 +119,8 @@ git switch -f main           # 强制切换（丢修改）
 git switch --orphan gh-pages # 无历史分支
 ```
 
-> switch / checkout 只操作本地引用，不做网络请求
-> --orphan 常见用途：gh-pages / 独立发布分支
+> switch / checkout 只操作本地引用，不做网络请求  
+> --orphan 常见用途：gh-pages / 独立发布分支  
 > --detached 常见用途: 查看远程分支代码 / 临时debug。禁止提交业务代码
 
 ## git branch
@@ -141,14 +141,14 @@ git branch -u origin/dev
 
 git reset 修改当前分支head指针,
 
-`git reset --hard HEAD^`   回滚到上个版本
-`git reset --hard HEAD^~2` 回滚到前两个版本
-`git reset --hard xxx`     (版本号或版本号前几位),回滚到指定版本号,会自动匹配
+`git reset --hard HEAD^`   回滚到上个版本  
+`git reset --hard HEAD^~2` 回滚到前两个版本  
+`git reset --hard xxx`     (版本号或版本号前几位),回滚到指定版本号,会自动匹配  
 `git reset --hard xxx filename`回滚某个文件到指定版本号(需要进入该文件所在目录)
 
-如果用`git push`会报错,因为我们本地库HEAD指向的版本比远程库的要旧
-`git push --force` 远程提交全丢失，与你本地完全同步。别人的之后的提交也全丢。
-`git push --force-with-lease` 远程没人动过 → 推送成功
+如果用`git push`会报错,因为我们本地库HEAD指向的版本比远程库的要旧  
+`git push --force` 远程提交全丢失，与你本地完全同步。别人的之后的提交也全丢。  
+`git push --force-with-lease` 远程没人动过 → 推送成功  
 `git reset` 建议只修改本地 未提交过的commit head,这样`git push`就不报错
 
 ```sh
@@ -171,14 +171,14 @@ git reset 修改当前分支head指针,
 
 ## git log / git reflog
 
-`git log`    打印当前分支可达的提交历史, reset、rebase后的引用一律看不到
-`git log feature`       看其他分支的提交历史
-`git log main..feature` 看feature分支比main多了哪些提交
-`--all`      所有分支可达提交
-`--oneline`  只包含版本号和记录描述
-`--graph`    命令行模拟图表展示(好看一点点)
-`-x`         查看最新的x个版本信息
-`-x filename`查看某个文件filename最新的x个版本信息（需要进入该文件所在目录）
+`git log`    打印当前分支可达的提交历史, reset、rebase后的引用一律看不到  
+`git log feature`       看其他分支的提交历史  
+`git log main..feature` 看feature分支比main多了哪些提交  
+`--all`      所有分支可达提交  
+`--oneline`  只包含版本号和记录描述  
+`--graph`    命令行模拟图表展示(好看一点点)  
+`-x`         查看最新的x个版本信息  
+`-x filename`查看某个文件filename最新的x个版本信息（需要进入该文件所在目录）  
 `git log --all --oneline --graph --decorate` 分支关系图
 
 可以自定义git log的展示内容,以后用 `git lg` 就行(最推荐)
@@ -196,7 +196,7 @@ HEAD@{0}: reset: moving to B
 HEAD@{1}: commit: D
 HEAD@{2}: commit: C
 ```
-> git reflog 只存在本地，默认保存90天。
+> git reflog 只存在本地，默认保存90天。  
 > git gc     垃圾回收, 物理彻底删除没有引用的 commit blob tree
 
 
@@ -236,18 +236,18 @@ git branch -a
 git switch -c feature/login origin/feature/login
 ```
 
-`git branch` 查看本地分支
-`git branch -r` 查看所有远程分支
-`git branch -a` 查看所有远程和本地分支
+`git branch` 查看本地分支  
+`git branch -r` 查看所有远程分支  
+`git branch -a` 查看所有远程和本地分支  
 `git branch -vv` 查看本地分支和远程分支的映射关系
 
-`git branch -D xxx` 删除本地分支
+`git branch -D xxx` 删除本地分支  
 `git push origin --delete xxx` 删除远程分支
 
-`git switch -c xxx origin/xxx` (新)新建并自动切换到本地分支xxx,并和远程分支建立映射关系
+`git switch -c xxx origin/xxx` (新)新建并自动切换到本地分支xxx,并和远程分支建立映射关系  
 `git checkout -b xxx origin/xxx` (旧)新建并自动切换到本地分支xxx,并和远程分支建立映射关系
 
-`origin`为git地址的标志
+`origin`为git地址的标志  
 `origin = https://github.com/xxx/xxx.git`
 
 ## git 冲突
