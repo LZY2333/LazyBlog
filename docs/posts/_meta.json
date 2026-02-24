@@ -31,11 +31,6 @@
     },
     {
         "type": "dir",
-        "name": "react",
-        "label": "React"
-    },
-    {
-        "type": "dir",
         "name": "angular",
         "label": "Angular"
     },
@@ -61,11 +56,6 @@
     },
     {
         "type": "dir",
-        "name": "ai",
-        "label": "AI"
-    },
-    {
-        "type": "dir",
         "name": "http",
         "label": "Http"
     },
@@ -83,5 +73,20 @@
         "type": "dir",
         "name": "vue",
         "label": "Vue"
+    },
+    {
+        "type": "dir",
+        "name": "AI",
+        "label": "AI"
+    },
+    {
+        "type": "dir",
+        "name": "React",
+        "label": "React"
+    },
+    {
+        "type": "dir",
+        "name": "zustand",
+        "label": "Zustand"
     }
 ]
