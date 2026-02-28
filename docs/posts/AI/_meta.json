@@ -2,5 +2,6 @@
     "large-model",
     "1-prompt-ngineering",
     "2-promt-generate",
-    "3-prompt-trick"
+    "3-prompt-trick",
+    "claude-code-config"
 ]
