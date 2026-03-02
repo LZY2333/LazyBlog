@@ -3,5 +3,6 @@
     "1-prompt-ngineering",
     "2-promt-generate",
     "3-prompt-trick",
-    "claude-code-config"
+    "claude-code-config",
+    "agent-management"
 ]
