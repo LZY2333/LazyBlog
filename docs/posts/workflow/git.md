@@ -2,10 +2,11 @@
 title: Git的使用
 date: 2021-11-20 09:43:01
 categories: 经验帖
-tags: 
+tags:
     - Git
 ---
-A — B — C —— D —— E  当前指向B，git reset能指向D吗，git reset能快捷直接指向最后一个吗，也就是不需要知道E的hash。  
+
+A — B — C —— D —— E 当前指向B，git reset能指向D吗，git reset能快捷直接指向最后一个吗，也就是不需要知道E的hash。  
 git fetch 只拉当前代码和其他分支信息, 并不修改工作区代码, git merge origin/feature 才修改工作区代码?
 
 ## 本地相关----------------------------
@@ -21,6 +22,7 @@ add / commit / status / diff
 ## git fetch
 
 `git fetch` 把远程(origin) 所有被配置为可fetch的分支 所有commit 下载到本地的「远程跟踪分支」里
+
 ```sh
 git branch -r
 # origin/main
@@ -30,6 +32,7 @@ git branch -r
 ```
 
 常见指令
+
 ```sh
 # 只 fetch dev 分支
 git fetch origin dev
@@ -41,7 +44,7 @@ git fetch origin dev
 
 ## git pull
 
-`git pull`          = `git fetch` + `git merge origin/<当前分支>`
+`git pull` = `git fetch` + `git merge origin/<当前分支>`
 
 `git pull --rebase` = `git fetch` + `git rebase origin/<当前分支>`
 
@@ -69,6 +72,7 @@ git merge --squash dev       # 将 dev 的提交压缩成一次提交再合并
 > --squash 杂乱的个人开发分支合并主分支时使用, 产生类似rebase一样的线性效果
 
 `git rebase` 整理历史，线性提交，适合个人分支
+
 ```sh
 git rebase main              # 将当前分支变基到 main（最常见）
 git rebase origin/main       # 直接基于远程 main 变基
@@ -81,12 +85,11 @@ git rebase --skip            # 跳过当前冲突提交
 > 使用merge: commit已经提交到远程仓库  
 > 使用rebase: commit未提交到远程仓库
 
-
 ## git switch
 
 `git switch dev` 切换分支  
-本地有 dev:                     切换到dev  
-本地没有 dev, 但有 origin/dev:   创建本地分支dev 并映射远程分支origin/dev  
+本地有 dev: 切换到dev  
+本地没有 dev, 但有 origin/dev: 创建本地分支dev 并映射远程分支origin/dev  
 本地没有 dev, 也没有 origin/dev: 报错
 
 ```sh
@@ -100,7 +103,9 @@ git fetch
 git switch dev
 # OK
 ```
+
 下面三个写法完全等价
+
 ```sh
 git switch dev
 git switch -c dev origin/dev
@@ -108,6 +113,7 @@ git checkout -b dev origin/dev
 ```
 
 常见指令
+
 ```sh
 git switch main              # 切换本地分支
 git switch -                 # 切回上一个分支
@@ -128,6 +134,7 @@ git switch --orphan gh-pages # 无历史分支
 git branch 与 switch 功能分隔
 
 本地已经有dev 也有 origin/dev 建立映射
+
 ```sh
 # 在任意分支
 git branch --set-upstream-to=origin/dev dev
@@ -141,9 +148,9 @@ git branch -u origin/dev
 
 git reset 修改当前分支head指针,
 
-`git reset --hard HEAD^`   回滚到上个版本  
+`git reset --hard HEAD^` 回滚到上个版本  
 `git reset --hard HEAD^~2` 回滚到前两个版本  
-`git reset --hard xxx`     (版本号或版本号前几位),回滚到指定版本号,会自动匹配  
+`git reset --hard xxx` (版本号或版本号前几位),回滚到指定版本号,会自动匹配  
 `git reset --hard xxx filename`回滚某个文件到指定版本号(需要进入该文件所在目录)
 
 如果用`git push`会报错,因为我们本地库HEAD指向的版本比远程库的要旧  
@@ -171,17 +178,18 @@ git reset 修改当前分支head指针,
 
 ## git log / git reflog
 
-`git log`    打印当前分支可达的提交历史, reset、rebase后的引用一律看不到  
-`git log feature`       看其他分支的提交历史  
+`git log` 打印当前分支可达的提交历史, reset、rebase后的引用一律看不到  
+`git log feature` 看其他分支的提交历史  
 `git log main..feature` 看feature分支比main多了哪些提交  
-`--all`      所有分支可达提交  
-`--oneline`  只包含版本号和记录描述  
-`--graph`    命令行模拟图表展示(好看一点点)  
-`-x`         查看最新的x个版本信息  
+`--all` 所有分支可达提交  
+`--oneline` 只包含版本号和记录描述  
+`--graph` 命令行模拟图表展示(好看一点点)  
+`-x` 查看最新的x个版本信息  
 `-x filename`查看某个文件filename最新的x个版本信息（需要进入该文件所在目录）  
 `git log --all --oneline --graph --decorate` 分支关系图
 
 可以自定义git log的展示内容,以后用 `git lg` 就行(最推荐)
+
 ```sh
 git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ci) %C(bold blue)<%an>%Creset' --abbrev-commit --"
 git mylog
@@ -191,22 +199,15 @@ git mylog
 ```
 
 `git reflog` 打印指针的移动历史
+
 ```txt
 HEAD@{0}: reset: moving to B
 HEAD@{1}: commit: D
 HEAD@{2}: commit: C
 ```
+
 > git reflog 只存在本地，默认保存90天。  
-> git gc     垃圾回收, 物理彻底删除没有引用的 commit blob tree
-
-
-
-
-
-
-
-
-
+> git gc 垃圾回收, 物理彻底删除没有引用的 commit blob tree
 
 ## git checkout 切换版本
 
@@ -217,8 +218,6 @@ HEAD@{2}: commit: C
 这样就可以自由查看某一个版本的代码了，这种方法正是我要找的。
 
 新语法: switch 代替 checkout, master 代替main
-
-
 
 ## git switch 拉取远程新分支
 
