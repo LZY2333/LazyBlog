@@ -2,6 +2,7 @@
     "0-basic",
     "1-hydration",
     "2-tailwind-css",
+    "3-auth-hydration-flicker-free-demo",
     "page-router",
     "ssr-rsc-streaming"
 ]
