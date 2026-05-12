@@ -7,15 +7,29 @@ tags:
     - React
 ---
 
-## SSR
+## SSR(待整理)
 
+1.UI生成必须在数据获取之后
+2.组件的 JavaScript 必须先加载到客户端，才能开始水合
+3.所有组件必须先水合，然后才能跟其中任意一个组件交互
+
+> Suspense，先渲染 Fallback UI, 解决问题1
 ## RSC
 
 核心能力 边下边渲染，边下边水合，局部水合即局部可用
 
 __Pages 设计目标 最快可看见内容, RSC 设计目标 最快可交互__
 
-## Streaming
+## Streaming(待整理)
+
+Streaming 是 Suspense 的技术支撑。将页面的 HTML 拆分成多个 chunks，然后逐步将这些块从服务端发送到客户端。
+
+Streaming 可以有效的阻止耗时长的数据请求阻塞整个页面加载的情况。它还可以减少加载第一个字节所需时间（TTFB）和首次内容绘制（FCP），有助于缩短可交互时间（TTI），尤其在速度慢的设备上。
+
+使用方法: `loading.jsx`(页面级别) `<Suspense>`(组件级别)
+
+> 响应头 Transfer-Encoding 值为 chunked，表示数据将以一系列分块的形式进行发送。
+> 分块传输编码（Chunked transfer encoding）是超文本传输协议（HTTP）中的一种数据传输机制，允许 HTTP由网页服务器发送给客户端应用（ 通常是网页浏览器）的数据可以分成多个部分。分块传输编码只在 HTTP 协议1.1版本（HTTP/1.1）中提供。
 
 ## Flight
 

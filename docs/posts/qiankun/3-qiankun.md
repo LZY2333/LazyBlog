@@ -216,7 +216,7 @@ if (window.__POWERED_BY_QIANKUN__) {
 **微应用通信**
 
 **路由跳转问题**  
-子应用的路由跳转会基于子应用的base，无法使用`<router-link>` `router.push/router.replace`  
+子应用的路由跳转会基于子应用的base，无法使用`<Link>` `navigate`  
 `<a>`标签可以跳，但会刷新页面  
 解决：将主应用路由实例传给子应用，子应用进行封装
 

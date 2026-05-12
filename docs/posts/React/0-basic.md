@@ -112,7 +112,7 @@ Scheduler包 调度workLoop
 ### BeginWork阶段
 BeginWork()  
 对比旧Fiber节点与新VDOM 构建新Fiber树  
-1.【新旧Fiber树】`current`旧Fiber树 和 `workInProgress`新Fiber树  
+1.【新旧Fiber树】`current`旧Fiber树 和 `workInProgress`新Fiber树
 2.【Fiber链表】子节点是 Fiber链表 不是数组  
 3.【Effect】每个Fiber记录自己的 `effectTag`
 
