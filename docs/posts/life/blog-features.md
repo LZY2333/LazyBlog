@@ -28,6 +28,9 @@ categories: life
 ## 文章 可选 hide功能
 ✅Completed
 
+### 脚手架文章模板
+🚧Progressing
+
 ### 标签统计
 🚧Progressing
 
