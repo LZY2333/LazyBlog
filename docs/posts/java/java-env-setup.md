@@ -87,3 +87,21 @@ mvn -version
 ```
 
 3. 执行 `Java: Clean Java Language Server Workspace` → Restart and delete，完整重启 VS Code。
+
+### 函数无法跳转 / Configure Java Runtime 无 Java 项目
+
+症状：代码中函数无法 Ctrl+Click 跳转，
+
+`Ctrl+Shift+P` → `Java: Configure Java Runtime` Project Settings中显示 There are no java projects opened in the current workspace。
+
+原因：VS Code Java 插件找不到 Maven 的 `settings.xml`，导致无法解析依赖，项目未被正确识别。
+
+解决：在 VS Code User `settings.json` 中添加 Maven 用户配置路径：
+
+```json
+{
+  "java.configuration.maven.userSettings": "C:\\Users\\你的用户名\\.m2\\settings.xml"
+}
+```
+
+保存后执行 `Java: Clean Java Language Server Workspace` → Restart and delete，重启 VS Code。
