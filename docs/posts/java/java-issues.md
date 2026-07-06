@@ -1,3 +1,11 @@
+---
+title: Java 开发问题记录
+date: 2026-06-27 22:14:33
+categories: 技术栈
+tags:
+    - Java
+---
+
 # Java 开发问题记录
 
 ## MapStruct 无法生成实现类

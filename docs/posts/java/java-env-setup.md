@@ -1,4 +1,10 @@
-# Java 环境配置
+---
+title: Java 环境配置
+date: 2026-06-23 01:54:26
+categories: 技术栈
+tags:
+    - Java
+---
 
 ## 一、安装 JDK
 
@@ -74,7 +80,7 @@ mvn -version
 
 ```json
 {
-  "java.jdt.ls.java.home": "D:\Java\jdk22",
+  "java.jdt.ls.java.home": "D:\\Java\\jdk22",
   "java.configuration.runtimes": [
     {
       "name": "JavaSE-1.8",
@@ -104,4 +110,4 @@ mvn -version
 }
 ```
 
-保存后执行 `Java: Clean Java Language Server Workspace` → Restart and delete，重启 VS Code。
+保存后执行 `Java: Clean Java Language Server Workspace` → Restart and delete，重启 VS Code
